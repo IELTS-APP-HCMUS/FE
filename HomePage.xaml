@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="login_full.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel Margin="40,20,40,20" VerticalAlignment="Center" Width="558">
+            <TextBlock Text="Welcome to MePass" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <TextBlock Text="You are now logged in!" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+            <Button Content="Log out" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10" Click="LogoutButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

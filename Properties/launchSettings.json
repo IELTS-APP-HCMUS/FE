@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "login_full (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "login_full (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
