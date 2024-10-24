@@ -13,23 +13,26 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
+using Microsoft.UI;
 
 
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace login_full
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class HomePage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+        private CalendarManager calendarManager;
+        private ScheduleManager scheduleManager;
+
         public HomePage()
         {
             this.InitializeComponent();
+
+            calendarManager = new CalendarManager(CalendarGrid, MonthYearDisplay);
+            scheduleManager = new ScheduleManager(ScheduleListView);
+            calendarManager.GenerateCalendarDays(DateTime.Now);
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -49,5 +52,76 @@ namespace login_full
                 window.Close();
             }
         }
+
+        private void UserProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var flyout = (sender as Button)?.Flyout;
+            if (flyout != null)
+            {
+                flyout.ShowAt(sender as FrameworkElement);
+            }
+        }
+        private void PreviousMonth_Click(object sender, RoutedEventArgs e)
+        {
+            calendarManager.PreviousMonth();
+        }
+
+        private void NextMonth_Click(object sender, RoutedEventArgs e)
+        {
+           calendarManager.NextMonth();
+        }
+
+        private void DayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            DateTime selectedDate = calendarManager.DayButtonClick(clickedButton);
+            scheduleManager.UpdateSchedule(selectedDate);
+        }
+
+
+        private void AddNewEvent_Click(object sender, RoutedEventArgs e)
+        {
+            scheduleManager.AddNewEvent(this.XamlRoot);
+        }
+
+
+        private void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        {
+            if (args.NewDate.HasValue)
+            {
+                DateTime selectedDate = args.NewDate.Value.Date;
+                ExamDateButton.Content = selectedDate.ToString("dd / MM / yyyy");
+                UpdateRemainingDays(selectedDate);
+            }
+            else
+            {
+                ExamDateButton.Content = "- / - / -";
+                RemainingDaysText.Text = "- ngày";
+            }
+        }
+
+        private void UpdateRemainingDays(DateTime examDate)
+        {
+            int remainingDays = (examDate - DateTime.Today).Days;
+            RemainingDaysText.Text = $"{remainingDays} ngày";
+        }
+        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
+                string category = clickedButton.Content.ToString();
+                // Handle the score category selection
+                // You might want to update the UI or store the selected category
+            }
+        }
+        //aboutus
+        private void AboutUs_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(AboutUsPage));
+        }
+
     }
+
+
 }

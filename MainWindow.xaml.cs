@@ -34,13 +34,13 @@ namespace login_full
     public sealed partial class MainWindow : Window
     {
         private readonly UserAuthenticationService _authService;
-        private readonly ApiService _apiService;
+        //private readonly ApiService _apiService;
         public MainWindow()
         {
             this.InitializeComponent();
             (Application.Current as App).MainWindow = this;
             _authService = new UserAuthenticationService();
-            _apiService = new ApiService();
+         //   _apiService = new ApiService();
             CheckSavedCredentials();
         }
 
@@ -185,72 +185,72 @@ namespace login_full
 
         // API login
 
-        private async void RegisterButton1_Click(object sender, RoutedEventArgs e)
-        {
-            LoginButton.Background = new SolidColorBrush(Colors.Transparent);
-            RegisterButton.Background = new SolidColorBrush(Colors.White);
-            LoginPanel.Visibility = Visibility.Collapsed;
-            RegisterPanel.Visibility = Visibility.Visible;
+        //private async void RegisterButton1_Click(object sender, RoutedEventArgs e)
+        //{
+        //    LoginButton.Background = new SolidColorBrush(Colors.Transparent);
+        //    RegisterButton.Background = new SolidColorBrush(Colors.White);
+        //    LoginPanel.Visibility = Visibility.Collapsed;
+        //    RegisterPanel.Visibility = Visibility.Visible;
 
-            string email = RegisterEmailTextBox.Text;
-            string fullName = FullNameTextBox.Text;
-            string password = RegisterPasswordBox.Password;
-            string confirmPassword = ConfirmPasswordBox.Password;
+        //    string email = RegisterEmailTextBox.Text;
+        //    string fullName = FullNameTextBox.Text;
+        //    string password = RegisterPasswordBox.Password;
+        //    string confirmPassword = ConfirmPasswordBox.Password;
 
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName) ||
-                string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
-            {
-                await ShowErrorDialogAsync("Please fill in all fields.");
-                return;
-            }
+        //    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName) ||
+        //        string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
+        //    {
+        //        await ShowErrorDialogAsync("Please fill in all fields.");
+        //        return;
+        //    }
 
-            if (password != confirmPassword)
-            {
-                await ShowErrorDialogAsync("Passwords do not match.");
-                return;
-            }
+        //    if (password != confirmPassword)
+        //    {
+        //        await ShowErrorDialogAsync("Passwords do not match.");
+        //        return;
+        //    }
 
-            var (firstName, lastName) = SplitFullName(fullName);
+        //    var (firstName, lastName) = SplitFullName(fullName);
 
-            var user = new UserRegistrationModel
-            {
-                Email = email,
-                Password = password,
-                FirstName = firstName,
-                LastName = lastName
-            };
+        //    var user = new UserRegistrationModel
+        //    {
+        //        Email = email,
+        //        Password = password,
+        //        FirstName = firstName,
+        //        LastName = lastName
+        //    };
 
-            try
-            {
-                bool isRegistered = await _apiService.RegisterUser(user);
-                if (isRegistered)
-                {
-                    await ShowSuccessDialogAsync("Registration successful!");
-                    // Optionally, you can automatically log the user in or navigate to the login page
-                }
-                else
-                {
-                    await ShowErrorDialogAsync("Registration failed. Please try again.");
-                }
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorDialogAsync($"An error occurred: {ex.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        bool isRegistered = await _apiService.RegisterUser(user);
+        //        if (isRegistered)
+        //        {
+        //            await ShowSuccessDialogAsync("Registration successful!");
+        //            // Optionally, you can automatically log the user in or navigate to the login page
+        //        }
+        //        else
+        //        {
+        //            await ShowErrorDialogAsync("Registration failed. Please try again.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await ShowErrorDialogAsync($"An error occurred: {ex.Message}");
+        //    }
+        //}
 
-        private (string FirstName, string LastName) SplitFullName(string fullName)
-        {
-            var nameParts = fullName.Trim().Split(' ');
-            if (nameParts.Length == 1)
-            {
-                return (nameParts[0], "");
-            }
-            else
-            {
-                return (nameParts[0], string.Join(" ", nameParts.Skip(1)));
-            }
-        }
+        //private (string FirstName, string LastName) SplitFullName(string fullName)
+        //{
+        //    var nameParts = fullName.Trim().Split(' ');
+        //    if (nameParts.Length == 1)
+        //    {
+        //        return (nameParts[0], "");
+        //    }
+        //    else
+        //    {
+        //        return (nameParts[0], string.Join(" ", nameParts.Skip(1)));
+        //    }
+        //}
     }
 
 }

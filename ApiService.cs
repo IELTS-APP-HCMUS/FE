@@ -12,7 +12,7 @@ namespace login_full
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = ""; 
+        private const string ApiBaseUrl = "";
 
         public ApiService()
         {
