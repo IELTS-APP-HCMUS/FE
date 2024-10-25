@@ -46,8 +46,8 @@
                     <TextBlock x:Name="ErrorMessageTextBlock" Foreground="Red" Visibility="Collapsed" Margin="0,10,0,0"/>
 
                     <StackPanel x:Name="LoginPanel" Visibility="Visible">
-                        <TextBlock Text="User name" Margin="0,0,0,5"/>
-                        <TextBox x:Name="UsernameTextBox" PlaceholderText="Enter your User name" Height="40" CornerRadius="20" BorderBrush="#49BBBD" Margin="0,0,0,20"/>
+                        <TextBlock Text="Email" Margin="0,0,0,5"/>
+                        <TextBox x:Name="UsernameTextBox" PlaceholderText="Enter your Email" Height="40" CornerRadius="20" BorderBrush="#49BBBD" Margin="0,0,0,20"/>
 
                         <TextBlock Text="Password" Margin="0,0,0,5"/>
                         <PasswordBox  x:Name="PasswordBox" PlaceholderText="Enter your Password" Height="40" CornerRadius="20" BorderBrush="#49BBBD" Margin="0,0,0,20"/>
