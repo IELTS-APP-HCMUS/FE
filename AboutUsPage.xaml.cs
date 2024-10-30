@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +13,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
+using Microsoft.Extensions.Configuration;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,23 +36,35 @@ namespace login_full
         {
             Frame.Navigate(typeof(HomePage));
         }
-        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            localSettings.Values.Remove("Username");
-            localSettings.Values.Remove("PasswordInBase64");
-            localSettings.Values.Remove("EntropyInBase64");
+			localSettings.Values.Remove("Username");
+			localSettings.Values.Remove("PasswordInBase64");
+			localSettings.Values.Remove("EntropyInBase64");
 
-            // Get the current window
-            var window = (Application.Current as App)?.MainWindow;
+			
+			if (App.IsLoggedInWithGoogle) 
+			{
+				var configuration = new ConfigurationBuilder()
+					.SetBasePath(AppContext.BaseDirectory)
+					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+					.Build();
 
-            if (window != null)
-            {
-                // Create and navigate to a new instance of MainWindow
-                var newMainWindow = new MainWindow();
-                newMainWindow.Activate();
-                window.Close();
-            }
-        }
+				var googleAuthService = new GoogleAuthService(configuration);
+				await googleAuthService.SignOutAsync(); // Gọi SignOutAsync để xóa token Google
+			}
+
+			// Lấy cửa sổ hiện tại
+			var window = (Application.Current as App)?.MainWindow;
+
+			if (window != null)
+			{
+				// Tạo và điều hướng tới một phiên bản mới của MainWindow
+				var newMainWindow = new MainWindow();
+				newMainWindow.Activate();
+				window.Close();
+			}
+		}
 
         private void UserProfileButton_Click(object sender, RoutedEventArgs e)
         {

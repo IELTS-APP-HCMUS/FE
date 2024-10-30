@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
 using Microsoft.UI;
+using Microsoft.Extensions.Configuration;
 
 
 
@@ -35,23 +36,33 @@ namespace login_full
             calendarManager.GenerateCalendarDays(DateTime.Now);
         }
 
-        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            localSettings.Values.Remove("Username");
-            localSettings.Values.Remove("PasswordInBase64");
-            localSettings.Values.Remove("EntropyInBase64");
+			localSettings.Values.Remove("Username");
+			localSettings.Values.Remove("PasswordInBase64");
+			localSettings.Values.Remove("EntropyInBase64");
 
-            // Get the current window
-            var window = (Application.Current as App)?.MainWindow;
 
-            if (window != null)
-            {
-                // Create and navigate to a new instance of MainWindow
-                var newMainWindow = new MainWindow();
-                newMainWindow.Activate();
-                window.Close();
-            }
-        }
+			if (App.IsLoggedInWithGoogle)
+			{
+				var configuration = new ConfigurationBuilder()
+					.SetBasePath(AppContext.BaseDirectory)
+					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+					.Build();
+
+				var googleAuthService = new GoogleAuthService(configuration);
+				await googleAuthService.SignOutAsync(); 
+			}
+
+			var window = (Application.Current as App)?.MainWindow;
+
+			if (window != null)
+			{
+				var newMainWindow = new MainWindow();
+				newMainWindow.Activate();
+				window.Close();
+			}
+		}
 
         private void UserProfileButton_Click(object sender, RoutedEventArgs e)
         {

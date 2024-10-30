@@ -25,7 +25,8 @@ namespace login_full
     public partial class App : Application
     {
         public Window MainWindow { get; set; }
-        public App()
+		public static bool IsLoggedInWithGoogle { get; set; } = false;
+		public App()
         {
             this.InitializeComponent();
 			var configService = new ConfigService(); 

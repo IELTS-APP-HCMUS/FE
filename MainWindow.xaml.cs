@@ -39,7 +39,6 @@ namespace login_full
     {
         private readonly UserAuthenticationService _authService;
 		private readonly LoginApiService _loginApiService;
-
 		// size of the window
 		private const int MinWindowWidth = 970;
         private const int MinWindowHeight = 0;
@@ -49,7 +48,7 @@ namespace login_full
             this.InitializeComponent();
             (Application.Current as App).MainWindow = this;
             _authService = new UserAuthenticationService();
-         //   _apiService = new ApiService();
+
    
             this.SizeChanged += MainWindow_SizeChanged;
 
@@ -57,22 +56,17 @@ namespace login_full
 			CheckSavedCredentials();
         }
 
-        // resize the window
         private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
-            // Ensure the window does not shrink below the minimum size
             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
 
-            // Get the current size
             var currentSize = appWindow.Size;
 
-            // Check and enforce minimum width and height
             int newWidth = Math.Max(currentSize.Width, MinWindowWidth);
             int newHeight = Math.Max(currentSize.Height, MinWindowHeight);
 
-            // Resize the window to maintain the minimum size
             appWindow.Resize(new SizeInt32(newWidth, newHeight));
         }
         private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
@@ -86,8 +80,6 @@ namespace login_full
 
 				var googleAuthService = new GoogleAuthService(configuration);
 
-				// Remove this line to prevent immediate sign out before authentication
-				// await googleAuthService.SignOutAsync();
 
 				var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
 
@@ -132,6 +124,7 @@ namespace login_full
 
 					if (jsonResponse["code"].ToString() == "200")
 					{
+						App.IsLoggedInWithGoogle = true;
 						string token = jsonResponse["data"].ToString();
 						await ShowSuccessDialogAsync("Login successful with Google!");
 						NavigateToHomePage();
@@ -233,6 +226,7 @@ namespace login_full
 				if (jsonResponse["code"].ToString() == "200")
 				{
 					string token = jsonResponse["data"].ToString();
+					App.IsLoggedInWithGoogle = false;
 					if (RememberMeCheckbox.IsChecked == true)
 					{
 						_authService.SaveCredentials(username, password);
@@ -241,7 +235,6 @@ namespace login_full
 				}
 				else
 				{
-					// Handle login failure
 					string errorMessage = jsonResponse["error_detail"].ToString();
 					ErrorMessageTextBlock.Text = errorMessage;
 					ErrorMessageTextBlock.Visibility = Visibility.Visible;
@@ -249,7 +242,6 @@ namespace login_full
 			}
 			catch (Exception ex)
 			{
-				// Handle any JSON parsing or unexpected exceptions
 				ErrorMessageTextBlock.Text = ex.Message;
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 			}
@@ -270,20 +262,17 @@ namespace login_full
 			string confirmPassword = ConfirmPasswordBox.Password;
 			string fullName = FullNameTextBox.Text;
 
-			// Separate first and last names if possible
 			string[] nameParts = fullName.Split(' ');
 			string firstName = nameParts.Length > 0 ? nameParts[0] : "";
 			string lastName = nameParts.Length > 1 ? nameParts[^1] : "";
-			string role = "end_user"; // Default role
+			string role = "end_user"; 
 
-			// Check that passwords match
 			if (password != confirmPassword)
 			{
 				await ShowErrorDialogAsync("Passwords do not match.");
 				return;
 			}
 
-			// Call the signup API
 			string response = await _loginApiService.SignupAsync(email, password, firstName, lastName, role);
 
 			if (response.StartsWith("Error") || response.StartsWith("Exception"))
@@ -296,7 +285,7 @@ namespace login_full
 			{
 				var jsonResponse = JObject.Parse(response);
 
-				if (jsonResponse["code"].ToString() == "0") // Assuming "0" indicates success
+				if (jsonResponse["code"].ToString() == "0") 
 				{
 					await ShowSuccessDialogAsync("User created successfully!");
 					NavigateToHomePage();
@@ -313,6 +302,5 @@ namespace login_full
 			}
 		}
 	}
-
 }
 
