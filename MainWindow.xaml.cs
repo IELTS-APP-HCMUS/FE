@@ -25,6 +25,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Windows.Services.Maps;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
+using Windows.Graphics;
 using login_full.API_Services;
 using Newtonsoft.Json.Linq;
 
@@ -36,24 +38,52 @@ namespace login_full
     public sealed partial class MainWindow : Window
     {
         private readonly UserAuthenticationService _authService;
-		private readonly LoginApiService _loginApiService;
-		public MainWindow()
+        //private readonly ApiService _apiService;
+
+
+        // size of the window
+        private const int MinWindowWidth = 970;
+        private const int MinWindowHeight = 0;
+
+        public MainWindow()
         {
             this.InitializeComponent();
             (Application.Current as App).MainWindow = this;
             _authService = new UserAuthenticationService();
+         //   _apiService = new ApiService();
+   
+            this.SizeChanged += MainWindow_SizeChanged;
+
 			_loginApiService = new LoginApiService();
 			CheckSavedCredentials();
         }
 
-		private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				var configuration = new ConfigurationBuilder()
-					.SetBasePath(AppContext.BaseDirectory)
-					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-					.Build();
+        // resize the window
+        private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+        {
+            // Ensure the window does not shrink below the minimum size
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            // Get the current size
+            var currentSize = appWindow.Size;
+
+            // Check and enforce minimum width and height
+            int newWidth = Math.Max(currentSize.Width, MinWindowWidth);
+            int newHeight = Math.Max(currentSize.Height, MinWindowHeight);
+
+            // Resize the window to maintain the minimum size
+            appWindow.Resize(new SizeInt32(newWidth, newHeight));
+        }
+        private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
 
 				var googleAuthService = new GoogleAuthService(configuration);
 

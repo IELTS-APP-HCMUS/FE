@@ -54,6 +54,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+	<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.220929.1" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
