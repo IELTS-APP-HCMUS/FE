@@ -46,8 +46,8 @@ namespace login_full
 			CheckSavedCredentials();
         }
 
-        private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
-        {
+		private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
+		{
 			try
 			{
 				var configuration = new ConfigurationBuilder()
@@ -56,7 +56,10 @@ namespace login_full
 					.Build();
 
 				var googleAuthService = new GoogleAuthService(configuration);
-				await googleAuthService.SignOutAsync();
+
+				// Remove this line to prevent immediate sign out before authentication
+				// await googleAuthService.SignOutAsync();
+
 				var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
 
 				if (credential == null)
@@ -79,18 +82,17 @@ namespace login_full
 				}
 
 				string idToken = credential.Token.IdToken;
-				
 
 				if (string.IsNullOrEmpty(idToken))
 				{
 					await ShowErrorDialogAsync("No ID token returned from Google.");
 					return;
 				}
+
 				var response = await _loginApiService.LoginWithOAuthAsync(idToken);
 
 				if (response.StartsWith("Error"))
 				{
-					//await ShowErrorDialogAsync("Login with Google failed.");
 					await ShowErrorDialogAsync(response);
 					return;
 				}
@@ -126,7 +128,7 @@ namespace login_full
 			}
 		}
 
-        private async Task ShowErrorDialogAsync(string message)
+		private async Task ShowErrorDialogAsync(string message)
         {
 			DispatcherQueue.TryEnqueue(async () =>
 			{
@@ -148,7 +150,7 @@ namespace login_full
 			{
 				ContentDialog dialog = new ContentDialog
 				{
-					Title = "Sign In Successfull",
+					Title = "Sign In Successful",
 					Content = message,
 					CloseButtonText = "OK",
 					XamlRoot = this.Content.XamlRoot
@@ -165,7 +167,7 @@ namespace login_full
             RegisterPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        private void RegisterButtonToggle_Click(object sender, RoutedEventArgs e)
         {
             LoginButton.Background = new SolidColorBrush(Colors.Transparent);
             RegisterButton.Background = new SolidColorBrush(Colors.White);
@@ -231,6 +233,56 @@ namespace login_full
             MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(typeof(HomePage));
         }
+
+		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
+		{
+			string email = RegisterEmailTextBox.Text;
+			string password = RegisterPasswordBox.Password;
+			string confirmPassword = ConfirmPasswordBox.Password;
+			string fullName = FullNameTextBox.Text;
+
+			// Separate first and last names if possible
+			string[] nameParts = fullName.Split(' ');
+			string firstName = nameParts.Length > 0 ? nameParts[0] : "";
+			string lastName = nameParts.Length > 1 ? nameParts[^1] : "";
+			string role = "end_user"; // Default role
+
+			// Check that passwords match
+			if (password != confirmPassword)
+			{
+				await ShowErrorDialogAsync("Passwords do not match.");
+				return;
+			}
+
+			// Call the signup API
+			string response = await _loginApiService.SignupAsync(email, password, firstName, lastName, role);
+
+			if (response.StartsWith("Error") || response.StartsWith("Exception"))
+			{
+				await ShowErrorDialogAsync(response);
+				return;
+			}
+
+			try
+			{
+				var jsonResponse = JObject.Parse(response);
+
+				if (jsonResponse["code"].ToString() == "0") // Assuming "0" indicates success
+				{
+					await ShowSuccessDialogAsync("User created successfully!");
+					NavigateToHomePage();
+				}
+				else
+				{
+					string errorMessage = jsonResponse["message"]?.ToString() ?? "Signup failed.";
+					await ShowErrorDialogAsync($"Signup failed: {errorMessage}");
+				}
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error during signup: {ex.Message}");
+			}
+		}
 	}
 
 }

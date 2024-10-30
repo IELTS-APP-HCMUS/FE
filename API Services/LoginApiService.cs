@@ -71,5 +71,39 @@ namespace login_full.API_Services
 				return $"Exception: {ex.Message}";
 			}
 		}
+		public async Task<string> SignupAsync(string email, string password, string firstName, string lastName, string role)
+		{
+			var signupData = new
+			{
+				email = email,
+				password = password,
+				first_name = firstName,
+				last_name = lastName,
+				role = role
+			};
+
+			string json = JsonConvert.SerializeObject(signupData);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/signup", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					string responseBody = await response.Content.ReadAsStringAsync();
+					return responseBody; 
+				}
+				else
+				{
+					return $"Error: {response.StatusCode}";
+				}
+			}
+			catch (Exception ex)
+			{
+				return $"Exception: {ex.Message}";
+			}
+		}
 	}
+
 }

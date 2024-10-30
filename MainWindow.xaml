@@ -38,7 +38,7 @@
                     <Border Background="#E6D1F2F4" CornerRadius="33" Height="50"  Margin="0,0,0,20">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Button x:Name="LoginButton" Content="Login" Width="260" Height="35" Background="White" CornerRadius="20" Click="LoginButton_Click"/>
-                            <Button x:Name="RegisterButton" Content="Register" Width="260" Height="35" Background="Transparent" CornerRadius="20" Margin="10,0,0,0" Click="RegisterButton_Click"/>
+                            <Button x:Name="RegisterButton" Content="Register" Width="260" Height="35" Background="Transparent" CornerRadius="20" Margin="10,0,0,0" Click="RegisterButtonToggle_Click"/>
                         </StackPanel>
                     </Border>
 
@@ -74,7 +74,7 @@
                         <TextBlock Text="Confirm Password" Margin="0,0,0,5"/>
                         <PasswordBox x:Name="ConfirmPasswordBox" PlaceholderText="Enter your Password again" Height="35" CornerRadius="20" BorderBrush="#49BBBD" Margin="0,0,0,10"/>
 
-                        <Button Content="Register"  Width="558" Height="40" Background="#9FDBE9" CornerRadius="20" Margin="0,0,0,10"/>
+                        <Button Content="Register" Click="RegisterButton_Click" Width="558" Height="40" Background="#9FDBE9" CornerRadius="20" Margin="0,0,0,10"/>
                     </StackPanel>
 
                     <Rectangle Height="1" Fill="Gray" Margin="0,0,0,20"/>
