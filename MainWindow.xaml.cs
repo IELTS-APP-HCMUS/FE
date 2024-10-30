@@ -38,11 +38,10 @@ namespace login_full
     public sealed partial class MainWindow : Window
     {
         private readonly UserAuthenticationService _authService;
-        //private readonly ApiService _apiService;
+		private readonly LoginApiService _loginApiService;
 
-
-        // size of the window
-        private const int MinWindowWidth = 970;
+		// size of the window
+		private const int MinWindowWidth = 970;
         private const int MinWindowHeight = 0;
 
         public MainWindow()
