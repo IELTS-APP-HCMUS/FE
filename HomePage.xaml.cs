@@ -14,6 +14,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
 using Microsoft.UI;
+using Windows.Graphics;
+
+using Microsoft.UI.Windowing;
 
 
 
@@ -25,7 +28,9 @@ namespace login_full
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         private CalendarManager calendarManager;
         private ScheduleManager scheduleManager;
-
+        // size of home page
+        // size of the window
+        
         public HomePage()
         {
             this.InitializeComponent();
@@ -33,7 +38,42 @@ namespace login_full
             calendarManager = new CalendarManager(CalendarGrid, MonthYearDisplay);
             scheduleManager = new ScheduleManager(ScheduleListView);
             calendarManager.GenerateCalendarDays(DateTime.Now);
+
+            // set size of home page
+            
+
+
         }
+        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            //var scrollViewer = sender as ScrollViewer;
+            //if (scrollViewer.VerticalOffset > 0) // Adjust the offset value as needed
+            //{
+            //    VisualStateManager.GoToState(this, "CollapsedHeader", true);
+            //}
+            //else
+            //{
+            //    VisualStateManager.GoToState(this, "ExpandedHeader", true);
+            //}
+        }
+
+        private void Home_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(HomePage));
+        }
+        private void UserHeaderButton_Click(object sender, RoutedEventArgs e)
+        {
+            // VisualStateManager.GoToState(this, "ExpandedHeader", true);
+            //var flyout = (sender as Button)?.Flyout;
+            //if (flyout != null)
+            //{
+            //    flyout.ShowAt(sender as FrameworkElement);
+            //}
+
+        }
+
+  
+
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
