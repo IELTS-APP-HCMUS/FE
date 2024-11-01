@@ -11,7 +11,7 @@ public class ConfigService
 	public ConfigService()
 	{
 		string basePath = AppContext.BaseDirectory;
-		string configFilePath = Path.Combine(basePath, "C:\\Users\\Admin\\Desktop\\project\\ielts-app-fe\\FE\\API Services\\config.yaml");
+		string configFilePath = Path.Combine(basePath, "D:\\Programming\\C#\\ielts-app\\API Services\\config.yaml");
 
 		if (!File.Exists(configFilePath))
 		{
