@@ -54,7 +54,7 @@ namespace login_full
 					client.DefaultRequestHeaders.Authorization =
 						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API
-					HttpResponseMessage response = await client.GetAsync("http://localhost:8080/api/users");
+					HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users");
 
 					// Kiểm tra phản hồi từ API
 					if (response.IsSuccessStatusCode)
@@ -100,7 +100,7 @@ namespace login_full
 					client.DefaultRequestHeaders.Authorization =
 						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API
-					HttpResponseMessage response = await client.GetAsync("http://localhost:8080/api/users/target");
+					HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users/target");
 
 					// Kiểm tra phản hồi từ API
 					if (response.IsSuccessStatusCode)
