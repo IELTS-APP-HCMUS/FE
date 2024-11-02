@@ -22,6 +22,10 @@ using Newtonsoft.Json.Linq;
 using System.Windows;
 
 using Microsoft.UI.Windowing;
+using System.Data;
+using System.Text;
+using Windows.Networking;
+using YamlDotNet.Core.Tokens;
 
 
 
@@ -41,7 +45,7 @@ namespace login_full
             this.InitializeComponent();
 
             LoadUserProfile();
-			//LoadUserTarget();
+			LoadUserTarget();
 
             calendarManager = new CalendarManager(CalendarGrid, MonthYearDisplay);
             scheduleManager = new ScheduleManager(ScheduleListView);
@@ -90,7 +94,7 @@ namespace login_full
 					string accessToken = GlobalState.Instance.AccessToken;
 					// Thêm access token vào header Authorization
 					client.DefaultRequestHeaders.Authorization =
-						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer ", accessToken);
+						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API
 					HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users");
 
@@ -109,6 +113,13 @@ namespace login_full
 						UserProfile_Email.Text = userProfile["data"]["email"].ToString();
                         UserNameTag.Text = userProfile["data"]["first_name"].ToString() + " " + userProfile["data"]["last_name"].ToString();
 
+                        // Lưu user profile vào GlobalState
+                        UserProfile user_profile = new UserProfile
+                        {
+                            Name = userProfile["data"]["first_name"].ToString() + " " + userProfile["data"]["last_name"].ToString(),
+                            Email = userProfile["data"]["email"].ToString(),
+					    };
+                        GlobalState.Instance.UserProfile = user_profile;
 						// Ẩn thông báo "Loading..."
 						//LoadingText.Visibility = Visibility.Collapsed;
 					}
@@ -125,81 +136,136 @@ namespace login_full
 				//LoadingText.Text = $"Error: {ex.Message}";
 			}
 		}
-		// Hàm gọi API để lấy dữ liệu người dùng
-		//private async void LoadUserTarget()
-		//{
-		//	try
-		//	{
-		//		using (HttpClient client = new HttpClient())
-		//		{
-		//			// Lấy access token từ GlobalState
-		//			string accessToken = GlobalState.Instance.AccessToken;
-		//			// Thêm access token vào header Authorization
-		//			client.DefaultRequestHeaders.Authorization =
-		//				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer ", accessToken);
-		//			// Gửi yêu cầu GET đến API
-		//			HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users/target");
+        // Hàm gọi API để lấy dữ liệu người dùng
+        private async void LoadUserTarget()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // Lấy access token từ GlobalState
+                    string accessToken = GlobalState.Instance.AccessToken;
+                    // Thêm access token vào header Authorization
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    // Gửi yêu cầu GET đến API
+                    HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users/target");
 
-  //                  // Kiểm tra phản hồi từ API
-  //                  if (response.IsSuccessStatusCode)
-  //                  {
-  //                      // Đọc dữ liệu JSON từ phản hồi
-  //                      string jsonResponse = await response.Content.ReadAsStringAsync();
+                    // Kiểm tra phản hồi từ API
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Đọc dữ liệu JSON từ phản hồi
+                        string stringResponse = await response.Content.ReadAsStringAsync();
 
-  //                      // Parse JSON thành đối tượng UserProfile
-  //                      //UserProfile userProfile = JsonConvert.DeserializeObject<UserProfile>(jsonResponse);
-  //                      var userTarget = JObject.Parse(jsonResponse);
-  //                  }
-  //      // click này ở 5 button điểm
-  //      private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
-  //      {
-  //          Button clickedButton = sender as Button;
-  //          if (clickedButton != null)
-  //          {
-  //              string category = clickedButton.Content.ToString();
-  //              IeltsScorePopup.IsOpen = true;
-  //          }
-  //      }
+                        // Parse JSON thành đối tượng UserProfile
+                        JObject jsonResponse = JObject.Parse(stringResponse);
+                        JObject dataResponse = (JObject)jsonResponse["data"];
+                        //dataResponse.Remove("id");
+                        //UserTarget userProfile = JsonConvert.DeserializeObject<UserTarget>(dataResponse.ToString());
+
+                        var readingTarget = dataResponse["target_reading"];
+						var listeningTarget = dataResponse["target_listening"];
+						var writingTarget = dataResponse["target_writing"];
+						var speakingTarget = dataResponse["target_speaking"];
 
 
-  //      // click nằm ở popup exit
-  //      private void ExitButton_Click(object sender, RoutedEventArgs e)
-  //      {
-  //          IeltsScorePopup.IsOpen = false;
-  //      }
+						ReadingScoreTextBlock.Text = readingTarget == null ? "-" : readingTarget.ToString();
+					    ListeningScoreTextBlock.Text = listeningTarget == null ? "-" : listeningTarget.ToString();
+						WritingScoreTextBlock.Text = writingTarget == null ? "-" : writingTarget.ToString();
+						SpeakingScoreTextBlock.Text = speakingTarget == null ? "-" : speakingTarget.ToString();
 
-  //      //click này nằm ở popup save
-  //      private void SaveButton_Click(object sender, RoutedEventArgs e)
-  //      {
-  //          double readingScore = double.TryParse(ReadingScoreTextBox.Text, out readingScore) ? readingScore : 0;
-  //          double listeningScore = double.TryParse(ListeningScoreTextBox.Text, out listeningScore) ? listeningScore : 0;
-  //          double writingScore = double.TryParse(WritingScoreTextBox.Text, out writingScore) ? writingScore : 0;
-  //          double speakingScore = double.TryParse(SpeakingScoreTextBox.Text, out speakingScore) ? speakingScore : 0;
-
-		//				// Cập nhật giao diện với thông tin người dùng
-
-		//				ReadingTarget.Text = userTarget["data"]["target_reading"].ToString();
-		//				ListeningTarget.Text = userTarget["data"]["target_listening"].ToString();
-		//				WritingTarget.Text = userTarget["data"]["target_writing"].ToString();
-		//				SpeakingTarget.Text = userTarget["data"]["target_speaking"].ToString();
+                        double overallTarget = ((double)readingTarget + (double)listeningTarget + (double)writingTarget + (double)speakingTarget)/4;
+						OverallScoreTextBlock.Text = overallTarget == 0 ? "-" : overallTarget.ToString();
 
 
-		//				// Ẩn thông báo "Loading..."
-		//				//LoadingText.Visibility = Visibility.Collapsed;
-		//			}
-		//			else
-		//			{
-		//				// Thông báo lỗi nếu không lấy được dữ liệu
-		//				//LoadingText.Text = "Failed to load user information.";
-		//			}
-		//		}
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		// Xử lý lỗi nếu có ngoại lệ
-		//		//LoadingText.Text = $"Error: {ex.Message}";
-		//	}
-		//}
+
+						// Ẩn thông báo "Loading..."
+						//LoadingText.Visibility = Visibility.Collapsed;
+					}
+					else
+				{
+					// Thông báo lỗi nếu không lấy được dữ liệu
+					//LoadingText.Text = "Failed to load user information.";
+				}
+			}
+}
+			catch (Exception ex)
+			{
+				// Xử lý lỗi nếu có ngoại lệ
+				//LoadingText.Text = $"Error: {ex.Message}";
+			}
+}
+        // click này ở 5 button điểm
+        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
+                string category = clickedButton.Content.ToString();
+                IeltsScorePopup.IsOpen = true;
+            }
+        }
+
+
+        //      // click nằm ở popup exit
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            IeltsScorePopup.IsOpen = false;
+        }
+
+        //      //click này nằm ở popup save
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            double readingScore = double.TryParse(ReadingScoreTextBox.Text, out readingScore) ? readingScore : 0;
+            double listeningScore = double.TryParse(ListeningScoreTextBox.Text, out listeningScore) ? listeningScore : 0;
+            double writingScore = double.TryParse(WritingScoreTextBox.Text, out writingScore) ? writingScore : 0;
+            double speakingScore = double.TryParse(SpeakingScoreTextBox.Text, out speakingScore) ? speakingScore : 0;
+
+			var targetRequest = new
+			{
+				target_reading = readingScore,
+				target_listening = listeningScore,
+				target_writing = writingScore,
+				target_speaking = speakingScore
+			};
+
+			string json = JsonConvert.SerializeObject(targetRequest);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					// Lấy access token từ GlobalState
+					string accessToken = GlobalState.Instance.AccessToken;
+					// Thêm access token vào header Authorization
+					client.DefaultRequestHeaders.Authorization =
+						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+					// Gửi yêu cầu GET đến API
+					HttpResponseMessage response = await client.PatchAsync("http://localhost:8080/api/users/target", content);
+
+					// Kiểm tra phản hồi từ API
+					if (response.IsSuccessStatusCode)
+					{
+                        LoadUserTarget();
+
+						// Ẩn thông báo "Loading..."
+						//LoadingText.Visibility = Visibility.Collapsed;
+					}
+					else
+					{
+						// Thông báo lỗi nếu không lấy được dữ liệu
+						//LoadingText.Text = "Failed to load user information.";
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// Xử lý lỗi nếu có ngoại lệ
+				//LoadingText.Text = $"Error: {ex.Message}";
+			}
+
+		}
 		private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
 			localSettings.Values.Remove("Username");

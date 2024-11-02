@@ -126,6 +126,8 @@ namespace login_full
 					{
 						App.IsLoggedInWithGoogle = true;
 						string token = jsonResponse["data"].ToString();
+						// Lưu access token vào GlobalState
+						GlobalState.Instance.AccessToken = token;
 						await ShowSuccessDialogAsync("Login successful with Google!");
 						NavigateToHomePage();
 					}
@@ -226,6 +228,8 @@ namespace login_full
 				if (jsonResponse["code"].ToString() == "200")
 				{
 					string token = jsonResponse["data"].ToString();
+					System.Diagnostics.Debug.WriteLine(token);
+
 					// Lưu access token vào GlobalState
 
 					GlobalState.Instance.AccessToken = token;

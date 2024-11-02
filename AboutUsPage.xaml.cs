@@ -14,6 +14,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -30,9 +32,25 @@ namespace login_full
         public AboutUsPage()
         {
             this.InitializeComponent();
+			LoadUserProfile();
         }
-
-        private void UserHeaderButton_Click(object sender, RoutedEventArgs e)
+		// Hàm gọi API để lấy dữ liệu người dùng
+		private void LoadUserProfile()
+		{
+			try
+			{
+				UserProfile userProfile = GlobalState.Instance.UserProfile;
+				UserProfile_Name2.Text = userProfile.Name;
+				UserProfile_Email2.Text = userProfile.Email;
+				UserName_Tag2.Text = userProfile.Name;
+			}
+			catch (Exception ex)
+			{
+				// Xử lý lỗi nếu có ngoại lệ
+				//LoadingText.Text = $"Error: {ex.Message}";
+			}
+		}
+		private void UserHeaderButton_Click(object sender, RoutedEventArgs e)
         {
             // VisualStateManager.GoToState(this, "ExpandedHeader", true);
             //var flyout = (sender as Button)?.Flyout;
