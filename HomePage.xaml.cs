@@ -85,10 +85,10 @@ namespace login_full
         }
 
 
-        // clicl nằm ở popup exit
+        // click nằm ở popup exit
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            IeltsScorePopup.IsOpen = false; 
+            IeltsScorePopup.IsOpen = false;
         }
 
         //click này nằm ở popup save

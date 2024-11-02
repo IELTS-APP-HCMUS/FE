@@ -776,7 +776,7 @@
         </ScrollViewer>
 
 
-        <!-- Popup for entering IELTS scores -->
+        <!-- nhầm repo hic !Popup for entering IELTS scores -->
         <Popup x:Name="IeltsScorePopup" IsOpen="False" HorizontalAlignment="Center" VerticalAlignment="Center" >
             <Border Background="#DFE0E0" CornerRadius="15" Width="444" Height="484" Padding="20">
                 <StackPanel>
