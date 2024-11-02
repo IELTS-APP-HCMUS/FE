@@ -40,7 +40,7 @@ namespace login_full
         private readonly UserAuthenticationService _authService;
 		private readonly LoginApiService _loginApiService;
 		// size of the window
-		private const int MinWindowWidth = 970;
+		private const int MinWindowWidth = 850;
         private const int MinWindowHeight = 0;
 
         public MainWindow()

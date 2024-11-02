@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using System.Windows;
 
 using Microsoft.UI.Windowing;
 
@@ -148,6 +149,31 @@ namespace login_full
 						// Parse JSON thành đối tượng UserProfile
 						//UserProfile userProfile = JsonConvert.DeserializeObject<UserProfile>(jsonResponse);
 						var userTarget = JObject.Parse(jsonResponse);
+        // click này ở 5 button điểm
+        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
+                string category = clickedButton.Content.ToString();
+                IeltsScorePopup.IsOpen = true;
+            }
+        }
+
+
+        // click nằm ở popup exit
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            IeltsScorePopup.IsOpen = false;
+        }
+
+        //click này nằm ở popup save
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            double readingScore = double.TryParse(ReadingScoreTextBox.Text, out readingScore) ? readingScore : 0;
+            double listeningScore = double.TryParse(ListeningScoreTextBox.Text, out listeningScore) ? listeningScore : 0;
+            double writingScore = double.TryParse(WritingScoreTextBox.Text, out writingScore) ? writingScore : 0;
+            double speakingScore = double.TryParse(SpeakingScoreTextBox.Text, out speakingScore) ? speakingScore : 0;
 
 						// Cập nhật giao diện với thông tin người dùng
 
@@ -253,16 +279,7 @@ namespace login_full
             int remainingDays = (examDate - DateTime.Today).Days;
             RemainingDaysText.Text = $"{remainingDays} ngày";
         }
-        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button clickedButton = sender as Button;
-            if (clickedButton != null)
-            {
-                string category = clickedButton.Content.ToString();
-                // Handle the score category selection
-                // You might want to update the UI or store the selected category
-            }
-        }
+
         //aboutus
         private void AboutUs_Click(object sender, RoutedEventArgs e)
         {

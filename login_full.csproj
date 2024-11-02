@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -15,16 +15,25 @@
 	 <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\course.png" />
     <Content Remove="Assets\eye_icon.png" />
     <Content Remove="Assets\facebook_icon.png" />
     <Content Remove="Assets\graduation_icon.png" />
     <Content Remove="Assets\graduation_icon1.png" />
+    <Content Remove="Assets\home.png" />
     <Content Remove="Assets\instagram_icon.png" />
+    <Content Remove="Assets\listening.png" />
+    <Content Remove="Assets\logout.png" />
+    <Content Remove="Assets\r&amp;l.png" />
+    <Content Remove="Assets\reading.png" />
     <Content Remove="Assets\reading_win.png" />
+    <Content Remove="Assets\speaking.png" />
     <Content Remove="Assets\student_icon.png" />
+    <Content Remove="Assets\target_icon.png" />
     <Content Remove="Assets\tiktok_icon.png" />
     <Content Remove="Assets\video_youtube_icon.png" />
     <Content Remove="Assets\working_from_home.png" />
+    <Content Remove="Assets\writing.png" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="AboutUsPage.xaml" />
@@ -74,6 +83,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\course.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\eye_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -86,13 +98,34 @@
     <None Update="Assets\graduation_icon1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\home.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\instagram_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\listening.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\logout.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\r&amp;l.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\reading.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\reading_win.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\speaking.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\student_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\target_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\tiktok_icon.png">
@@ -102,6 +135,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\working_from_home.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Page Update="BlankPage1.xaml">

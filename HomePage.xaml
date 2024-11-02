@@ -497,6 +497,7 @@
                                             <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" Foreground="#FFA500" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                             <TextBlock Text="Mục tiêu của bạn" FontWeight="SemiBold"/>
                                         </StackPanel>
+                                      
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
@@ -505,37 +506,37 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" Click="ScoreCategoryButton_Click" Background="#FFE4E1" CornerRadius="10" Padding="10,5" Margin="0,0,5,0">
+                                            <Button x:Name="OverallScoreButton" Grid.Column="0" Click="ScoreCategoryButton_Click" Background="#FFE4E1" CornerRadius="10" Padding="10,5" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Overall score" FontSize="12" Margin="0,0,5,10"/>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="-------" FontWeight="Bold"/>
+                                                        <TextBlock x:Name="OverallScoreTextBlock" Text="-------" FontWeight="Bold"/>
                                                         <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" Foreground="#FFA500" Margin="20,0,0,0"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Button>
-                                            <Button Grid.Column="1" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+                                            <Button x:Name="ReadingButton" Grid.Column="1" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Reading" FontSize="12" Margin="0,0,5,10"/>
-                                                    <TextBlock x:Name="ReadingTarget" Text="" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="ReadingScoreTextBlock" Text="" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
-                                            <Button Grid.Column="2" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+                                            <Button x:Name="ListeningButton" Grid.Column="2" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Listening" FontSize="12" Margin="0,0,5,10"/>
-													<TextBlock x:Name="ListeningTarget" Text="" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="ListeningScoreTextBlock" Text="" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
-                                            <Button Grid.Column="3" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+                                            <Button x:Name="WritingButton" Grid.Column="3" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Writing" FontSize="12" Margin="0,0,5,10"/>
-													<TextBlock x:Name="WritingTarget" Text="" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="WritingScoreTextBlock" Text="" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                             <Button Grid.Column="4" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Width="95" Padding="10,5">
                                                 <StackPanel>
                                                     <TextBlock Text="Speaking" FontSize="12" Margin="0,0,5,10"/>
-													<TextBlock x:Name="SpeakingTarget" Text="" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="SpeakingScoreTextBlock" Text="" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                         </Grid>
@@ -773,35 +774,61 @@
 
             </StackPanel>
         </ScrollViewer>
+
+
+        <!-- nhầm repo hic !Popup for entering IELTS scores -->
+        <Popup x:Name="IeltsScorePopup" IsOpen="False" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Border Background="#DFE0E0" CornerRadius="15" Width="444" Height="484" Padding="20">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <Image Source="/Assets/target_icon.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                        <TextBlock Text="Mục tiêu bạn muốn" FontFamily="Poppins" FontSize="20" FontWeight="Normal"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,20">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Image Source="/Assets/reading.png" Width="20" Height="20" Margin="0,0,5,0"/>
+                            <TextBlock Text="Reading" FontFamily="Poppins" FontSize="11" FontWeight="Normal"/>
+                        </StackPanel>
+                        <Border Background="#F3E4E4" CornerRadius="15" Margin="0,0,0,10">
+                            <TextBox x:Name="ReadingScoreTextBox" Height="34" BorderBrush="Transparent"/>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Image Source="/Assets/listening.png" Width="20" Height="20" Margin="0,0,5,0"/>
+                            <TextBlock Text="Listening" FontFamily="Poppins" FontSize="11" FontWeight="Normal"/>
+                        </StackPanel>
+                        <Border Background="#F3E4E4" CornerRadius="15" Margin="0,0,0,10">
+                            <TextBox x:Name="ListeningScoreTextBox" Height="34" BorderBrush="Transparent"/>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Image Source="/Assets/writing.png" Width="20" Height="20" Margin="0,0,5,0"/>
+                            <TextBlock Text="Writing" FontFamily="Poppins" FontSize="11" FontWeight="Normal"/>
+                        </StackPanel>
+                        <Border Background="#F3E4E4" CornerRadius="15" Margin="0,0,0,10">
+                            <TextBox x:Name="WritingScoreTextBox" Height="34" BorderBrush="Transparent"/>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <Image Source="/Assets/speaking.png" Width="20" Height="20" Margin="0,0,5,0"/>
+                            <TextBlock Text="Speaking" FontFamily="Poppins" FontSize="11" FontWeight="Normal"/>
+                        </StackPanel>
+                        <Border Background="#F3E4E4" CornerRadius="15" Margin="0,0,0,20">
+                            <TextBox x:Name="SpeakingScoreTextBox" Height="34" BorderBrush="Transparent"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+                        <Button Content="Save" Width="61" Height="32" Background="#FFFFFF" BorderBrush="Transparent" FontFamily="Poppins" FontSize="12" FontWeight="Normal" Margin="0,0,10,0" Click="SaveButton_Click"/>
+                        <Button Content="Exit" Width="61" Height="32" Background="#FFF8F8" BorderBrush="Transparent" FontFamily="Poppins" FontSize="12" FontWeight="Normal" Click="ExitButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </Page>
 
 
 
 
-<!--<Button Grid.Column="1" Background="Transparent" BorderThickness="0" Click="UserHeaderButton_Click">
-    <Button.Flyout>
-        <Flyout x:Name="CollapsedUserProfileFlyout">
-            <StackPanel Width="250">
-                <TextBlock Text="Thành Phát Nguyễn" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                <TextBlock Text="nguyenthanhphat1906@gmail.com" FontSize="14" Margin="0,0,0,10"/>
-                <Rectangle Height="1" Fill="LightGray" Margin="0,0,0,10"/>
-                <Button Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,0,10"/>
-                <Button Content="Reading &amp; Listening" FontSize="18" Foreground="Black" Margin="0,0,0,10"/>
-                <Button Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,10"/>
-                <Button Content="Courses" FontSize="18" Foreground="Black" Margin="0,0,0,10"/>
-                <Button Content="About Us" FontSize="18" Foreground="Black" Click="AboutUs_Click" Margin="0,0,0,10"/>
-                <Button Content="Đăng xuất" Click="LogoutButton_Click" HorizontalAlignment="Stretch"/>
-            </StackPanel>
-        </Flyout>
-    </Button.Flyout>
-    <StackPanel Orientation="Horizontal">
-        <Ellipse Width="35" Height="34">
-            <Ellipse.Fill>
-                <ImageBrush ImageSource="/Assets/working_from_home.png"/>
-            </Ellipse.Fill>
-        </Ellipse>
-        <TextBlock Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="White"/>
-        <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="White" VerticalAlignment="Center"/>
-    </StackPanel>
-</Button>-->
