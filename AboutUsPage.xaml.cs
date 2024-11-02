@@ -32,6 +32,21 @@ namespace login_full
             this.InitializeComponent();
         }
 
+        private void UserHeaderButton_Click(object sender, RoutedEventArgs e)
+        {
+            // VisualStateManager.GoToState(this, "ExpandedHeader", true);
+            //var flyout = (sender as Button)?.Flyout;
+            //if (flyout != null)
+            //{
+            //    flyout.ShowAt(sender as FrameworkElement);
+            //}
+
+        }
+        private  void AboutUs_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(AboutUsPage));
+        }
+
         private void Home_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(HomePage));
