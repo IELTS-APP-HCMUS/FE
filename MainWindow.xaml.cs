@@ -1,4 +1,4 @@
-using Google.Apis.Util;
+﻿using Google.Apis.Util;
 using login_full;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Xaml;
@@ -226,6 +226,9 @@ namespace login_full
 				if (jsonResponse["code"].ToString() == "200")
 				{
 					string token = jsonResponse["data"].ToString();
+					// Lưu access token vào GlobalState
+
+					GlobalState.Instance.AccessToken = token;
 					App.IsLoggedInWithGoogle = false;
 					if (RememberMeCheckbox.IsChecked == true)
 					{
