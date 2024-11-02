@@ -135,7 +135,7 @@ namespace login_full
 					string accessToken = GlobalState.Instance.AccessToken;
 					// Thêm access token vào header Authorization
 					client.DefaultRequestHeaders.Authorization =
-						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer ", accessToken);
 					// Gửi yêu cầu GET đến API
 					HttpResponseMessage response = await client.GetAsync("https://ielts-app-api-4.onrender.com/api/users/target");
 
