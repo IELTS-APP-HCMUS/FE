@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
 using Microsoft.UI;
 using Windows.Graphics;
+using System.Windows;
 
 using Microsoft.UI.Windowing;
 
@@ -72,7 +73,46 @@ namespace login_full
 
         }
 
-  
+        // click này ở 5 button điểm
+        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
+                string category = clickedButton.Content.ToString();
+                IeltsScorePopup.IsOpen = true;
+            }
+        }
+
+
+        // clicl nằm ở popup exit
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            IeltsScorePopup.IsOpen = false; 
+        }
+
+        //click này nằm ở popup save
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            double readingScore = double.TryParse(ReadingScoreTextBox.Text, out readingScore) ? readingScore : 0;
+            double listeningScore = double.TryParse(ListeningScoreTextBox.Text, out listeningScore) ? listeningScore : 0;
+            double writingScore = double.TryParse(WritingScoreTextBox.Text, out writingScore) ? writingScore : 0;
+            double speakingScore = double.TryParse(SpeakingScoreTextBox.Text, out speakingScore) ? speakingScore : 0;
+
+            double averageScore = (readingScore + listeningScore + writingScore + speakingScore) / 4;
+
+            OverallScoreTextBlock.Text = $"{averageScore:0.0}";
+
+            // Update the individual score buttons=
+            ReadingScoreTextBlock.Text = $"{readingScore:0.0}";
+            ListeningScoreTextBlock.Text = $"{listeningScore:0.0}";
+            WritingScoreTextBlock.Text = $"{writingScore:0.0}";
+            SpeakingScoreTextBlock.Text = $"{speakingScore:0.0}";
+
+            IeltsScorePopup.IsOpen = false;
+        }
+
+
 
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -136,25 +176,16 @@ namespace login_full
             else
             {
                 ExamDateButton.Content = "- / - / -";
-                RemainingDaysText.Text = "- ng�y";
+                RemainingDaysText.Text = "- ngày";
             }
         }
 
         private void UpdateRemainingDays(DateTime examDate)
         {
             int remainingDays = (examDate - DateTime.Today).Days;
-            RemainingDaysText.Text = $"{remainingDays} ng�y";
+            RemainingDaysText.Text = $"{remainingDays} ngày";
         }
-        private void ScoreCategoryButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button clickedButton = sender as Button;
-            if (clickedButton != null)
-            {
-                string category = clickedButton.Content.ToString();
-                // Handle the score category selection
-                // You might want to update the UI or store the selected category
-            }
-        }
+
         //aboutus
         private void AboutUs_Click(object sender, RoutedEventArgs e)
         {
