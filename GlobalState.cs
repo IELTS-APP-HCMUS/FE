@@ -9,6 +9,7 @@
 		public string AccessToken { get; set; }
 
 		public UserProfile UserProfile { get; set; }
+		public UserTarget UserTarget { get; set; }
 
 		// Private constructor để ngăn chặn khởi tạo từ bên ngoài
 		private GlobalState() { }

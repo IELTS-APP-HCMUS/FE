@@ -198,13 +198,14 @@ namespace login_full
             RegisterPanel.Visibility = Visibility.Visible;
         }
 
-        private void CheckSavedCredentials()
+        private async void CheckSavedCredentials()
         {
-            if (_authService.HasSavedCredentials())
-            {
-                NavigateToHomePage();
-            }
-        }
+			if (_authService.HasSavedCredentials())
+			{
+				NavigateToHomePage();
+			}
+
+		}
 
         private async void Login1Button_Click(object sender, RoutedEventArgs e)
         {
@@ -270,8 +271,8 @@ namespace login_full
 			string fullName = FullNameTextBox.Text;
 
 			string[] nameParts = fullName.Split(' ');
-			string firstName = nameParts.Length > 0 ? nameParts[0] : "";
-			string lastName = nameParts.Length > 1 ? nameParts[^1] : "";
+			string lastName = nameParts.Length > 0 ? nameParts[0] : "";
+			string firstName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
 			string role = "end_user"; 
 
 			if (password != confirmPassword)

@@ -38,6 +38,7 @@
   <ItemGroup>
     <None Remove="AboutUsPage.xaml" />
     <None Remove="API Services\config.yaml" />
+    <None Remove="Assets\google.png" />
     <None Remove="BlankPage1.xaml" />
     <None Remove="HomePage.xaml" />
   </ItemGroup>
@@ -92,6 +93,9 @@
     <None Update="Assets\facebook_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Update="Assets\google.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Update="Assets\graduation_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
