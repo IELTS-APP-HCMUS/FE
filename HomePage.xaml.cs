@@ -26,6 +26,7 @@ using System.Data;
 using System.Text;
 using Windows.Networking;
 using YamlDotNet.Core.Tokens;
+using System.Threading.Tasks;
 
 
 
@@ -53,7 +54,6 @@ namespace login_full
 
             // set size of home page
             
-
 
         }
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
@@ -168,14 +168,11 @@ namespace login_full
 						//var writingTarget = dataResponse["target_writing"];
 						//var speakingTarget = dataResponse["target_speaking"];
 
-                        
+
 						ReadingScoreTextBlock.Text = userTarget.TargetReading == -1 ? "-" : userTarget.TargetReading.ToString();
-						ListeningScoreTextBlock.Text = userTarget.TargetListening == -1 ? "-" : userTarget.TargetListening.ToString();
+					    ListeningScoreTextBlock.Text = userTarget.TargetListening == -1 ? "-" : userTarget.TargetListening.ToString();
 						WritingScoreTextBlock.Text = userTarget.TargetWriting == -1 ? "-" : userTarget.TargetWriting.ToString();
 						SpeakingScoreTextBlock.Text = userTarget.TargetSpeaking == -1 ? "-" : userTarget.TargetSpeaking.ToString();
-                        RemainingDaysText.Text = userTarget.TargetStudyDuration.ToString() + " ngày";
-						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
-						ExamDateButton.Content = dateTime.ToString();
 
 						double overallTarget = -1;
                         if(userTarget.TargetReading!=-1||userTarget.TargetListening!=-1||userTarget.TargetWriting!=-1||userTarget.TargetSpeaking!=-1)
@@ -250,7 +247,7 @@ namespace login_full
 					client.DefaultRequestHeaders.Authorization =
 						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API
-					HttpResponseMessage response = await client.PatchAsync("http://localhost:8080/api/users/target", content);
+					HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
 
 					// Kiểm tra phản hồi từ API
 					if (response.IsSuccessStatusCode)
@@ -279,7 +276,11 @@ namespace login_full
 			localSettings.Values.Remove("Username");
 			localSettings.Values.Remove("PasswordInBase64");
 			localSettings.Values.Remove("EntropyInBase64");
+			localSettings.Values.Clear();
 
+			GlobalState.Instance.AccessToken = null;
+			GlobalState.Instance.UserProfile = null;  // Clear user profile if you store it in GlobalState
+			
 
 			if (App.IsLoggedInWithGoogle)
 			{
@@ -390,13 +391,61 @@ namespace login_full
             }
         }
 
-        private void UpdateRemainingDays(DateTime examDate)
+		private async Task UpdateExamDateInDatabase(DateTime examDate)
+		{
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					
+					string accessToken = GlobalState.Instance.AccessToken;
+					client.DefaultRequestHeaders.Authorization =
+						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+					
+					string formattedDate = examDate.ToString("yyyy-MM-dd 00:00:00");
+
+					
+					var updateData = new
+					{
+						next_exam_date = formattedDate
+					};
+
+					
+					string json = JsonConvert.SerializeObject(updateData);
+					var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+					
+					HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+
+					if (response.IsSuccessStatusCode)
+					{
+						
+						System.Diagnostics.Debug.WriteLine("Exam date updated successfully.");
+					}
+					else
+					{
+						
+						System.Diagnostics.Debug.WriteLine("Failed to update exam date.");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				
+				System.Diagnostics.Debug.WriteLine($"Error updating exam date: {ex.Message}");
+			}
+		}
+
+
+
+		private void UpdateRemainingDays(DateTime examDate)
         {
             int remainingDays = (examDate - DateTime.Today).Days;
             RemainingDaysText.Text = $"{remainingDays} ngày";
         }
 
-        //aboutus
+
         private void AboutUs_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(AboutUsPage));

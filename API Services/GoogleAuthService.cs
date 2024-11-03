@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Security.Authentication;
 
 namespace login_full
 {
@@ -15,7 +16,7 @@ namespace login_full
 		private readonly GoogleAuthorizationCodeFlow _flow;
 		private readonly string _tokenFilePath;
 		private readonly string _logFilePath;
-		private static bool _isInitialized = false; 
+		private static bool _isInitialized = false;
 
 		public GoogleAuthService(IConfiguration configuration)
 		{
@@ -26,7 +27,7 @@ namespace login_full
 			LogMessage($"Token directory path: {_tokenFilePath}");
 			LogMessage($"Log file path: {_logFilePath}");
 
-			if (!_isInitialized) 
+			if (!_isInitialized)
 			{
 				LogMessage("Initializing GoogleAuthService...");
 				_isInitialized = true;
@@ -66,7 +67,7 @@ namespace login_full
 			catch (Exception ex)
 			{
 				LogMessage($"Authentication failed: {ex.Message}");
-				throw new Exception("Authentication failed. Please try again.", ex);
+				throw new AuthenticationException("Authentication failed. Please try again.", ex);
 			}
 		}
 
@@ -95,5 +96,7 @@ namespace login_full
 				writer.WriteLine($"{DateTime.Now}: {message}");
 			}
 		}
+
+		
 	}
 }
