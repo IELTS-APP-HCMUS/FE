@@ -175,10 +175,11 @@ namespace login_full
 						SpeakingScoreTextBlock.Text = userTarget.TargetSpeaking == -1 ? "-" : userTarget.TargetSpeaking.ToString();
 
 						double overallTarget = -1;
-                        if(userTarget.TargetReading!=-1||userTarget.TargetListening!=-1||userTarget.TargetWriting!=-1||userTarget.TargetSpeaking!=-1)
+                        if(userTarget.TargetReading!=-1 && userTarget.TargetListening!=-1 && userTarget.TargetWriting!=-1 && userTarget.TargetSpeaking!=-1)
                         {
 						    overallTarget = (userTarget.TargetReading + userTarget.TargetListening + userTarget.TargetWriting + userTarget.TargetSpeaking) / 4;
-                        }
+							overallTarget = Math.Round(overallTarget * 2) / 2;
+						}
 						OverallScoreTextBlock.Text = overallTarget == -1 ? "-" : overallTarget.ToString();
 
 
