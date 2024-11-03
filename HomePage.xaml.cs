@@ -26,6 +26,7 @@ using System.Data;
 using System.Text;
 using Windows.Networking;
 using YamlDotNet.Core.Tokens;
+using System.Threading.Tasks;
 
 
 
@@ -53,7 +54,6 @@ namespace login_full
 
             // set size of home page
             
-
 
         }
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
@@ -174,9 +174,20 @@ namespace login_full
 						WritingScoreTextBlock.Text = writingTarget == null ? "-" : writingTarget.ToString();
 						SpeakingScoreTextBlock.Text = speakingTarget == null ? "-" : speakingTarget.ToString();
 
-                        double overallTarget = ((double)readingTarget + (double)listeningTarget + (double)writingTarget + (double)speakingTarget)/4;
+						double overallTarget = ((double)readingTarget + (double)listeningTarget + (double)writingTarget + (double)speakingTarget) / 4;
+						overallTarget = Math.Ceiling(overallTarget * 2) / 2;
 						OverallScoreTextBlock.Text = overallTarget == 0 ? "-" : overallTarget.ToString();
-
+						
+                        if (DateTime.TryParse(dataResponse["next_exam_date"]?.ToString(), out DateTime examDate))
+						{
+							ExamDateButton.Content = examDate.ToString("dd / MM / yyyy");
+							UpdateRemainingDays(examDate);
+						}
+						else
+						{
+							ExamDateButton.Content = "- / - / -";
+							RemainingDaysText.Text = "- ngày";
+						}
 
 
 						// Ẩn thông báo "Loading..."
@@ -242,7 +253,7 @@ namespace login_full
 					client.DefaultRequestHeaders.Authorization =
 						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API
-					HttpResponseMessage response = await client.PatchAsync("http://localhost:8080/api/users/target", content);
+					HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
 
 					// Kiểm tra phản hồi từ API
 					if (response.IsSuccessStatusCode)
@@ -271,7 +282,11 @@ namespace login_full
 			localSettings.Values.Remove("Username");
 			localSettings.Values.Remove("PasswordInBase64");
 			localSettings.Values.Remove("EntropyInBase64");
+			localSettings.Values.Clear();
 
+			GlobalState.Instance.AccessToken = null;
+			GlobalState.Instance.UserProfile = null;  // Clear user profile if you store it in GlobalState
+			
 
 			if (App.IsLoggedInWithGoogle)
 			{
@@ -326,14 +341,15 @@ namespace login_full
         }
 
 
-        private void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        private async void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
             if (args.NewDate.HasValue)
             {
                 DateTime selectedDate = args.NewDate.Value.Date;
                 ExamDateButton.Content = selectedDate.ToString("dd / MM / yyyy");
                 UpdateRemainingDays(selectedDate);
-            }
+				await UpdateExamDateInDatabase(selectedDate);
+			}
             else
             {
                 ExamDateButton.Content = "- / - / -";
@@ -341,13 +357,61 @@ namespace login_full
             }
         }
 
-        private void UpdateRemainingDays(DateTime examDate)
+		private async Task UpdateExamDateInDatabase(DateTime examDate)
+		{
+			try
+			{
+				using (HttpClient client = new HttpClient())
+				{
+					
+					string accessToken = GlobalState.Instance.AccessToken;
+					client.DefaultRequestHeaders.Authorization =
+						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+					
+					string formattedDate = examDate.ToString("yyyy-MM-dd 00:00:00");
+
+					
+					var updateData = new
+					{
+						next_exam_date = formattedDate
+					};
+
+					
+					string json = JsonConvert.SerializeObject(updateData);
+					var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+					
+					HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+
+					if (response.IsSuccessStatusCode)
+					{
+						
+						System.Diagnostics.Debug.WriteLine("Exam date updated successfully.");
+					}
+					else
+					{
+						
+						System.Diagnostics.Debug.WriteLine("Failed to update exam date.");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				
+				System.Diagnostics.Debug.WriteLine($"Error updating exam date: {ex.Message}");
+			}
+		}
+
+
+
+		private void UpdateRemainingDays(DateTime examDate)
         {
             int remainingDays = (examDate - DateTime.Today).Days;
             RemainingDaysText.Text = $"{remainingDays} ngày";
         }
 
-        //aboutus
+
         private void AboutUs_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(AboutUsPage));

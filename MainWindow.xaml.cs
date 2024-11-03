@@ -80,7 +80,6 @@ namespace login_full
 
 				var googleAuthService = new GoogleAuthService(configuration);
 
-
 				var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
 
 				if (credential == null)
@@ -264,6 +263,7 @@ namespace login_full
 
 		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
 		{
+			//MainFrame.Navigate(typeof(RegisterPage));
 			string email = RegisterEmailTextBox.Text;
 			string password = RegisterPasswordBox.Password;
 			string confirmPassword = ConfirmPasswordBox.Password;
@@ -295,7 +295,12 @@ namespace login_full
 				if (jsonResponse["code"].ToString() == "0") 
 				{
 					await ShowSuccessDialogAsync("User created successfully!");
-					NavigateToHomePage();
+					RegisterPanel.Visibility = Visibility.Collapsed;
+					LoginPanel.Visibility = Visibility.Visible;
+
+					// Optionally set the button style to indicate the active tab
+					RegisterButton.Background = new SolidColorBrush(Colors.Transparent);
+					LoginButton.Background = new SolidColorBrush(Colors.White);
 				}
 				else
 				{
@@ -307,6 +312,7 @@ namespace login_full
 			{
 				await ShowErrorDialogAsync($"Unexpected error during signup: {ex.Message}");
 			}
+
 		}
 	}
 }
