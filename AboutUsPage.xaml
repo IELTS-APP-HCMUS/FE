@@ -10,71 +10,186 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <!-- Visual State Manager for Header Collapse/Expand States -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="HeaderStates">
+                <VisualState x:Name="ExpandedHeader">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1000"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="FullHeader.Visibility" Value="Visible"/>
+                        <Setter Target="CollapsedHeaderGrid.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CollapsedHeader">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="FullHeader.Visibility" Value="Collapsed"/>
+                        <Setter Target="CollapsedHeaderGrid.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Sticky Header -->
-        <Grid Height="90" Background="#4EACD2">
+        <!-- Full Header -->
+        <Grid x:Name="FullHeader" Height="60" Background="#4EACD2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <!-- Logo -->
                 <ColumnDefinition Width="*"/>
-                <!-- Navigation items -->
                 <ColumnDefinition Width="Auto"/>
-                <!-- User profile -->
             </Grid.ColumnDefinitions>
 
             <!-- Logo -->
             <TextBlock Grid.Column="0" 
-            Text="MEPASS" 
-            FontSize="32" 
-            FontWeight="Bold" 
-            Foreground="White" 
-            VerticalAlignment="Center" 
-            Margin="37,0,50,0"/>
+                Text="MEPASS" 
+                FontSize="32" 
+                FontWeight="Bold" 
+                Foreground="White" 
+                VerticalAlignment="Center" 
+                Margin="37,0,50,0"/>
 
             <!-- Navigation items -->
-            <StackPanel  Grid.Column="1"
-             Orientation="Horizontal" 
-             HorizontalAlignment="Center" 
-             VerticalAlignment="Center">
-                <HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,40,0" Click="Home_Click"/>
-                <HyperlinkButton Content="Reading &amp; Listening" FontSize="18" Foreground="Black" Margin="0,0,40,0"/>
-                <HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,40,0"/>
-                <HyperlinkButton Content="Courses" FontSize="18" Foreground="Black" Margin="0,0,40,0"/>
-                <HyperlinkButton Content="About Us" FontSize="18" Foreground="Black"/>
+            <StackPanel Grid.Column="1"
+                 Orientation="Horizontal" 
+                 HorizontalAlignment="Center" 
+                 VerticalAlignment="Center" Margin="10,0,0,0">
+                <HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,0,0" Click="Home_Click"/>
+                <HyperlinkButton Content="Reading &amp; Listening" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
+                <HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
+                <HyperlinkButton Content="Courses" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
+                <HyperlinkButton Content="About Us" FontSize="18" Foreground="Black" Click="AboutUs_Click"/>
             </StackPanel>
 
-            <!-- User profile -->
             <!-- User profile -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
                 <Button x:Name="UserProfileButton" Background="Transparent" BorderThickness="0" Click="UserProfileButton_Click">
                     <Button.Flyout>
                         <Flyout x:Name="UserProfileFlyout">
                             <StackPanel Width="250">
-                                <TextBlock Text="Thành Phát Nguyễn" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                                <TextBlock Text="nguyenthanhphat1906@gmail.com" FontSize="14" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="UserProfile_Name2" Text="Thành Phát Nguyễn" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                                <TextBlock x:Name="UserProfile_Email2" Text="nguyenthanhphat1906@gmail.com" FontSize="14" Margin="0,0,0,10"/>
                                 <Rectangle Height="1" Fill="LightGray" Margin="0,0,0,10"/>
                                 <Button Content="Đăng xuất" Click="LogoutButton_Click" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
                     <StackPanel Orientation="Horizontal">
-                        <Ellipse Width="50" Height="50">
+                        <Ellipse Width="35" Height="34">
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="/Assets/default_avatar.png"/>
+                                <ImageBrush ImageSource="/Assets/working_from_home.png"/>
                             </Ellipse.Fill>
                         </Ellipse>
-                        <TextBlock Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
+                        <TextBlock x:Name="UserName_Tag2" Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
                         <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="Black" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
+        </Grid>
+
+        <!-- Collapsed Header -->
+        <Grid x:Name="CollapsedHeaderGrid" Height="60" Background="#4EACD2" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Logo -->
+            <TextBlock Grid.Column="0" 
+                Text="MEPASS" 
+                FontSize="32" 
+                FontWeight="Bold" 
+                Foreground="White" 
+                VerticalAlignment="Center" 
+                Margin="37,0,50,0"/>
+
+            <!-- User profile buttontrùng hớp nút bình thường -->
+            <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Click="UserHeaderButton_Click">
+                <Button.Flyout>
+                    <Flyout x:Name="CollapsedUserProfileFlyout">
+                        <StackPanel Width="270" Background="#F6EBE5">
+                            <TextBlock x:Name="UserProfile_Name"  Text="Thành Phát Nguyễn" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="UserProfile_Email" Text="nguyenthanhphat1906@gmail.com" FontSize="14" Margin="0,0,0,10"/>
+                            <Rectangle Height="1" Fill="LightGray" Margin="0,0,0,10"/>
+
+                            <!-- Home Page Button with Icon -->
+                            <Button FontSize="18" Foreground="Black" Click="Home_Click" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/home.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for Home Page -->
+                                    <TextBlock Text="Trang chủ"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Reading & Listening Button with Icon -->
+                            <Button FontSize="18" Foreground="Black" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/home.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for Reading -->
+                                    <TextBlock Text="Reading &amp; Listening"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Full Test Button with Icon -->
+                            <Button FontSize="18" Foreground="Black" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/home.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for Full Test -->
+                                    <TextBlock Text="Full Test"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Courses Button with Icon -->
+                            <Button FontSize="18" Foreground="Black" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/course.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for Courses -->
+                                    <TextBlock Text="Courses"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- About Us Button with Icon -->
+                            <Button FontSize="18" Foreground="Black" Click="AboutUs_Click" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/home.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for About Us -->
+                                    <TextBlock Text="About Us"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Logout Button with Icon -->
+                            <Button  Click="LogoutButton_Click" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/logout.png" Width="24" Height="24" Margin="0,0,10,0"/>
+                                    <!-- Icon for Logout -->
+                                    <TextBlock Text="Đăng xuất"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="35" Height="34">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="/Assets/working_from_home.png"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock x:Name="UserName_Tag" Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="White"/>
+                    <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </Grid>
 
         <!-- Main Content -->
