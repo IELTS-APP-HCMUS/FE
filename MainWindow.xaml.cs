@@ -1,4 +1,4 @@
-using Google.Apis.Util;
+﻿using Google.Apis.Util;
 using login_full;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Xaml;
@@ -25,6 +25,10 @@ using System.Security.Cryptography;
 using System.Text;
 using Windows.Services.Maps;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
+using Windows.Graphics;
+using login_full.API_Services;
+using Newtonsoft.Json.Linq;
 
 
 
@@ -34,16 +38,37 @@ namespace login_full
     public sealed partial class MainWindow : Window
     {
         private readonly UserAuthenticationService _authService;
-        //private readonly ApiService _apiService;
+		private readonly LoginApiService _loginApiService;
+		// size of the window
+		private const int MinWindowWidth = 850;
+        private const int MinWindowHeight = 0;
+
         public MainWindow()
         {
             this.InitializeComponent();
             (Application.Current as App).MainWindow = this;
             _authService = new UserAuthenticationService();
-         //   _apiService = new ApiService();
-            CheckSavedCredentials();
+
+   
+            this.SizeChanged += MainWindow_SizeChanged;
+
+			_loginApiService = new LoginApiService();
+			CheckSavedCredentials();
         }
 
+        private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            var currentSize = appWindow.Size;
+
+            int newWidth = Math.Max(currentSize.Width, MinWindowWidth);
+            int newHeight = Math.Max(currentSize.Height, MinWindowHeight);
+
+            appWindow.Resize(new SizeInt32(newWidth, newHeight));
+        }
         private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -53,80 +78,109 @@ namespace login_full
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build();
 
-                var googleAuthService = new GoogleAuthService(configuration);
-                var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
+				var googleAuthService = new GoogleAuthService(configuration);
 
-                if (credential == null)
-                {
-                    await ShowErrorDialogAsync("Authentication failed. No credential returned.");
-                    return;
-                }
+				var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
 
-                if (credential.Token.IsExpired(SystemClock.Default))
-                {
-                    try
-                    {
-                        await credential.RefreshTokenAsync(CancellationToken.None);
-                    }
-                    catch (Exception refreshEx)
-                    {
-                        await ShowErrorDialogAsync($"Failed to refresh token: {refreshEx.Message}");
-                        return;
-                    }
-                }
+				if (credential == null)
+				{
+					await ShowErrorDialogAsync("Authentication failed. No credential returned.");
+					return;
+				}
 
-                await ShowSuccessDialogAsync($"Signed in successfully. User ID: {credential.UserId}");
+				if (credential.Token.IsExpired(SystemClock.Default))
+				{
+					try
+					{
+						await credential.RefreshTokenAsync(CancellationToken.None);
+					}
+					catch (Exception refreshEx)
+					{
+						await ShowErrorDialogAsync($"Failed to refresh token: {refreshEx.Message}");
+						return;
+					}
+				}
 
-                // TODO: Implement your post-login logic here
-            }
-        
-            catch (Google.Apis.Auth.OAuth2.Responses.TokenResponseException trEx)
-            {
-                await ShowErrorDialogAsync($"Token response error: {trEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                await ShowErrorDialogAsync($"Unexpected error: {ex.Message}");
-            }
-        }
+				string idToken = credential.Token.IdToken;
 
-        private async Task ShowErrorDialogAsync(string message)
+				if (string.IsNullOrEmpty(idToken))
+				{
+					await ShowErrorDialogAsync("No ID token returned from Google.");
+					return;
+				}
+
+				var response = await _loginApiService.LoginWithOAuthAsync(idToken);
+
+				if (response.StartsWith("Error"))
+				{
+					await ShowErrorDialogAsync(response);
+					return;
+				}
+
+				try
+				{
+					var jsonResponse = JObject.Parse(response);
+
+					if (jsonResponse["code"].ToString() == "200")
+					{
+						App.IsLoggedInWithGoogle = true;
+						string token = jsonResponse["data"].ToString();
+						// Lưu access token vào GlobalState
+						GlobalState.Instance.AccessToken = token;
+						await ShowSuccessDialogAsync("Login successful with Google!");
+						NavigateToHomePage();
+					}
+					else
+					{
+						string errorMessage = jsonResponse["error_detail"].ToString();
+						await ShowErrorDialogAsync($"Login failed: {errorMessage}");
+					}
+				}
+				catch (Exception ex)
+				{
+					await ShowErrorDialogAsync($"Unexpected error during login: {ex.Message}");
+				}
+			}
+			catch (Google.Apis.Auth.OAuth2.Responses.TokenResponseException trEx)
+			{
+				await ShowErrorDialogAsync($"Token response error: {trEx.Message}");
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error: {ex.Message}");
+			}
+		}
+
+		private async Task ShowErrorDialogAsync(string message)
         {
-            if (Dispatcher == null)
-            {
-                throw new InvalidOperationException("Dispatcher is not initialized.");
-            }
-
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-            {
-                ContentDialog dialog = new ContentDialog
-                {
-                    Title = "Sign In Error",
-                    Content = message,
-                    CloseButtonText = "OK"
-                };
-                await dialog.ShowAsync();
-            });
-        }
+			DispatcherQueue.TryEnqueue(async () =>
+			{
+				ContentDialog dialog = new ContentDialog
+				{
+					Title = "Sign In Error",
+					Content = message,
+					CloseButtonText = "OK",
+					XamlRoot = this.Content.XamlRoot
+				};
+				_ = await dialog.ShowAsync();
+			});
+			
+		}
 
         private async Task ShowSuccessDialogAsync(string message)
         {
-            if (Dispatcher == null)
-            {
-                throw new InvalidOperationException("Dispatcher is not initialized.");
-            }
-
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-            {
-                ContentDialog dialog = new ContentDialog
-                {
-                    Title = "Sign In Successful",
-                    Content = message,
-                    CloseButtonText = "OK"
-                };
-                await dialog.ShowAsync();
-            });
-        }
+			DispatcherQueue.TryEnqueue(async () =>
+			{
+				ContentDialog dialog = new ContentDialog
+				{
+					Title = "Sign In Successful",
+					Content = message,
+					CloseButtonText = "OK",
+					XamlRoot = this.Content.XamlRoot
+				};
+				_ = await dialog.ShowAsync();
+			});
+		}
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
@@ -136,7 +190,7 @@ namespace login_full
             RegisterPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        private void RegisterButtonToggle_Click(object sender, RoutedEventArgs e)
         {
             LoginButton.Background = new SolidColorBrush(Colors.Transparent);
             RegisterButton.Background = new SolidColorBrush(Colors.White);
@@ -144,35 +198,62 @@ namespace login_full
             RegisterPanel.Visibility = Visibility.Visible;
         }
 
-        private void CheckSavedCredentials()
+        private async void CheckSavedCredentials()
         {
-            if (_authService.HasSavedCredentials())
-            {
-                NavigateToHomePage();
-            }
-        }
+			if (_authService.HasSavedCredentials())
+			{
+				NavigateToHomePage();
+			}
 
-        private void Login1Button_Click(object sender, RoutedEventArgs e)
+		}
+
+        private async void Login1Button_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameTextBox.Text;
-            string password = PasswordBox.Password;
+			string username = UsernameTextBox.Text;
+			string password = PasswordBox.Password;
 
-            if (_authService.ValidateCredentials(username,password))
-            {
-                if (RememberMeCheckbox.IsChecked == true)
-                {
-                   _authService.SaveCredentials(username, password);
-                }
-                NavigateToHomePage();
-            }
-            else
-            {
-                ErrorMessageTextBlock.Text = "Invalid username or password.";
-                ErrorMessageTextBlock.Visibility = Visibility.Visible;
-            }
-        }
+			string response = await _loginApiService.LoginAsync(username, password);
 
-    
+			if (response.StartsWith("Error"))
+			{
+				ErrorMessageTextBlock.Text = "Invalid email or password";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				return;
+			}
+
+			try
+			{
+				var jsonResponse = JObject.Parse(response);
+
+				if (jsonResponse["code"].ToString() == "200")
+				{
+					string token = jsonResponse["data"].ToString();
+					System.Diagnostics.Debug.WriteLine(token);
+
+					// Lưu access token vào GlobalState
+
+					GlobalState.Instance.AccessToken = token;
+					App.IsLoggedInWithGoogle = false;
+					if (RememberMeCheckbox.IsChecked == true)
+					{
+						_authService.SaveCredentials(username, password);
+					}
+					NavigateToHomePage();
+				}
+				else
+				{
+					string errorMessage = jsonResponse["error_detail"].ToString();
+					ErrorMessageTextBlock.Text = errorMessage;
+					ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				}
+			}
+			catch (Exception ex)
+			{
+				ErrorMessageTextBlock.Text = ex.Message;
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+			}
+		}
+
         private void NavigateToHomePage()
         {
 
@@ -181,77 +262,59 @@ namespace login_full
             MainFrame.Navigate(typeof(HomePage));
         }
 
+		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
+		{
+			//MainFrame.Navigate(typeof(RegisterPage));
+			string email = RegisterEmailTextBox.Text;
+			string password = RegisterPasswordBox.Password;
+			string confirmPassword = ConfirmPasswordBox.Password;
+			string fullName = FullNameTextBox.Text;
 
+			string[] nameParts = fullName.Split(' ');
+			string lastName = nameParts.Length > 0 ? nameParts[0] : "";
+			string firstName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
+			string role = "end_user"; 
 
-        // API login
+			if (password != confirmPassword)
+			{
+				await ShowErrorDialogAsync("Passwords do not match.");
+				return;
+			}
 
-        //private async void RegisterButton1_Click(object sender, RoutedEventArgs e)
-        //{
-        //    LoginButton.Background = new SolidColorBrush(Colors.Transparent);
-        //    RegisterButton.Background = new SolidColorBrush(Colors.White);
-        //    LoginPanel.Visibility = Visibility.Collapsed;
-        //    RegisterPanel.Visibility = Visibility.Visible;
+			string response = await _loginApiService.SignupAsync(email, password, firstName, lastName, role);
 
-        //    string email = RegisterEmailTextBox.Text;
-        //    string fullName = FullNameTextBox.Text;
-        //    string password = RegisterPasswordBox.Password;
-        //    string confirmPassword = ConfirmPasswordBox.Password;
+			if (response.StartsWith("Error") || response.StartsWith("Exception"))
+			{
+				await ShowErrorDialogAsync(response);
+				return;
+			}
 
-        //    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName) ||
-        //        string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
-        //    {
-        //        await ShowErrorDialogAsync("Please fill in all fields.");
-        //        return;
-        //    }
+			try
+			{
+				var jsonResponse = JObject.Parse(response);
 
-        //    if (password != confirmPassword)
-        //    {
-        //        await ShowErrorDialogAsync("Passwords do not match.");
-        //        return;
-        //    }
+				if (jsonResponse["code"].ToString() == "0") 
+				{
+					await ShowSuccessDialogAsync("User created successfully!");
+					RegisterPanel.Visibility = Visibility.Collapsed;
+					LoginPanel.Visibility = Visibility.Visible;
 
-        //    var (firstName, lastName) = SplitFullName(fullName);
+					// Optionally set the button style to indicate the active tab
+					RegisterButton.Background = new SolidColorBrush(Colors.Transparent);
+					LoginButton.Background = new SolidColorBrush(Colors.White);
+				}
+				else
+				{
+					string errorMessage = jsonResponse["message"]?.ToString() ?? "Signup failed.";
+					await ShowErrorDialogAsync($"Signup failed: {errorMessage}");
+				}
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error during signup: {ex.Message}");
+			}
 
-        //    var user = new UserRegistrationModel
-        //    {
-        //        Email = email,
-        //        Password = password,
-        //        FirstName = firstName,
-        //        LastName = lastName
-        //    };
-
-        //    try
-        //    {
-        //        bool isRegistered = await _apiService.RegisterUser(user);
-        //        if (isRegistered)
-        //        {
-        //            await ShowSuccessDialogAsync("Registration successful!");
-        //            // Optionally, you can automatically log the user in or navigate to the login page
-        //        }
-        //        else
-        //        {
-        //            await ShowErrorDialogAsync("Registration failed. Please try again.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await ShowErrorDialogAsync($"An error occurred: {ex.Message}");
-        //    }
-        //}
-
-        //private (string FirstName, string LastName) SplitFullName(string fullName)
-        //{
-        //    var nameParts = fullName.Trim().Split(' ');
-        //    if (nameParts.Length == 1)
-        //    {
-        //        return (nameParts[0], "");
-        //    }
-        //    else
-        //    {
-        //        return (nameParts[0], string.Join(" ", nameParts.Skip(1)));
-        //    }
-        //}
-    }
-
+		}
+	}
 }
 

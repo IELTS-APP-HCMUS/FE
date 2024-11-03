@@ -15,6 +15,8 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using System.IO;
+using login_full.API_Services;
 
 
 namespace login_full
@@ -23,10 +25,14 @@ namespace login_full
     public partial class App : Application
     {
         public Window MainWindow { get; set; }
-        public App()
+		public static bool IsLoggedInWithGoogle { get; set; } = false;
+		public App()
         {
             this.InitializeComponent();
-        }
+			var configService = new ConfigService(); 
+			var dbService = new DatabaseService(configService);
+			dbService.ConnectToDatabase(); 
+		}
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
@@ -35,5 +41,6 @@ namespace login_full
         }
 
         private Window m_window;
+
     }
 }
