@@ -170,19 +170,23 @@ namespace login_full
 
 
 						ReadingScoreTextBlock.Text = userTarget.TargetReading == -1 ? "-" : userTarget.TargetReading.ToString();
-					    ListeningScoreTextBlock.Text = userTarget.TargetListening == -1 ? "-" : userTarget.TargetListening.ToString();
+						ListeningScoreTextBlock.Text = userTarget.TargetListening == -1 ? "-" : userTarget.TargetListening.ToString();
 						WritingScoreTextBlock.Text = userTarget.TargetWriting == -1 ? "-" : userTarget.TargetWriting.ToString();
 						SpeakingScoreTextBlock.Text = userTarget.TargetSpeaking == -1 ? "-" : userTarget.TargetSpeaking.ToString();
+						RemainingDaysText.Text = userTarget.TargetStudyDuration.ToString() + " ngày";
+						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
+						int remainingDays = (dateTime.ToDateTime(TimeOnly.MinValue) - DateTime.Today).Days;
+						RemainingDaysText.Text = $"{remainingDays} ngày";
+						ExamDateButton.Content = dateTime.ToString();
+
 
 						double overallTarget = -1;
-                        if(userTarget.TargetReading!=-1 && userTarget.TargetListening!=-1 && userTarget.TargetWriting!=-1 && userTarget.TargetSpeaking!=-1)
-                        {
-						    overallTarget = (userTarget.TargetReading + userTarget.TargetListening + userTarget.TargetWriting + userTarget.TargetSpeaking) / 4;
+						if (userTarget.TargetReading != -1 && userTarget.TargetListening != -1 && userTarget.TargetWriting != -1 && userTarget.TargetSpeaking != -1)
+						{
+							overallTarget = (userTarget.TargetReading + userTarget.TargetListening + userTarget.TargetWriting + userTarget.TargetSpeaking) / 4;
 							overallTarget = Math.Round(overallTarget * 2) / 2;
 						}
 						OverallScoreTextBlock.Text = overallTarget == -1 ? "-" : overallTarget.ToString();
-
-
 
 						// Ẩn thông báo "Loading..."
 						//LoadingText.Visibility = Visibility.Collapsed;
