@@ -154,28 +154,35 @@ namespace login_full
                     // Kiểm tra phản hồi từ API
                     if (response.IsSuccessStatusCode)
                     {
-                        // Đọc dữ liệu JSON từ phản hồi
-                        string stringResponse = await response.Content.ReadAsStringAsync();
+						// Đọc dữ liệu JSON từ phản hồi
+						string stringResponse = await response.Content.ReadAsStringAsync();
 
                         // Parse JSON thành đối tượng UserProfile
                         JObject jsonResponse = JObject.Parse(stringResponse);
                         JObject dataResponse = (JObject)jsonResponse["data"];
-                        //dataResponse.Remove("id");
-                        //UserTarget userProfile = JsonConvert.DeserializeObject<UserTarget>(dataResponse.ToString());
+                        dataResponse.Remove("id");
+                        UserTarget userTarget = dataResponse.ToObject<UserTarget>();
 
-                        var readingTarget = dataResponse["target_reading"];
-						var listeningTarget = dataResponse["target_listening"];
-						var writingTarget = dataResponse["target_writing"];
-						var speakingTarget = dataResponse["target_speaking"];
+						//var readingTarget = dataResponse["target_reading"];
+						//var listeningTarget = dataResponse["target_listening"];
+						//var writingTarget = dataResponse["target_writing"];
+						//var speakingTarget = dataResponse["target_speaking"];
 
+                        
+						ReadingScoreTextBlock.Text = userTarget.TargetReading == -1 ? "-" : userTarget.TargetReading.ToString();
+						ListeningScoreTextBlock.Text = userTarget.TargetListening == -1 ? "-" : userTarget.TargetListening.ToString();
+						WritingScoreTextBlock.Text = userTarget.TargetWriting == -1 ? "-" : userTarget.TargetWriting.ToString();
+						SpeakingScoreTextBlock.Text = userTarget.TargetSpeaking == -1 ? "-" : userTarget.TargetSpeaking.ToString();
+                        RemainingDaysText.Text = userTarget.TargetStudyDuration.ToString() + " ngày";
+						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
+						ExamDateButton.Content = dateTime.ToString();
 
-						ReadingScoreTextBlock.Text = readingTarget == null ? "-" : readingTarget.ToString();
-					    ListeningScoreTextBlock.Text = listeningTarget == null ? "-" : listeningTarget.ToString();
-						WritingScoreTextBlock.Text = writingTarget == null ? "-" : writingTarget.ToString();
-						SpeakingScoreTextBlock.Text = speakingTarget == null ? "-" : speakingTarget.ToString();
-
-                        double overallTarget = ((double)readingTarget + (double)listeningTarget + (double)writingTarget + (double)speakingTarget)/4;
-						OverallScoreTextBlock.Text = overallTarget == 0 ? "-" : overallTarget.ToString();
+						double overallTarget = -1;
+                        if(userTarget.TargetReading!=-1||userTarget.TargetListening!=-1||userTarget.TargetWriting!=-1||userTarget.TargetSpeaking!=-1)
+                        {
+						    overallTarget = (userTarget.TargetReading + userTarget.TargetListening + userTarget.TargetWriting + userTarget.TargetSpeaking) / 4;
+                        }
+						OverallScoreTextBlock.Text = overallTarget == -1 ? "-" : overallTarget.ToString();
 
 
 
@@ -183,10 +190,11 @@ namespace login_full
 						//LoadingText.Visibility = Visibility.Collapsed;
 					}
 					else
-				{
-					// Thông báo lỗi nếu không lấy được dữ liệu
-					//LoadingText.Text = "Failed to load user information.";
-				}
+				    {
+						// Thông báo lỗi nếu không lấy được dữ liệu
+						//LoadingText.Text = "Failed to load user information.";
+						string stringResponse = await response.Content.ReadAsStringAsync();
+					}
 			}
 }
 			catch (Exception ex)
@@ -326,13 +334,54 @@ namespace login_full
         }
 
 
-        private void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        private async void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
             if (args.NewDate.HasValue)
             {
                 DateTime selectedDate = args.NewDate.Value.Date;
                 ExamDateButton.Content = selectedDate.ToString("dd / MM / yyyy");
-                UpdateRemainingDays(selectedDate);
+
+				var targetRequest = new
+				{
+					next_exam_date = selectedDate.ToString("yyyy-MM-dd")
+				};
+
+				string json = JsonConvert.SerializeObject(targetRequest);
+				var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+				try
+				{
+					using (HttpClient client = new HttpClient())
+					{
+						// Lấy access token từ GlobalState
+						string accessToken = GlobalState.Instance.AccessToken;
+						// Thêm access token vào header Authorization
+						client.DefaultRequestHeaders.Authorization =
+							new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+						// Gửi yêu cầu GET đến API
+						HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+
+						// Kiểm tra phản hồi từ API
+						if (response.IsSuccessStatusCode)
+						{
+							//LoadUserTarget();
+
+							// Ẩn thông báo "Loading..."
+							//LoadingText.Visibility = Visibility.Collapsed;
+						}
+						else
+						{
+							// Thông báo lỗi nếu không lấy được dữ liệu
+							//LoadingText.Text = "Failed to load user information.";
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					// Xử lý lỗi nếu có ngoại lệ
+					//LoadingText.Text = $"Error: {ex.Message}";
+				}
+				UpdateRemainingDays(selectedDate);
             }
             else
             {

@@ -68,7 +68,7 @@
                             </Grid.RowDefinitions>
 
                             <Button x:Name="LoginButton" Content="Login" Background="White" CornerRadius="20" Click="LoginButton_Click" Margin="5" HorizontalAlignment="Stretch"/>
-                            <Button x:Name="RegisterButton" Content="Register" Background="Transparent" CornerRadius="20" Click="RegisterButton_Click" Margin="5" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="RegisterButton" Content="Register" Background="Transparent" CornerRadius="20" Click="RegisterButtonToggle_Click" Margin="5" HorizontalAlignment="Stretch" Grid.Column="1"/>
                         </Grid>
                     </Border>
                     <TextBlock Text="This is a website that helps you fully improve your English skills in the most comprehensive way." TextWrapping="Wrap" Margin="0,0,0,20"/>
@@ -116,7 +116,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Button Content="Register" Width="140" Height="40" Background="#9FDBE9" Grid.Column="2"  CornerRadius="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10"/>
+							<Button Click="RegisterButton_Click" Content="Register" Width="140" Height="40" Background="#9FDBE9" Grid.Column="2"  CornerRadius="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10"/>
                         </Grid>
 
 
