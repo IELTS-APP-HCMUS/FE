@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 
-namespace login_full
+namespace login_full.Helpers
 {
     public class CalendarManager
     {
@@ -25,15 +25,15 @@ namespace login_full
 
             // Create the CalendarDayButtonStyle programmatically
             var calendarDayButtonStyle = new Style(typeof(Button));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.BorderThicknessProperty, new Thickness(0)));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.PaddingProperty, new Thickness(5)));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.MarginProperty, new Thickness(2)));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.HorizontalAlignmentProperty, HorizontalAlignment.Stretch));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.VerticalAlignmentProperty, VerticalAlignment.Stretch));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.FontSizeProperty, 14.0));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.MinWidthProperty, 40.0));
-            calendarDayButtonStyle.Setters.Add(new Setter(Button.MinHeightProperty, 40.0));
+            calendarDayButtonStyle.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
+            calendarDayButtonStyle.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(0)));
+            calendarDayButtonStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(5)));
+            calendarDayButtonStyle.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(2)));
+            calendarDayButtonStyle.Setters.Add(new Setter(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Stretch));
+            calendarDayButtonStyle.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Stretch));
+            calendarDayButtonStyle.Setters.Add(new Setter(Control.FontSizeProperty, 14.0));
+            calendarDayButtonStyle.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, 40.0));
+            calendarDayButtonStyle.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, 40.0));
 
             // Add the style to the application resources
             Application.Current.Resources["CalendarDayButtonStyle"] = calendarDayButtonStyle;

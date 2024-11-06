@@ -1,6 +1,8 @@
-﻿namespace login_full
+﻿using login_full.Models;
+
+namespace login_full
 {
-	internal class GlobalState
+    internal class GlobalState
 	{
 		// Instance duy nhất của class
 		private static GlobalState _instance;

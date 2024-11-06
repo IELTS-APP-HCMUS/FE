@@ -68,7 +68,6 @@ namespace login_full
             }
         }
     }
-
     public class ScheduleItem
     {
         public string Time { get; set; }
