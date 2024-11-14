@@ -78,8 +78,8 @@
                         <Flyout x:Name="UserProfileFlyout">
                             <StackPanel Width="250">
                                 <!-- Bind to viewModel properties -->
-                                <TextBlock Text="{x:Bind viewModel.UserProfile.Name}" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                                <TextBlock Text="{x:Bind viewModel.UserProfile.Email}" FontSize="14" Margin="0,0,0,10"/>
+                                <TextBlock Text="{x:Bind viewModel.UserProfile.Name, Mode=OneWay}" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                                <TextBlock Text="{x:Bind viewModel.UserProfile.Email,Mode=OneWay}" FontSize="14" Margin="0,0,0,10"/>
                                 <Rectangle Height="1" Fill="LightGray" Margin="0,0,0,10"/>
                                 <Button Content="Đăng xuất" Click="LogoutButton_Click" HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -92,7 +92,7 @@
                                 <ImageBrush ImageSource="/Assets/working_from_home.png"/>
                             </Ellipse.Fill>
                         </Ellipse>
-                        <TextBlock Text="{x:Bind viewModel.UserProfile}" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
+                        <TextBlock Text="{x:Bind viewModel.UserProfile.Name, Mode=OneWay}" VerticalAlignment="Center" Margin="10,0" Foreground="Black"/>
                         <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="Black" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
@@ -520,25 +520,25 @@
                                             <Button x:Name="ReadingButton" Grid.Column="1" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Reading" FontSize="12" Margin="0,0,5,10"/>
-                                                    <TextBlock x:Name="ReadingScoreTextBlock" Text="{x:Bind viewModel.ReadingScore, Mode=OneWay}" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="ReadingScoreTextBlock" Text="{x:Bind viewModel.UserTarget.TargetReading, Mode=OneWay}" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                             <Button x:Name="ListeningButton" Grid.Column="2" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Listening" FontSize="12" Margin="0,0,5,10"/>
-                                                    <TextBlock x:Name="ListeningScoreTextBlock" Text="{x:Bind viewModel.ListeningScore, Mode=OneWay}" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="ListeningScoreTextBlock" Text="{x:Bind viewModel.UserTarget.TargetListening, Mode=OneWay}" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                             <Button x:Name="WritingButton" Grid.Column="3" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Writing" FontSize="12" Margin="0,0,5,10"/>
-                                                    <TextBlock x:Name="WritingScoreTextBlock" Text="{x:Bind viewModel.WritingScore, Mode=OneWay}" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="WritingScoreTextBlock" Text="{x:Bind viewModel.UserTarget.TargetWriting, Mode=OneWay}" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                             <Button Grid.Column="4" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Width="95" Padding="10,5">
                                                 <StackPanel>
                                                     <TextBlock Text="Speaking" FontSize="12" Margin="0,0,5,10"/>
-                                                    <TextBlock x:Name="SpeakingScoreTextBlock" Text="{x:Bind viewModel.SpeakingScore, Mode=OneWay}" FontWeight="Bold"/>
+                                                    <TextBlock x:Name="SpeakingScoreTextBlock" Text="{x:Bind viewModel.UserTarget.TargetSpeaking, Mode=OneWay}" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Button>
                                         </Grid>
@@ -573,7 +573,7 @@
                                             <StackPanel Grid.Column="1" Width="140">
                                                 <TextBlock Text="Số ngày còn lại" Margin="4,0,0,5"/>
                                                 <Border Background="#FFE4E1" Padding="5" CornerRadius="10">
-                                                    <TextBlock x:Name="RemainingDaysText" Text="{x:Bind viewModel.RemainingDaysText, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="RemainingDaysText" Text="{x:Bind viewModel.RemainingDays, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                 </Border>
                                             </StackPanel>
                                         </Grid>
