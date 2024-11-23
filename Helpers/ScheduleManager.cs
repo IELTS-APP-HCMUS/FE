@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace login_full
+namespace login_full.Helpers
 {
     public class ScheduleManager
     {

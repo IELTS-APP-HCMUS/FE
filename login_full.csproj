@@ -40,6 +40,17 @@
     <None Remove="API Services\config.yaml" />
     <None Remove="Assets\google.png" />
     <None Remove="BlankPage1.xaml" />
+    <None Remove="Components\Footer.xaml" />
+    <None Remove="Components\Header.xaml" />
+    <None Remove="Components\Home\Banner.xaml" />
+    <None Remove="Components\Home\Calendar.xaml" />
+    <None Remove="Components\Home\History.xaml" />
+    <None Remove="Components\Home\Performance\ExamRemain.xaml" />
+    <None Remove="Components\Home\Performance\Performance.xaml" />
+    <None Remove="Components\Home\Performance\Target.xaml" />
+    <None Remove="Components\Home\Schedule.xaml" />
+    <None Remove="Components\Home\Suggestion.xaml" />
+    <None Remove="Components\Home\TargetUpdatePopUp.xaml" />
     <None Remove="HomePage.xaml" />
   </ItemGroup>
 
@@ -63,6 +74,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
 	<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.220929.1" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />
@@ -144,6 +156,39 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Components\Home\Schedule.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Calendar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Performance\ExamRemain.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Performance\Target.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Performance\Performance.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\History.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Suggestion.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\Banner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Footer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Home\TargetUpdatePopUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Components\Header.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="BlankPage1.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,6 +198,9 @@
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <!--
