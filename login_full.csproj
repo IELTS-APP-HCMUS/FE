@@ -52,6 +52,7 @@
     <None Remove="Components\Home\Suggestion.xaml" />
     <None Remove="Components\Home\TargetUpdatePopUp.xaml" />
     <None Remove="HomePage.xaml" />
+    <None Remove="Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -156,6 +157,9 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Components\Home\Schedule.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

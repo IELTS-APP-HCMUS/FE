@@ -26,69 +26,58 @@ namespace login_full.Components
 	public sealed partial class Header : UserControl
 	{
 		private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-		//public UserProfile ViewModel
-		//{
-		//	get; set;
-		//}
-		//public GlobalState ViewModel { get; } = GlobalState.Instance;
-		//public UserProfile UserProfile
-		//{
-		//	//get { return GlobalState.Instance.UserProfile; }
-		//	get; set;
-		//}
+		
 		public Header()
 		{
 			this.InitializeComponent();
 
-			// Subscribe to changes in the GlobalState instance
 			GlobalState.Instance.PropertyChanged += GlobalState_PropertyChanged;
-			//this.DataContext = ViewModel;
-			//ViewModel = GlobalState.Instance.UserProfile;
 			UserProfile userProfile = GlobalState.Instance.UserProfile;
 			if (userProfile != null)
 			{
-				// Cập nhật giao diện với thông tin người dùng
 				UserProfile_Name.Text = userProfile.Name;
 				UserProfile_Email.Text = userProfile.Email;
 				UserNameTag.Text = userProfile.Name;
 			}
-			//UserProfile = new UserProfile()
-			//{
-			//	Name = "Tuan Nhat",
-			//	Email = "tn1@gmail.com"
-			//};
+			
 		}
-		//private void Page_Loaded(object sender, RoutedEventArgs e)
-		//{
-
-		//}
+		
 		private void GlobalState_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(GlobalState.UserProfile))
 			{
-				// Notify the UI that the UserProfile has changed
-				//this.DataContext = null;
-				//this.DataContext = GlobalState.Instance.UserProfile; // This will refresh the XAML bindings
 				Console.WriteLine("GlobalState_PropertyChanged");
 				UserProfile userProfile = GlobalState.Instance.UserProfile;
 				if (userProfile != null)
 				{
-					// Cập nhật giao diện với thông tin người dùng
 					UserProfile_Name.Text = userProfile.Name;
 					UserProfile_Email.Text = userProfile.Email;
 					UserNameTag.Text = userProfile.Name;
 				}
 			}
 		}
+
+		private void NavigateToPage(Type pageType)
+		{
+			if (App.MainWindow is MainWindow mainWindow && mainWindow.MainFrame != null)
+			{
+				if (mainWindow.MainFrame.Content?.GetType() != pageType)
+				{
+					mainWindow.MainFrame.Navigate(pageType);
+				}
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("MainFrame is not initialized or accessible.");
+			}
+		}
 		private void Home_Click(object sender, RoutedEventArgs e)
 		{
-			var frame = Window.Current.Content as Frame;
-			frame?.Navigate(typeof(HomePage));
+			NavigateToPage(typeof(HomePage));
 		}
 		private void AboutUs_Click(object sender, RoutedEventArgs e)
 		{
-			var frame = Window.Current.Content as Frame;
-			frame?.Navigate(typeof(AboutUsPage));
+			NavigateToPage(typeof(AboutUsPage));
 		}
 		private void UserProfileButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -103,7 +92,7 @@ namespace login_full.Components
 			localSettings.Values.Clear();
 
 			GlobalState.Instance.AccessToken = null;
-			GlobalState.Instance.UserProfile = null;  // Clear user profile if you store it in GlobalState
+			GlobalState.Instance.UserProfile = null;  
 
 
 			if (App.IsLoggedInWithGoogle)
@@ -117,7 +106,7 @@ namespace login_full.Components
 				await googleAuthService.SignOutAsync();
 			}
 
-			var window = (Application.Current as App)?.MainWindow;
+			var window = App.MainWindow;
 
 			if (window != null)
 			{

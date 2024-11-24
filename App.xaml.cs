@@ -24,7 +24,7 @@ namespace login_full
 
     public partial class App : Application
     {
-        public Window MainWindow { get; set; }
+        public static Window MainWindow { get; set; }
 		public static bool IsLoggedInWithGoogle { get; set; } = false;
 		public App()
         {
@@ -36,8 +36,11 @@ namespace login_full
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            MainWindow = new MainWindow();
+			var frame = new Frame();
+			MainWindow.Content = frame;
+			frame.Navigate(typeof(LoginPage)); // Navigate to initial page
+			MainWindow.Activate();
         }
 
         private Window m_window;

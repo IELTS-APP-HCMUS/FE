@@ -20,14 +20,10 @@ using login_full.Models;
 using login_full.Context;
 
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+
 
 namespace login_full
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class AboutUsPage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
@@ -36,7 +32,7 @@ namespace login_full
             this.InitializeComponent();
 			LoadUserProfile();
         }
-		// Hàm gọi API để lấy dữ liệu người dùng
+		
 		private void LoadUserProfile()
 		{
 			try
@@ -48,21 +44,11 @@ namespace login_full
 			}
 			catch (Exception ex)
 			{
-				// Xử lý lỗi nếu có ngoại lệ
-				//LoadingText.Text = $"Error: {ex.Message}";
+				
 			}
 		}
-		private void UserHeaderButton_Click(object sender, RoutedEventArgs e)
-        {
-            // VisualStateManager.GoToState(this, "ExpandedHeader", true);
-            //var flyout = (sender as Button)?.Flyout;
-            //if (flyout != null)
-            //{
-            //    flyout.ShowAt(sender as FrameworkElement);
-            //}
-
-        }
-        private  void AboutUs_Click(object sender, RoutedEventArgs e)
+		
+        private void AboutUs_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(AboutUsPage));
         }
@@ -86,15 +72,14 @@ namespace login_full
 					.Build();
 
 				var googleAuthService = new GoogleAuthService(configuration);
-				await googleAuthService.SignOutAsync(); // Gọi SignOutAsync để xóa token Google
+				await googleAuthService.SignOutAsync(); 
 			}
 
-			// Lấy cửa sổ hiện tại
-			var window = (Application.Current as App)?.MainWindow;
+			
+			var window = App.MainWindow;
 
 			if (window != null)
 			{
-				// Tạo và điều hướng tới một phiên bản mới của MainWindow
 				var newMainWindow = new MainWindow();
 				newMainWindow.Activate();
 				window.Close();
