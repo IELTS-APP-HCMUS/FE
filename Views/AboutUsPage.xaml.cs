@@ -43,67 +43,11 @@ namespace login_full
 			try
 			{
 				UserProfile userProfile = GlobalState.Instance.UserProfile;
-				//UserProfile_Name2.Text = userProfile.Name;
-				//UserProfile_Email2.Text = userProfile.Email;
-				//UserName_Tag2.Text = userProfile.Name;
-				//System.Diagnostics.Debug.WriteLine("User Profile Loaded: ", UserProfile_Name2.Text);
-				
 			}
 			catch (Exception ex)
 			{
-				
+				System.Diagnostics.Debug.WriteLine("Error loading user profile: " + ex.Message);
 			}
 		}
-		
-        private void AboutUs_Click(object sender, RoutedEventArgs e)
-        {
-			App.MainFrame.Navigate(typeof(AboutUsPage));
-		}
-
-        private void Home_Click(object sender, RoutedEventArgs e)
-        {
-			App.MainFrame.Navigate(typeof(HomePage));
-        }
-        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
-        {
-			localSettings.Values.Remove("Username");
-			localSettings.Values.Remove("PasswordInBase64");
-			localSettings.Values.Remove("EntropyInBase64");
-
-			
-			if (App.IsLoggedInWithGoogle) 
-			{
-				var configuration = new ConfigurationBuilder()
-					.SetBasePath(AppContext.BaseDirectory)
-					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-					.Build();
-
-				var googleAuthService = new GoogleAuthService(configuration);
-				await googleAuthService.SignOutAsync(); 
-			}
-
-			
-			var window = App.MainWindow;
-
-			if (window != null)
-			{
-				var newFrame = new Frame();
-				App.MainFrame = newFrame;
-				App.MainWindow.Content = newFrame;
-
-				// Navigate to LoginPage
-				App.MainFrame.Navigate(typeof(LoginPage));
-			}
-			
-		}
-
-        private void UserProfileButton_Click(object sender, RoutedEventArgs e)
-        {
-            var flyout = (sender as Button)?.Flyout;
-            if (flyout != null)
-            {
-                flyout.ShowAt(sender as FrameworkElement);
-            }
-        }
     }
 }
