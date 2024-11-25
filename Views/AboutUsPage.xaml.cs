@@ -30,17 +30,24 @@ namespace login_full
         public AboutUsPage()
         {
             this.InitializeComponent();
+			System.Diagnostics.Debug.WriteLine("Loading About Us Page successfully");
+			this.DataContext = this;
+			System.Diagnostics.Debug.WriteLine("Start loading user profile");
 			LoadUserProfile();
-        }
+			System.Diagnostics.Debug.WriteLine("done");
+
+		}
 		
 		private void LoadUserProfile()
 		{
 			try
 			{
 				UserProfile userProfile = GlobalState.Instance.UserProfile;
-				UserProfile_Name2.Text = userProfile.Name;
-				UserProfile_Email2.Text = userProfile.Email;
-				UserName_Tag2.Text = userProfile.Name;
+				//UserProfile_Name2.Text = userProfile.Name;
+				//UserProfile_Email2.Text = userProfile.Email;
+				//UserName_Tag2.Text = userProfile.Name;
+				//System.Diagnostics.Debug.WriteLine("User Profile Loaded: ", UserProfile_Name2.Text);
+				
 			}
 			catch (Exception ex)
 			{
@@ -50,12 +57,12 @@ namespace login_full
 		
         private void AboutUs_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(AboutUsPage));
-        }
+			App.MainFrame.Navigate(typeof(AboutUsPage));
+		}
 
         private void Home_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(HomePage));
+			App.MainFrame.Navigate(typeof(HomePage));
         }
         private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
@@ -80,10 +87,14 @@ namespace login_full
 
 			if (window != null)
 			{
-				var newMainWindow = new MainWindow();
-				newMainWindow.Activate();
-				window.Close();
+				var newFrame = new Frame();
+				App.MainFrame = newFrame;
+				App.MainWindow.Content = newFrame;
+
+				// Navigate to LoginPage
+				App.MainFrame.Navigate(typeof(LoginPage));
 			}
+			
 		}
 
         private void UserProfileButton_Click(object sender, RoutedEventArgs e)

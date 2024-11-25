@@ -18,6 +18,7 @@ using Windows.Foundation.Collections;
 using login_full.Models;
 using System.ComponentModel;
 
+
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -59,16 +60,16 @@ namespace login_full.Components
 
 		private void NavigateToPage(Type pageType)
 		{
-			if (App.MainWindow is MainWindow mainWindow && mainWindow.MainFrame != null)
+			if (App.MainFrame != null)
 			{
-				if (mainWindow.MainFrame.Content?.GetType() != pageType)
-				{
-					mainWindow.MainFrame.Navigate(pageType);
-				}
+				System.Diagnostics.Debug.WriteLine($"Attempting to navigate to {pageType.Name}");
+				bool result = App.MainFrame.Navigate(pageType);
+				System.Diagnostics.Debug.WriteLine($"Navigation result: {result}");
+				System.Diagnostics.Debug.WriteLine($"Current content: {App.MainFrame.Content?.GetType().Name}");
 			}
 			else
 			{
-				System.Diagnostics.Debug.WriteLine("MainFrame is not initialized or accessible.");
+				System.Diagnostics.Debug.WriteLine("MainFrame is not accessible.");
 			}
 		}
 		private void Home_Click(object sender, RoutedEventArgs e)
@@ -110,10 +111,15 @@ namespace login_full.Components
 
 			if (window != null)
 			{
-				var newMainWindow = new MainWindow();
-				newMainWindow.Activate();
-				window.Close();
+				var newFrame = new Frame();
+				App.MainFrame = newFrame;
+				App.MainWindow.Content = newFrame;
+
+				// Navigate to LoginPage
+				App.MainFrame.Navigate(typeof(LoginPage));
 			}
+		
 		}
+
 	}
 }

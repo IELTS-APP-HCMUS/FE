@@ -11,17 +11,12 @@ namespace login_full
 	{
 		private const int MinWindowWidth = 850;
 		private const int MinWindowHeight = 600;
-		public Frame MainFrame { get; private set; }
+
 		public MainWindow()
 		{
 			this.InitializeComponent();
+			// Set the global MainFrame
 			App.MainWindow = this;
-
-			MainFrame = new Frame();
-			this.Content = MainFrame;
-			MainFrame.Navigate(typeof(LoginPage)); 
-
-			
 			this.SizeChanged += MainWindow_SizeChanged;
 		}
 

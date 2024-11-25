@@ -38,7 +38,8 @@
 			<HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
 			<HyperlinkButton Content="Courses" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
 			<HyperlinkButton Content="About Us" FontSize="18" Foreground="Black" Click="AboutUs_Click"/>
-		</StackPanel>
+      
+        </StackPanel>
 
 		<!-- User profile -->
 		<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">

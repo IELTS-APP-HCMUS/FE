@@ -27,6 +27,7 @@ namespace login_full
 		public LoginPage()
 		{
 			this.InitializeComponent();
+			
 			_authService = new UserAuthenticationService();
 			_loginApiService = new LoginApiService();
 
@@ -223,7 +224,7 @@ namespace login_full
 		{
 			LoginGrid.Visibility = Visibility.Collapsed;
 			Frame.Visibility = Visibility.Visible;
-			Frame.Navigate(typeof(HomePage));
+			App.MainFrame.Navigate(typeof(HomePage));
 		}
 
 		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
