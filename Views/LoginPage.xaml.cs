@@ -220,11 +220,11 @@ namespace login_full
 			}
 		}
 
-		private void NavigateToHomePage()
+		private async void NavigateToHomePage()
 		{
 			LoginGrid.Visibility = Visibility.Collapsed;
 			Frame.Visibility = Visibility.Visible;
-			App.MainFrame.Navigate(typeof(HomePage));
+			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
 		}
 
 		private async void RegisterButton_Click(object sender, RoutedEventArgs e)

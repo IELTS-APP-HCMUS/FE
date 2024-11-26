@@ -17,6 +17,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using login_full.Models;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -58,32 +59,44 @@ namespace login_full.Components
 			}
 		}
 
-		private void NavigateToPage(Type pageType)
+		private async Task NavigateToPage(Type pageType)
 		{
-			if (App.MainFrame != null)
+			if (App.NavigationService != null)
 			{
-				System.Diagnostics.Debug.WriteLine($"Attempting to navigate to {pageType.Name}");
-				bool result = App.MainFrame.Navigate(pageType);
-				System.Diagnostics.Debug.WriteLine($"Navigation result: {result}");
-				System.Diagnostics.Debug.WriteLine($"Current content: {App.MainFrame.Content?.GetType().Name}");
+				try
+				{
+					System.Diagnostics.Debug.WriteLine($"Attempting to navigate to {pageType.Name}");
+					await App.NavigationService.NavigateToAsync(pageType);
+					System.Diagnostics.Debug.WriteLine($"Current content: {App.MainFrame.Content?.GetType().Name}");
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine($"Navigation failed: {ex.Message}");
+				}
 			}
 			else
 			{
-				System.Diagnostics.Debug.WriteLine("MainFrame is not accessible.");
+				System.Diagnostics.Debug.WriteLine("NavigationService is not initialized.");
 			}
 		}
-		private void Home_Click(object sender, RoutedEventArgs e)
+		private async void Home_Click(object sender, RoutedEventArgs e)
 		{
-			NavigateToPage(typeof(HomePage));
+			await NavigateToPage(typeof(HomePage));
 		}
-		private void AboutUs_Click(object sender, RoutedEventArgs e)
+
+		private async void AboutUs_Click(object sender, RoutedEventArgs e)
 		{
-			NavigateToPage(typeof(AboutUsPage));
+			await NavigateToPage(typeof(AboutUsPage));
 		}
 		private void UserProfileButton_Click(object sender, RoutedEventArgs e)
 		{
 			var flyout = (sender as Button)?.Flyout;
 			flyout?.ShowAt(sender as FrameworkElement);
+		}
+
+		private async void Reading_Click(object sender, RoutedEventArgs e)
+		{
+			await NavigateToPage(typeof(login_full.Views.reading_Item_UI));
 		}
 		private async void LogoutButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -107,18 +120,9 @@ namespace login_full.Components
 				await googleAuthService.SignOutAsync();
 			}
 
-			var window = App.MainWindow;
+			//Return to LoginPage
+			await NavigateToPage(typeof(LoginPage));
 
-			if (window != null)
-			{
-				var newFrame = new Frame();
-				App.MainFrame = newFrame;
-				App.MainWindow.Content = newFrame;
-
-				// Navigate to LoginPage
-				App.MainFrame.Navigate(typeof(LoginPage));
-			}
-		
 		}
 
 	}

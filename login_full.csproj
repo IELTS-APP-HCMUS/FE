@@ -53,6 +53,9 @@
     <None Remove="Components\Home\TargetUpdatePopUp.xaml" />
     <None Remove="HomePage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
+    <None Remove="Views\ReadingTestPage.xaml" />
+    <None Remove="Views\reading_Item_UI.xaml" />
+    <None Remove="Views\TestResultPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,6 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
@@ -157,6 +161,15 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\TestResultPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ReadingTestPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\reading_Item_UI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -202,9 +215,6 @@
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <!--

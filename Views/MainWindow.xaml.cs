@@ -17,6 +17,7 @@ namespace login_full
 			this.InitializeComponent();
 			// Set the global MainFrame
 			App.MainWindow = this;
+
 			this.SizeChanged += MainWindow_SizeChanged;
 		}
 

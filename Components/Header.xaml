@@ -34,8 +34,8 @@
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center" Margin="10,0,0,0">
 			<HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,0,0" Click="Home_Click"/>
-			<HyperlinkButton Content="Reading &amp; Listening" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
-			<HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
+            <HyperlinkButton Content="Reading" FontSize="18" Foreground="Black" Margin="0,0,0,0" Click ="Reading_Click"/>
+            <HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
 			<HyperlinkButton Content="Courses" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
 			<HyperlinkButton Content="About Us" FontSize="18" Foreground="Black" Click="AboutUs_Click"/>
       
