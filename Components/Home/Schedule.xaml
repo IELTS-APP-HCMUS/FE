@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="login_full.Components.Home.Schedule"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full.Components.Home"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+	<StackPanel>
+		<TextBlock Text="Kế hoạch trong ngày của bạn" FontWeight="SemiBold" Margin="0,0,0,10"/>
+		<ListView x:Name="ScheduleListView" SelectionMode="Single">
+			<ListView.ItemTemplate>
+				<DataTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<TextBlock Text="{Binding Time}" Margin="0,0,10,0"/>
+						<TextBlock Text="{Binding Activity}" Grid.Column="1" Foreground="#FF7575"/>
+					</Grid>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+		<Button Content="Add New Event" Click="AddNewEvent_Click" Margin="0,10,0,0"/>
+	</StackPanel>
+</UserControl>

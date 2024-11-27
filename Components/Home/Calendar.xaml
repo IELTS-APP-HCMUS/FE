@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="login_full.Components.Home.Calendar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full.Components.Home"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+	<StackPanel>
+		<Grid Margin="0,0,0,10">
+			<Button Content="&#xE76B;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Left" Background="Transparent" Click="PreviousMonth_Click"/>
+			<TextBlock x:Name="MonthYearDisplay" Text="September 2021" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			<Button Content="&#xE76C;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Right" Background="Transparent" Click="NextMonth_Click"/>
+		</Grid>
+		<Grid x:Name="CalendarGrid">
+			<!-- Days of the week -->
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Days of the week headers -->
+			<TextBlock Text="Sun" Grid.Column="0" HorizontalAlignment="Center"/>
+			<TextBlock Text="Mon" Grid.Column="1" HorizontalAlignment="Center"/>
+			<TextBlock Text="Tue" Grid.Column="2" HorizontalAlignment="Center"/>
+			<TextBlock Text="Wed" Grid.Column="3" HorizontalAlignment="Center"/>
+			<TextBlock Text="Thu" Grid.Column="4" HorizontalAlignment="Center"/>
+			<TextBlock Text="Fri" Grid.Column="5" HorizontalAlignment="Center"/>
+			<TextBlock Text="Sat" Grid.Column="6" HorizontalAlignment="Center"/>
+
+			<!-- Calendar days will be added here programmatically -->
+		</Grid>
+	</StackPanel>
+</UserControl>
