@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="login_full.Components.Footer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full.Components"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+	<Grid x:Name="FooterGrid" Background="#0E5470" Padding="20,40,20,20" Margin="0,50,0,0">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="FooterLayoutStates">
+				<!-- Wide Layout State (horizontal layout) -->
+				<VisualState x:Name="WideFooterLayout">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0"/>
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="FooterGrid.ColumnDefinitions[0].Width" Value="Auto"/>
+						<Setter Target="FooterGrid.ColumnDefinitions[1].Width" Value="*"/>
+						<Setter Target="FooterGrid.RowDefinitions[0].Height" Value="Auto"/>
+						<Setter Target="FooterGrid.RowDefinitions[1].Height" Value="*"/>
+						<Setter Target="LogoAndSloganPanel.Orientation" Value="Vertical"/>
+						<Setter Target="ContactInfoPanel.Orientation" Value="Vertical"/>
+						<Setter Target="LogoAndSloganPanel.HorizontalAlignment" Value="Left"/>
+						<Setter Target="ContactInfoPanel.HorizontalAlignment" Value="Right"/>
+						<Setter Target="LogoAndSloganPanel.Grid.Row" Value="0"/>
+						<Setter Target="ContactInfoPanel.Grid.Row" Value="0"/>
+						<Setter Target="LogoAndSloganPanel.Grid.Column" Value="0"/>
+						<Setter Target="ContactInfoPanel.Grid.Column" Value="1"/>
+					</VisualState.Setters>
+				</VisualState>
+
+				<!-- Narrow Layout State (vertical layout) -->
+				<VisualState x:Name="NarrowFooterLayout">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0"/>
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<!-- Stack sections vertically -->
+						<Setter Target="FooterGrid.ColumnDefinitions[0].Width" Value="*"/>
+						<Setter Target="FooterGrid.ColumnDefinitions[1].Width" Value="0"/>
+						<Setter Target="FooterGrid.RowDefinitions[0].Height" Value="Auto"/>
+						<Setter Target="FooterGrid.RowDefinitions[1].Height" Value="Auto"/>
+						<Setter Target="FooterGrid.RowDefinitions[2].Height" Value="*"/>
+						<Setter Target="LogoAndSloganPanel.Orientation" Value="Vertical"/>
+						<Setter Target="ContactInfoPanel.Orientation" Value="Vertical"/>
+						<Setter Target="LogoAndSloganPanel.HorizontalAlignment" Value="Center"/>
+						<Setter Target="ContactInfoPanel.HorizontalAlignment" Value="Center"/>
+						<Setter Target="LogoAndSloganPanel.Grid.Row" Value="0"/>
+						<Setter Target="ContactInfoPanel.Grid.Row" Value="1"/>
+						<Setter Target="LogoAndSloganPanel.Grid.Column" Value="0"/>
+						<Setter Target="ContactInfoPanel.Grid.Column" Value="0"/>
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+
+		<!-- Define the layout grid structure -->
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="1*"/>
+			<ColumnDefinition Width="1*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<!-- Logo and Slogan Section -->
+		<StackPanel x:Name="LogoAndSloganPanel" Orientation="Vertical" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center">
+			<Border Width="140" Height="139" BorderBrush="#49BBBD" BorderThickness="2" CornerRadius="6">
+				<TextBlock Text="MEPASS" FontSize="32" FontWeight="Bold" Foreground="White" 
+       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+			</Border>
+			<TextBlock Text="English for everyone" FontSize="22" FontWeight="SemiBold" Foreground="White" 
+   VerticalAlignment="Center" Margin="20,0,0,0"/>
+		</StackPanel>
+
+		<!-- Contact Information Section -->
+		<StackPanel x:Name="ContactInfoPanel" Orientation="Vertical" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
+			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+				<FontIcon Glyph="&#xE8E1;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="29" Margin="0,0,10,0"/>
+				<TextBlock Text="FOLLOW US" FontSize="22" FontWeight="Bold" Foreground="White"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+				<Image Source="/Assets/instagram_icon.png" Width="40" Height="40" Margin="10,0"/>
+				<Image Source="/Assets/facebook_icon.png" Width="40" Height="40" Margin="10,0"/>
+				<Image Source="/Assets/video_youtube_icon.png" Width="40" Height="40" Margin="10,0"/>
+				<Image Source="/Assets/tiktok_icon.png" Width="40" Height="40" Margin="10,0"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+				<FontIcon Glyph="&#xE707;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="24" Margin="0,0,10,0"/>
+				<TextBlock Text="ABC-ABF" FontSize="22" Foreground="White"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+				<FontIcon Glyph="&#xE717;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="24" Margin="0,0,10,0"/>
+				<TextBlock Text="099-9199-456" FontSize="22" FontWeight="Bold" Foreground="White"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+				<FontIcon Glyph="&#xE715;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="24" Margin="0,0,10,0"/>
+				<TextBlock Text="mepass@gmail.com" FontSize="22" FontWeight="Bold" Foreground="White"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Bottom Links and Copyright -->
+		<StackPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,20,0,0">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+				<TextBlock Text="Careers" Foreground="#B2B3CF" FontSize="22" Margin="0,0,20,0"/>
+				<TextBlock Text="Privacy Policy" Foreground="#B2B3CF" FontSize="22" Margin="0,0,20,0"/>
+				<TextBlock Text="Terms &amp; Conditions" Foreground="#B2B3CF" FontSize="22"/>
+			</StackPanel>
+			<TextBlock Text="© 2024 MePass, Inc." Foreground="#B2B3CF" FontSize="22" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+		</StackPanel>
+	</Grid>
+</UserControl>

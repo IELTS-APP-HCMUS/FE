@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="login_full.Components.Home.Banner"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full.Components.Home"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+	<Grid Margin="50,50,50,0">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+
+		<!-- Left column -->
+		<StackPanel Grid.Column="0">
+
+			<TextBlock Text="Learn the best" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
+			<TextBlock Text="ways for staying" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
+			<TextBlock Text="productive" FontSize="48" FontWeight="Bold" TextWrapping="Wrap">
+				<TextBlock.Foreground>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+						<GradientStop Color="#333333" Offset="0.0"/>
+						<GradientStop Color="#FFBE21" Offset="1.0"/>
+					</LinearGradientBrush>
+				</TextBlock.Foreground>
+			</TextBlock>
+			<TextBlock Text="Working at home is definitely a convenient option and makes sense in these unprecedented times." 
+       FontSize="18" Foreground="#585858" TextWrapping="Wrap" Margin="0,20,0,30"/>
+			<StackPanel Orientation="Horizontal">
+				<Button Content="Get Tips" Width="160" Height="62" Background="#4856DF" Foreground="White" 
+        FontWeight="Bold" FontSize="18" CornerRadius="12"/>
+				<Button Content="Learn More" Margin="20,0,0,0" Width="180" Height="70" Background="Transparent" 
+        Foreground="#333333" FontSize="18" BorderThickness="0">
+					<Button.ContentTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<Ellipse Width="52" Height="52" Stroke="#FFBE21" StrokeThickness="5">
+									<Ellipse.Fill>
+										<SolidColorBrush Color="White"/>
+									</Ellipse.Fill>
+								</Ellipse>
+								<TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+							</StackPanel>
+						</DataTemplate>
+					</Button.ContentTemplate>
+				</Button>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Right column -->
+		<Image Grid.Column="1" Source="/Assets/graduation_icon1.png" Stretch="Uniform" Height="512"/>
+	</Grid>
+</UserControl>
