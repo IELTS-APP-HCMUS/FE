@@ -27,14 +27,34 @@ namespace login_full
 		public LoginPage()
 		{
 			this.InitializeComponent();
-			
+			this.Loaded += OnLoaded;
+
 			_authService = new UserAuthenticationService();
 			_loginApiService = new LoginApiService();
 
 			// Check for saved credentials on page load
-			CheckSavedCredentials();
+			//CheckSavedCredentials();
+		}
+		private async void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			await InitializeAsync();
 		}
 
+		private async Task InitializeAsync()
+		{
+			try
+			{
+				// Check saved credentials
+				if (_authService.HasSavedCredentials())
+				{
+					await NavigateToHomePage();
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Initialization error: {ex.Message}");
+			}
+		}
 		private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -165,14 +185,6 @@ namespace login_full
 			RegisterPanel.Visibility = Visibility.Visible;
 		}
 
-		private async void CheckSavedCredentials()
-		{
-			if (_authService.HasSavedCredentials())
-			{
-				NavigateToHomePage();
-			}
-		}
-
 		private async void Login1Button_Click(object sender, RoutedEventArgs e)
 		{
 			string username = UsernameTextBox.Text;
@@ -220,7 +232,7 @@ namespace login_full
 			}
 		}
 
-		private async void NavigateToHomePage()
+		private async Task NavigateToHomePage()
 		{
 			LoginGrid.Visibility = Visibility.Collapsed;
 			Frame.Visibility = Visibility.Visible;
