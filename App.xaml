@@ -3,7 +3,8 @@
     x:Class="login_full.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:login_full">
+    xmlns:local="using:login_full" 
+    xmlns:converters="using:login_full.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,10 +12,29 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- Converters -->
+            <converters:BoolToGreenConverter x:Key="BoolToGreenConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:BoolToExplanationTextConverter x:Key="BoolToExplanationTextConverter"/>
 
             <!-- Other app resources here -->
+            <Style x:Key="AccentButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#0078D4"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="12,6"/>
+                <Setter Property="CornerRadius" Value="4"/>
+            </Style>
+
+            <Style x:Key="ExplanationButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#E8E8E8"/>
+                <Setter Property="Foreground" Value="#444444"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="12,6"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+
         </ResourceDictionary>
-
-
     </Application.Resources>
 </Application>

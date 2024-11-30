@@ -30,7 +30,9 @@ namespace login_full.Services
                                 Type = QuestionType.YesNoNotGiven,
                                 QuestionText = "Wegener's ideas about continental drift were widely disputed while he was alive.",
                                 Options = new List<string> { "YES", "NO", "NOT GIVEN" },
-                                CorrectAnswer = "YES"
+                                CorrectAnswer = "YES",
+                                Explanation = "Đáp án đúng là YES vì Wegener's ideas about continental drift were widely disputed while he was alive. Trong đoạn văn có đề cập: \"Wegener's ideas about continental drift were widely disputed while he was alive.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -38,7 +40,9 @@ namespace login_full.Services
                                 Type = QuestionType.YesNoNotGiven,
                                 QuestionText = "Wegener was a geologist by profession.",
                                 Options = new List<string> { "YES", "NO", "NOT GIVEN" },
-                                CorrectAnswer = "NOT GIVEN"
+                                CorrectAnswer = "NOT GIVEN",
+                                Explanation = "Đáp án đúng là NOT GIVEN vì Wegener was not a geologist by profession. Trong đoạn văn không có đề cập: \"Wegener was a geologist by profession.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -65,7 +69,9 @@ namespace login_full.Services
                                 Type = QuestionType.MultipleChoice,
                                 QuestionText = "Which countries were connected by the Silk Road?",
                                 Options = new List<string> { "China and India", "China and Europe", "India and Africa", "Europe and Africa" },
-                                CorrectAnswer = "China and Europe"
+                                CorrectAnswer = "China and Europe",
+                                Explanation = "Đáp án đúng là China and Europe vì The Silk Road connected the East and the West, facilitating not only trade but also cultural exchanges. Trong đoạn văn có đề cập: \"The Silk Road, an ancient trade route, connected the East and the West, facilitating not only trade but also cultural exchanges...\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -73,7 +79,9 @@ namespace login_full.Services
                                 Type = QuestionType.MultipleChoice,
                                 QuestionText = "What was the primary trade item on the Silk Road?",
                                 Options = new List<string> { "Spices", "Gold", "Silk", "Tea" },
-                                CorrectAnswer = "Silk"
+                                CorrectAnswer = "Silk",
+                                Explanation = "Đáp án đúng là Silk vì The Silk Road was primarily used for trading goods. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -81,7 +89,9 @@ namespace login_full.Services
                                 Type = QuestionType.TrueFalseNotGiven,
                                 QuestionText = "The Silk Road was only used for trading goods.",
                                 Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
-                                CorrectAnswer = "FALSE"
+                                CorrectAnswer = "FALSE",
+                                Explanation = "Đáp án đúng là FALSE vì The Silk Road was not only used for trading goods. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -89,7 +99,9 @@ namespace login_full.Services
                                 Type = QuestionType.TrueFalseNotGiven,
                                 QuestionText = "The Silk Road was a single, continuous route.",
                                 Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
-                                CorrectAnswer = "FALSE"
+                                CorrectAnswer = "FALSE",
+                                Explanation = "Đáp án đúng là FALSE vì The Silk Road was not a single, continuous route. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -116,7 +128,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Green spaces help to improve ____ by reducing air pollution.",
                                 Options = new List<string> { "air quality", "water quality", "noise levels", "traffic flow" },
-                                CorrectAnswer = "air quality"
+                                CorrectAnswer = "air quality",
+                                Explanation = "Đáp án đúng là air quality vì Green spaces help to improve air quality by reducing air pollution. Trong đoạn văn có đề cập: \"Green spaces help to improve air quality by reducing air pollution.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -124,7 +138,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Urban parks often provide opportunities for ____ activities.",
                                 Options = new List<string> { "cultural", "commercial", "educational", "physical" },
-                                CorrectAnswer = "physical"
+                                CorrectAnswer = "physical",
+                                Explanation = "Đáp án đúng là physical vì Urban parks often provide opportunities for physical activities. Trong đoạn văn có đề cập: \"Urban parks often provide opportunities for physical activities.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -132,7 +148,9 @@ namespace login_full.Services
                                 Type = QuestionType.TrueFalseNotGiven,
                                 QuestionText = "Green spaces increase property values in nearby areas.",
                                 Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
-                                CorrectAnswer = "TRUE"
+                                CorrectAnswer = "TRUE",
+                                Explanation = "Đáp án đúng là TRUE vì Green spaces increase property values in nearby areas. Trong đoạn văn có đề cập: \"Green spaces increase property values in nearby areas.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -140,7 +158,9 @@ namespace login_full.Services
                                 Type = QuestionType.YesNoNotGiven,
                                 QuestionText = "All urban green spaces are publicly owned.",
                                 Options = new List<string> { "YES", "NO", "NOT GIVEN" },
-                                CorrectAnswer = "NO"
+                                CorrectAnswer = "NO",
+                                Explanation = "Đáp án đúng là NO vì Not all urban green spaces are publicly owned. Trong đoạn văn có đề cập: \"Not all urban green spaces are publicly owned.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -167,7 +187,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "AI started with ____ systems in the 1950s.",
                                 Options = new List<string> { "computing", "thinking", "learning", "programming" },
-                                CorrectAnswer = "computing"
+                                CorrectAnswer = "computing",
+                                Explanation = "Đáp án đúng là computing vì AI started with computing systems in the 1950s. Trong đoạn văn có đề cập: \"AI started with computing systems in the 1950s.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -175,7 +197,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Modern AI uses ____ networks for complex tasks.",
                                 Options = new List<string> { "digital", "neural", "computer", "social" },
-                                CorrectAnswer = "neural"
+                                CorrectAnswer = "neural",
+                                Explanation = "Đáp án đúng là neural vì Modern AI uses neural networks for complex tasks. Trong đoạn văn có đề cập: \"Modern AI uses neural networks for complex tasks.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -203,7 +227,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -211,7 +237,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -219,7 +247,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -246,7 +276,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -254,7 +286,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -262,7 +296,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -289,7 +325,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -297,7 +335,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -305,7 +345,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -332,7 +374,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -340,7 +384,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -348,7 +394,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -375,7 +423,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -383,7 +433,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -391,7 +443,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -419,7 +473,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -427,7 +483,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -435,7 +493,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -462,7 +522,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -470,7 +532,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -478,7 +542,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -505,7 +571,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -513,7 +581,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -521,7 +591,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -548,7 +620,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -556,7 +630,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -564,7 +640,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -591,7 +669,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -599,7 +679,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -607,7 +689,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress
@@ -634,7 +718,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Solar ____ converts sunlight to electricity.",
                                 Options = new List<string> { "panels", "cells", "batteries", "systems" },
-                                CorrectAnswer = "panels"
+                                CorrectAnswer = "panels",
+                                Explanation = "Đáp án đúng là panels vì Solar panels convert sunlight to electricity. Trong đoạn văn có đề cập: \"Solar panels convert sunlight to electricity.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -642,7 +728,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "Wind ____ generate power from moving air.",
                                 Options = new List<string> { "mills", "turbines", "engines", "generators" },
-                                CorrectAnswer = "turbines"
+                                CorrectAnswer = "turbines",
+                                Explanation = "Đáp án đúng là turbines vì Wind turbines generate power from moving air. Trong đoạn văn có đề cập: \"Wind turbines generate power from moving air.\"",
+                                IsExplanationVisible = false
                             },
                             new Question
                             {
@@ -650,7 +738,9 @@ namespace login_full.Services
                                 Type = QuestionType.GapFilling,
                                 QuestionText = "These technologies are becoming more ____.",
                                 Options = new List<string> { "expensive", "complex", "efficient", "popular" },
-                                CorrectAnswer = "efficient"
+                                CorrectAnswer = "efficient",
+                                Explanation = "Đáp án đúng là efficient vì These technologies are becoming more efficient. Trong đoạn văn có đề cập: \"These technologies are becoming more efficient.\"",
+                                IsExplanationVisible = false
                             }
                         },
                         Progress = new TestProgress

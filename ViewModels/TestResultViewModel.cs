@@ -36,6 +36,7 @@ namespace login_full.ViewModels
         public IRelayCommand BackCommand { get; }
         public IRelayCommand RetryCommand { get; }
         public IRelayCommand HomeCommand { get; }
+        public IRelayCommand ViewDetailCommand { get; }
 
 
         public string TestDuration { get; }
@@ -104,6 +105,10 @@ namespace login_full.ViewModels
             BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
+            ViewDetailCommand = new RelayCommand(() => 
+            {
+                _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testDetail);
+            });
 
 
             TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";

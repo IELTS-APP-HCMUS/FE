@@ -55,6 +55,7 @@
     <None Remove="Views\LoginPage.xaml" />
     <None Remove="Views\ReadingTestPage.xaml" />
     <None Remove="Views\reading_Item_UI.xaml" />
+    <None Remove="Views\TestDetailResultPage.xaml" />
     <None Remove="Views\TestResultPage.xaml" />
   </ItemGroup>
 
@@ -161,6 +162,9 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\TestDetailResultPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\TestResultPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

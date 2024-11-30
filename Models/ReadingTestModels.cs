@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace login_full.Models
 {
@@ -16,8 +19,10 @@ namespace login_full.Models
         public TestProgress Progress { get; set; }
     }
 
-    public class Question
+    public class Question : ObservableObject
     {
+        private bool _isExplanationVisible;
+        
         public string Id { get; set; }
         public QuestionType Type { get; set; }
         public string QuestionText { get; set; }
@@ -25,6 +30,37 @@ namespace login_full.Models
         public string CorrectAnswer { get; set; }
         public string UserAnswer { get; set; }
         public bool IsAnswered => !string.IsNullOrEmpty(UserAnswer);
+        public ObservableCollection<QuestionOptionModel> OptionModels { get; set; }
+        public string Explanation { get; set; }
+
+        public bool IsExplanationVisible
+        {
+            get => _isExplanationVisible;
+            set => SetProperty(ref _isExplanationVisible, value);
+        }
+
+        public void InitializeOptionModels()
+        {
+            OptionModels = new ObservableCollection<QuestionOptionModel>();
+            
+            foreach (var option in Options)
+            {
+                var optionModel = new QuestionOptionModel
+                {
+                    Text = option,
+                    IsSelected = option == UserAnswer,
+                    IsCorrect = option == CorrectAnswer,
+                    IsWrong = option == UserAnswer && option != CorrectAnswer
+                };
+                
+                OptionModels.Add(optionModel);
+            }
+        }
+
+        public void ToggleExplanation()
+        {
+            IsExplanationVisible = !IsExplanationVisible;
+        }
     }
 
     public enum QuestionType
