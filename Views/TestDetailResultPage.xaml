@@ -88,8 +88,9 @@
                                          Style="{ThemeResource BodyTextBlockStyle}"
                                          Margin="0,0,0,10"/>
 
-                                <!-- Options -->
-                                <ItemsControl ItemsSource="{Binding OptionModels}">
+                                <!-- Multiple Choice Questions -->
+                                <ItemsControl ItemsSource="{Binding OptionModels}"
+                                              Visibility="{Binding Type, Converter={StaticResource QuestionTypeToVisibilityConverter}, ConverterParameter='GapFilling,Inverse'}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid Margin="0,5">
@@ -119,6 +120,34 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
+                                <!-- Gap Filling Questions -->
+                                <Grid Visibility="{Binding Type, Converter={StaticResource QuestionTypeToVisibilityConverter}, ConverterParameter=GapFilling}"
+                                      Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- User Input -->
+                                    <TextBox Text="{Binding UserInput, Mode=TwoWay}"
+                                            PlaceholderText="Nhập đáp án của bạn"
+                                            IsEnabled="False"
+                                            BorderBrush="{Binding IsCorrectAnswer, Converter={StaticResource BoolToColorConverter}}"
+                                            Margin="0,0,10,0"/>
+
+                                    <!-- Correct/Wrong Indicators -->
+                                    <StackPanel Grid.Column="1" 
+                                               Orientation="Horizontal"
+                                               Margin="10,0,0,0">
+                                        <FontIcon Glyph="&#xE73E;"
+                                                Foreground="Green"
+                                                Visibility="{Binding IsCorrectAnswer, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <FontIcon Glyph="&#xE711;"
+                                                Foreground="Red"
+                                                Visibility="{Binding IsCorrectAnswer, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                                    </StackPanel>
+                                </Grid>
+
                                 <!-- Explanation section -->
                                 <Button Content="{Binding IsExplanationVisible, Converter={StaticResource BoolToExplanationTextConverter}}"
                                         Command="{Binding ElementName=TestDetailPage, Path=ViewModel.ToggleExplanationCommand}"
@@ -138,6 +167,12 @@
                                         <TextBlock Text="{Binding Explanation}"
                                                   TextWrapping="Wrap"
                                                   Style="{ThemeResource BodyTextBlockStyle}"/>
+                                        <TextBlock Margin="0,5,0,0"
+                                                 Visibility="{Binding Type, Converter={StaticResource QuestionTypeToVisibilityConverter}, ConverterParameter=GapFilling}"
+                                                 Foreground="Green">
+                                            <Run Text="Đáp án đúng: "/>
+                                           <Run Text="{Binding CorrectAnswer}"/>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

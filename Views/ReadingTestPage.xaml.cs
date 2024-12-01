@@ -20,12 +20,15 @@ namespace login_full.Views
 		public ReadingTestPage()
 		{
 			this.InitializeComponent();
+            var readingTestService = ServiceLocator.GetService<IReadingTestService>();
+            var navigationService = App.NavigationService;
 
-			// Sử dụng NavigationService từ App
-			ViewModel = new ReadingTestViewModel(
-				new MockReadingTestService(),
-				App.NavigationService
-			);
+
+            // Sử dụng NavigationService từ App
+            ViewModel = new ReadingTestViewModel(
+                readingTestService,
+                navigationService
+            );
 			//  Loaded += ReadingTestPage_Loaded;
 		}
 

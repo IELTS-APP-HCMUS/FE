@@ -10,9 +10,13 @@ namespace login_full.Services
     public class MockReadingTestService : IReadingTestService
     {
         private readonly Dictionary<string, ReadingTestDetail> _mockTests;
+        private readonly List<TestHistory> _testHistory;
+        private readonly LocalStorageService _localStorageService;
 
-        public MockReadingTestService()
+        public MockReadingTestService(LocalStorageService localStorageService)
         {
+            _localStorageService = localStorageService;
+            _testHistory = _localStorageService.GetTestHistory();
             _mockTests = new Dictionary<string, ReadingTestDetail>
             {
                 {
@@ -20,7 +24,7 @@ namespace login_full.Services
                     {
                         Id = "test1",
                         Title = "Alfred Wegener: science, exploration and the theory of continental drift",
-                        Content = @"This is a book about the life and scientific work of Alfred Wegener, whose reputation today rests with his theory of continental displacement, better known as continental drift...",
+                        Content = @"This is a book about the life and scientific work of Alfred Wegener, whose reputation today rests with his theory of continental displacement, better known as continental drift. The theory maintains that continents were joined together at one time, before breaking apart and drifting to their present positions. This was a highly controversial theory when Wegener proposed it in 1912. It was almost universally rejected by the scientific community during his lifetime...",
                         TimeLimit = 10,
                         Questions = new List<Question>
                         {
@@ -31,23 +35,32 @@ namespace login_full.Services
                                 QuestionText = "Wegener's ideas about continental drift were widely disputed while he was alive.",
                                 Options = new List<string> { "YES", "NO", "NOT GIVEN" },
                                 CorrectAnswer = "YES",
-                                Explanation = "Đáp án đúng là YES vì Wegener's ideas about continental drift were widely disputed while he was alive. Trong đoạn văn có đề cập: \"Wegener's ideas about continental drift were widely disputed while he was alive.\"",
+                                Explanation = "Đáp án đúng là YES vì trong đoạn văn có đề cập: \"It was almost universally rejected by the scientific community during his lifetime\"",
                                 IsExplanationVisible = false
                             },
                             new Question
                             {
                                 Id = "q2",
-                                Type = QuestionType.YesNoNotGiven,
-                                QuestionText = "Wegener was a geologist by profession.",
-                                Options = new List<string> { "YES", "NO", "NOT GIVEN" },
-                                CorrectAnswer = "NOT GIVEN",
-                                Explanation = "Đáp án đúng là NOT GIVEN vì Wegener was not a geologist by profession. Trong đoạn văn không có đề cập: \"Wegener was a geologist by profession.\"",
+                                Type = QuestionType.GapFilling,
+                                QuestionText = "The theory suggests that continents were once ____ before separating.",
+                                CorrectAnswer = "joined",
+                                Explanation = "Đáp án đúng là 'joined' vì trong đoạn văn có đề cập: \"The theory maintains that continents were joined together at one time\"",
                                 IsExplanationVisible = false
-                            }
+                            },
+                            new Question
+                            {
+                                Id = "q3",
+                                Type = QuestionType.MultipleChoice,
+                                QuestionText = "When did Wegener first propose his theory?",
+                                Options = new List<string> { "1910", "1911", "1912", "1913" },
+                                CorrectAnswer = "1912",
+                                Explanation = "Đáp án đúng là 1912 vì trong đoạn văn có đề cập: \"when Wegener proposed it in 1912\"",
+                                IsExplanationVisible = false
+                            },
                         },
                         Progress = new TestProgress
                         {
-                            TotalQuestions = 2,
+                            TotalQuestions = 3,
                             AnsweredQuestions = 0,
                             RemainingTime = 10*60,
                             IsCompleted = true
@@ -59,7 +72,7 @@ namespace login_full.Services
                     {
                         Id = "test2",
                         Title = "The History of the Silk Road",
-                        Content = @"The Silk Road, an ancient trade route, connected the East and the West, facilitating not only trade but also cultural exchanges...",
+                        Content = @"The Silk Road was an ancient network of trade routes that connected the East and West, and was central to cultural interaction between them for centuries. The Silk Road primarily refers to the terrestrial routes connecting East Asia and Southeast Asia with East Africa, West Asia and Southern Europe. The Silk Road derives its name from the lucrative trade in silk carried out along its length, beginning in the Han dynasty of China (207 BCE–220 CE)...",
                         TimeLimit = 50,
                         Questions = new List<Question>
                         {
@@ -67,40 +80,44 @@ namespace login_full.Services
                             {
                                 Id = "q1",
                                 Type = QuestionType.MultipleChoice,
-                                QuestionText = "Which countries were connected by the Silk Road?",
-                                Options = new List<string> { "China and India", "China and Europe", "India and Africa", "Europe and Africa" },
-                                CorrectAnswer = "China and Europe",
-                                Explanation = "Đáp án đúng là China and Europe vì The Silk Road connected the East and the West, facilitating not only trade but also cultural exchanges. Trong đoạn văn có đề cập: \"The Silk Road, an ancient trade route, connected the East and the West, facilitating not only trade but also cultural exchanges...\"",
+                                QuestionText = "What was the main purpose of the Silk Road?",
+                                Options = new List<string> {
+                                    "Cultural exchange only",
+                                    "Trade routes connecting East and West",
+                                    "Silk transportation only",
+                                    "Military routes"
+                                },
+                                CorrectAnswer = "Trade routes connecting East and West",
+                                Explanation = "Đáp án đúng là \"Trade routes connecting East and West\" vì đoạn văn mở đầu nêu rõ đây là \"ancient network of trade routes that connected the East and West\"",
                                 IsExplanationVisible = false
                             },
                             new Question
                             {
                                 Id = "q2",
-                                Type = QuestionType.MultipleChoice,
-                                QuestionText = "What was the primary trade item on the Silk Road?",
-                                Options = new List<string> { "Spices", "Gold", "Silk", "Tea" },
-                                CorrectAnswer = "Silk",
-                                Explanation = "Đáp án đúng là Silk vì The Silk Road was primarily used for trading goods. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                Type = QuestionType.TrueFalseNotGiven,
+                                QuestionText = "The Silk Road was exclusively used for trading silk.",
+                                Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
+                                CorrectAnswer = "FALSE",
+                                Explanation = "Đáp án là FALSE vì tuy con đường tơ lụa được đặt tên theo việc buôn bán tơ lụa nhưng không phải chỉ dùng để buôn bán tơ lụa, mà còn là nơi giao lưu văn hóa",
                                 IsExplanationVisible = false
                             },
                             new Question
                             {
                                 Id = "q3",
-                                Type = QuestionType.TrueFalseNotGiven,
-                                QuestionText = "The Silk Road was only used for trading goods.",
-                                Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
-                                CorrectAnswer = "FALSE",
-                                Explanation = "Đáp án đúng là FALSE vì The Silk Road was not only used for trading goods. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                Type = QuestionType.GapFilling,
+                                QuestionText = "The Silk Road got its name from the ____ trade in silk during the Han dynasty.",
+                                CorrectAnswer = "lucrative",
+                                Explanation = "Đáp án là 'lucrative' vì trong đoạn văn có đề cập: \"derives its name from the lucrative trade in silk\"",
                                 IsExplanationVisible = false
                             },
                             new Question
                             {
                                 Id = "q4",
-                                Type = QuestionType.TrueFalseNotGiven,
-                                QuestionText = "The Silk Road was a single, continuous route.",
-                                Options = new List<string> { "TRUE", "FALSE", "NOT GIVEN" },
-                                CorrectAnswer = "FALSE",
-                                Explanation = "Đáp án đúng là FALSE vì The Silk Road was not a single, continuous route. Trong đoạn văn có đề cập: \"The Silk Road was primarily used for trading goods.\"",
+                                Type = QuestionType.YesNoNotGiven,
+                                QuestionText = "The Silk Road began operation during the Han dynasty.",
+                                Options = new List<string> { "YES", "NO", "NOT GIVEN" },
+                                CorrectAnswer = "YES",
+                                Explanation = "Đáp án là YES vì trong đoạn văn có đề cập việc buôn bán tơ lụa bắt đầu \"beginning in the Han dynasty\"",
                                 IsExplanationVisible = false
                             }
                         },
@@ -108,7 +125,7 @@ namespace login_full.Services
                         {
                             TotalQuestions = 4,
                             AnsweredQuestions = 0,
-                            RemainingTime = 50 * 6  ,
+                            RemainingTime = 50 * 60,
                             IsCompleted = false
                         }
                     }
@@ -211,7 +228,7 @@ namespace login_full.Services
                         }
                     }
                 },
-                
+
                 {
                     "test6", new ReadingTestDetail
                     {
@@ -457,7 +474,7 @@ namespace login_full.Services
                         }
                     }
                 },
-                             
+
                                 {
                     "test11", new ReadingTestDetail
                     {
@@ -794,20 +811,63 @@ namespace login_full.Services
         // đã update vs testID bên cs
         public async Task<bool> SubmitTestAsync(string testId)
         {
-            if (_mockTests.ContainsKey(testId))
+            try
             {
-                var test = _mockTests[testId];
-                test.Progress.IsCompleted = true;
-                test.Progress.AnsweredQuestions = test.Questions.Count(q =>
-                    q.UserAnswer == q.CorrectAnswer);
+                if (_mockTests.ContainsKey(testId))
+                {
+                    var test = _mockTests[testId];
+                    test.Progress.IsCompleted = true;
 
-                // Thông báo cho UI cập nhật trạng thái
-                await UpdateTestCompletionStatus(testId, true);
-                return true;
+                    // Tính toán kết quả
+                    var correctAnswers = test.Questions.Count(q => q.UserAnswer == q.CorrectAnswer);
+                    var wrongAnswers = test.Questions.Count(q => !string.IsNullOrEmpty(q.UserAnswer) && q.UserAnswer != q.CorrectAnswer);
+                    var skippedAnswers = test.Questions.Count(q => string.IsNullOrEmpty(q.UserAnswer));
+
+                    // Tạo đối tượng lịch sử mới
+                    var testHistory = new TestHistory
+                    {
+                        TestId = testId,
+                        Title = test.Title,
+                        SubmitTime = DateTime.Now,
+                        Duration = TimeSpan.FromSeconds(test.TimeLimit * 60 - test.Progress.RemainingTime),
+                        TotalQuestions = test.Questions.Count,
+                        CorrectAnswers = correctAnswers,
+                        WrongAnswers = wrongAnswers,
+                        SkippedAnswers = skippedAnswers
+                    };
+
+                    // Thêm vào list (đã được khởi tạo trong constructor)
+                    _testHistory.Add(testHistory);
+                    _localStorageService.SaveTestHistory(_testHistory);
+
+
+                    // Cập nhật Progress
+                    test.Progress.AnsweredQuestions = correctAnswers;
+                    await UpdateTestCompletionStatus(testId, true);
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in SubmitTestAsync: {ex.Message}");
+                return false;
+            }
         }
 
+        public async Task<List<TestHistory>> GetTestHistoryAsync()
+        {
+            try
+            {
+                await Task.Delay(100); // Simulate network delay
+                return _localStorageService.GetTestHistory().OrderByDescending(h => h.SubmitTime).ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetTestHistoryAsync: {ex.Message}");
+                return new List<TestHistory>();
+            }
+        }
 
     }
 }

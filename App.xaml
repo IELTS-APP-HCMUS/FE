@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:login_full" 
-    xmlns:converters="using:login_full.Converters">
+    xmlns:converters="using:login_full.Converters" >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,6 +16,10 @@
             <converters:BoolToGreenConverter x:Key="BoolToGreenConverter"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:BoolToExplanationTextConverter x:Key="BoolToExplanationTextConverter"/>
+            <converters:QuestionTypeToVisibilityConverter x:Key="QuestionTypeToVisibilityConverter"/>
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+            <converters:DateFormatConverter x:Key="DateFormatConverter"/>
+            <converters:TimeFormatConverter x:Key="TimeFormatConverter"/>
 
             <!-- Other app resources here -->
             <Style x:Key="AccentButtonStyle" TargetType="Button">
