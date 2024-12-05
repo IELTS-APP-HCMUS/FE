@@ -25,13 +25,16 @@ namespace login_full.ViewModels
         }
 
         public IRelayCommand SortByNameCommand { get; }
+		public IRelayCommand SortByTimeCommand { get; }
 
-        public HistoryViewModel(IReadingTestService readingTestService, INavigationService navigationService)
+
+		public HistoryViewModel(IReadingTestService readingTestService, INavigationService navigationService)
         {
             _readingTestService = readingTestService;
             _navigationService = navigationService;
             SortByNameCommand = new RelayCommand(SortByName);
-            LoadTestHistories();
+			SortByTimeCommand = new RelayCommand(SortByTime);
+			LoadTestHistories();
         }
 
         private async void LoadTestHistories()
@@ -45,7 +48,12 @@ namespace login_full.ViewModels
             TestHistories = new ObservableCollection<TestHistory>(sorted);
         }
 
-        public async void RetakeTest(string testId)
+        private void SortByTime()
+        {
+            var sorted = TestHistories.OrderBy(x => x.SubmitTime).ToList();
+			TestHistories = new ObservableCollection<TestHistory>(sorted);
+		}
+		public async void RetakeTest(string testId)
         {
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), testId);
         }

@@ -52,6 +52,9 @@
     <None Remove="Components\Home\Suggestion.xaml" />
     <None Remove="Components\Home\TargetUpdatePopUp.xaml" />
     <None Remove="HomePage.xaml" />
+    <None Remove="Views\ForgotPasswordPage\EmailSubmit.xaml" />
+    <None Remove="Views\ForgotPasswordPage\OTPVerify.xaml" />
+    <None Remove="Views\ForgotPasswordPage\PasswordReset.xaml" />
     <None Remove="Views\LoginPage.xaml" />
     <None Remove="Views\ReadingTestPage.xaml" />
     <None Remove="Views\reading_Item_UI.xaml" />
@@ -165,6 +168,15 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\ForgotPasswordPage\PasswordReset.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ForgotPasswordPage\OTPVerify.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ForgotPasswordPage\EmailSubmit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\TestDetailResultPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

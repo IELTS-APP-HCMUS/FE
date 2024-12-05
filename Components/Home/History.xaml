@@ -28,21 +28,43 @@
 				<!-- Header -->
 				<StackPanel Orientation="Horizontal" Margin="0,0,0,20">
 					<Button Content="Theo tên bài" 
+							Name="ByNameTab"
 							Command="{x:Bind ViewModel.SortByNameCommand}"
-							Background="#FFF0F0" 
+							Background="#DBD7BB" 
 							Foreground="#FF7575" 
 							BorderThickness="0" 
 							CornerRadius="20" 
 							Padding="15,10" 
-							Margin="0,0,10,0"/>
+							Margin="0,0,10,0"
+							Click="ByNameTab_Click"/>
+					<Button Content="Theo hạn nộp"
+							x:Name="ByTimeTab"
+							Command="{x:Bind ViewModel.SortByTimeCommand}"
+							Background="#FFFFFF" 
+							Foreground="#88AABB" 
+							BorderThickness="0" 
+							CornerRadius="20" 
+							Padding="15,10" 
+							Margin="0,0,10,0"
+							Click="ByTimeTab_Click"/>
 				</StackPanel>
 
 				<!-- History Table -->
 				<ScrollViewer Grid.Row="1">
+					<ScrollViewer.Resources>
+						<Style TargetType="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</ScrollViewer.Resources>
 					<ListView ItemsSource="{x:Bind ViewModel.TestHistories, Mode=OneWay}">
 						<ListView.ItemTemplate>
 							<DataTemplate x:DataType="models:TestHistory">
 								<Grid Padding="10">
+									<Grid.Resources>
+										<Style TargetType="TextBlock">
+											<Setter Property="Foreground" Value="Black"/>
+										</Style>
+									</Grid.Resources>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="2*"/>
 										<ColumnDefinition Width="1.2*"/>
@@ -53,7 +75,7 @@
 										<ColumnDefinition Width="0.8*"/>
 										<ColumnDefinition Width="1.2*"/>
 									</Grid.ColumnDefinitions>
-
+									
 									<TextBlock Text="{x:Bind Title}" 
 											 Grid.Column="0"
 											 TextWrapping="Wrap"/>
@@ -103,6 +125,11 @@
 						<ListView.HeaderTemplate>
 							<DataTemplate>
 								<Grid Padding="10" Background="#f5f5f5">
+									<Grid.Resources>
+										<Style TargetType="TextBlock">
+											<Setter Property="Foreground" Value="Black"/>
+										</Style>
+									</Grid.Resources>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="2*"/>
 										<ColumnDefinition Width="1.2*"/>

@@ -16,6 +16,8 @@ using login_full.Context;
 using Microsoft.UI.Xaml.Media;
 using System.Linq;
 using Microsoft.UI;
+using login_full.Views;
+using login_full.Views.ForgotPasswordPage;
 
 namespace login_full
 {
@@ -55,7 +57,7 @@ namespace login_full
 				System.Diagnostics.Debug.WriteLine($"Initialization error: {ex.Message}");
 			}
 		}
-		private async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
+		public async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -125,7 +127,7 @@ namespace login_full
 					App.IsLoggedInWithGoogle = true;
 					GlobalState.Instance.AccessToken = jsonResponse["data"].ToString();
 					await ShowSuccessDialogAsync("Login successful with Google!");
-					NavigateToHomePage();
+					_ = NavigateToHomePage();
 				}
 				else
 				{
@@ -216,7 +218,7 @@ namespace login_full
 					{
 						_authService.SaveCredentials(username, password);
 					}
-					NavigateToHomePage();
+					_ = NavigateToHomePage();
 				}
 				else
 				{
@@ -232,11 +234,28 @@ namespace login_full
 			}
 		}
 
+		private async void ForgotPassword_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				await NavigateToForgotPassword();
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error during navigation: {ex.Message}");
+			}
+		}
+
 		private async Task NavigateToHomePage()
 		{
 			LoginGrid.Visibility = Visibility.Collapsed;
 			Frame.Visibility = Visibility.Visible;
 			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
+		}
+
+		private static async Task NavigateToForgotPassword()
+		{
+			await App.NavigationService.NavigateToAsync(typeof(EmailSubmit));
 		}
 
 		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
