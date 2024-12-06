@@ -121,13 +121,17 @@ namespace login_full
 						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
 						int remainingDays = (dateTime.ToDateTime(TimeOnly.MinValue) - DateTime.Today).Days;
 
-						
-						Target.TargetListening = userTarget.TargetListening;
-						Target.TargetReading = userTarget.TargetReading;
-						Target.TargetSpeaking = userTarget.TargetSpeaking;
-						Target.TargetWriting = userTarget.TargetWriting;
-						Target.TargetStudyDuration = remainingDays;
-						Target.NextExamDate = userTarget.NextExamDate;
+						if (dateTime.Year == 1900)
+						{
+							dateTime = DateOnly.FromDateTime(DateTime.Now); 
+						}
+
+						Target.TargetListening = userTarget.TargetListening == -1 ? 0 : userTarget.TargetListening;
+						Target.TargetReading = userTarget.TargetReading == -1 ? 0 : userTarget.TargetReading;
+						Target.TargetSpeaking = userTarget.TargetSpeaking == -1 ? 0 : userTarget.TargetSpeaking;
+						Target.TargetWriting = userTarget.TargetWriting == -1 ? 0 : userTarget.TargetWriting;
+						Target.TargetStudyDuration = remainingDays >= 0 ? remainingDays : 0;
+						Target.NextExamDate = dateTime.ToString("yyyy-MM-dd");
 
 					}
 					else

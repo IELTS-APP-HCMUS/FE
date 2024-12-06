@@ -1,25 +1,20 @@
 ﻿using login_full.Context;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
+using login_full.API_Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
+
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Media.Protection.PlayReady;
-using login_full.Views;
+
+using Google.Apis.Util;
+using Microsoft.Extensions.Configuration;
+using System.Threading;
+
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,9 +26,11 @@ namespace login_full.Views.ForgotPasswordPage
 	/// </summary>
 	public sealed partial class EmailSubmit : Page
 	{
+		private readonly LoginApiService _loginApiService;
 		public EmailSubmit()
 		{
 			this.InitializeComponent();
+			_loginApiService = new LoginApiService();
 		}
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -93,11 +90,126 @@ namespace login_full.Views.ForgotPasswordPage
 		}
 		public async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
 		{
-			//
+			try
+			{
+				var configuration = new ConfigurationBuilder()
+					.SetBasePath(AppContext.BaseDirectory)
+					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+					.Build();
+
+				var googleAuthService = new GoogleAuthService(configuration);
+				var credential = await googleAuthService.AuthenticateAsync(CancellationToken.None);
+
+				if (credential == null)
+				{
+					await ShowErrorDialogAsync("Authentication failed. No credential returned.");
+					return;
+				}
+
+				if (credential.Token.IsExpired(SystemClock.Default))
+				{
+					try
+					{
+						await credential.RefreshTokenAsync(CancellationToken.None);
+					}
+					catch (Exception refreshEx)
+					{
+						await ShowErrorDialogAsync($"Failed to refresh token: {refreshEx.Message}");
+						return;
+					}
+				}
+
+				string idToken = credential.Token.IdToken;
+
+				if (string.IsNullOrEmpty(idToken))
+				{
+					await ShowErrorDialogAsync("No ID token returned from Google.");
+					return;
+				}
+
+				var response = await _loginApiService.LoginWithOAuthAsync(idToken);
+
+				if (response.StartsWith("Error"))
+				{
+					await ShowErrorDialogAsync(response);
+					return;
+				}
+
+				await HandleLoginResponseAsync(response);
+			}
+			catch (Google.Apis.Auth.OAuth2.Responses.TokenResponseException trEx)
+			{
+				await ShowErrorDialogAsync($"Token response error: {trEx.Message}");
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error: {ex.Message}");
+			}
 		}
+
+		private async Task ShowErrorDialogAsync(string message)
+		{
+			DispatcherQueue.TryEnqueue(async () =>
+			{
+				var dialog = new ContentDialog
+				{
+					Title = "Sign In Error",
+					Content = message,
+					CloseButtonText = "OK",
+					XamlRoot = this.XamlRoot
+				};
+				await dialog.ShowAsync();
+			});
+		}
+
+		private async Task HandleLoginResponseAsync(string response)
+		{
+			try
+			{
+				var jsonResponse = JObject.Parse(response);
+
+				if (jsonResponse["code"].ToString() == "200")
+				{
+					App.IsLoggedInWithGoogle = true;
+					GlobalState.Instance.AccessToken = jsonResponse["data"].ToString();
+					await ShowSuccessDialogAsync("Login successful with Google!");
+					_ = NavigateToHomePage();
+				}
+				else
+				{
+					string errorMessage = jsonResponse["error_detail"].ToString();
+					await ShowErrorDialogAsync($"Login failed: {errorMessage}");
+				}
+			}
+			catch (Exception ex)
+			{
+				await ShowErrorDialogAsync($"Unexpected error during login: {ex.Message}");
+			}
+		}
+
+		private async Task ShowSuccessDialogAsync(string message)
+		{
+			DispatcherQueue.TryEnqueue(async () =>
+			{
+				var dialog = new ContentDialog
+				{
+					Title = "Sign In Successful",
+					Content = message,
+					CloseButtonText = "OK",
+					XamlRoot = this.XamlRoot
+				};
+				await dialog.ShowAsync();
+			});
+		}
+
 		private static async Task NavigateToOTPVerify()
 		{
 			await App.NavigationService.NavigateToAsync(typeof(OTPVerify));
+		}
+
+		private async Task NavigateToHomePage()
+		{
+			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
 		}
 	}
 }
