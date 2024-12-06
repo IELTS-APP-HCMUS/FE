@@ -10,152 +10,125 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-	<Grid Margin="50,50,50,0">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+    <Grid Margin="50,50,50,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-		<TextBlock Text="Lịch sử làm bài" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        <TextBlock Text="Lịch sử làm bài" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-		<Border Grid.Row="1" Background="White" CornerRadius="28" Padding="20">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="*"/>
-				</Grid.RowDefinitions>
+        <Border Grid.Row="1" Background="White" CornerRadius="28" Padding="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-				<!-- Header -->
-				<StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-					<Button Content="Theo tên bài" 
-							Name="ByNameTab"
+                <!-- Header -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <Button Content="Theo tên bài" 
 							Command="{x:Bind ViewModel.SortByNameCommand}"
-							Background="#DBD7BB" 
+							Background="#FFF0F0" 
 							Foreground="#FF7575" 
 							BorderThickness="0" 
 							CornerRadius="20" 
 							Padding="15,10" 
-							Margin="0,0,10,0"
-							Click="ByNameTab_Click"/>
-					<Button Content="Theo hạn nộp"
-							x:Name="ByTimeTab"
-							Command="{x:Bind ViewModel.SortByTimeCommand}"
-							Background="#FFFFFF" 
-							Foreground="#88AABB" 
-							BorderThickness="0" 
-							CornerRadius="20" 
-							Padding="15,10" 
-							Margin="0,0,10,0"
-							Click="ByTimeTab_Click"/>
-				</StackPanel>
+							Margin="0,0,10,0"/>
+                </StackPanel>
 
-				<!-- History Table -->
-				<ScrollViewer Grid.Row="1">
-					<ScrollViewer.Resources>
-						<Style TargetType="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</ScrollViewer.Resources>
-					<ListView ItemsSource="{x:Bind ViewModel.TestHistories, Mode=OneWay}">
-						<ListView.ItemTemplate>
-							<DataTemplate x:DataType="models:TestHistory">
-								<Grid Padding="10">
-									<Grid.Resources>
-										<Style TargetType="TextBlock">
-											<Setter Property="Foreground" Value="Black"/>
-										</Style>
-									</Grid.Resources>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="2*"/>
-										<ColumnDefinition Width="1.2*"/>
-										<ColumnDefinition Width="1*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="1.2*"/>
-									</Grid.ColumnDefinitions>
-									
-									<TextBlock Text="{x:Bind Title}" 
+                <!-- History Table -->
+                <ScrollViewer Grid.Row="1">
+                    <ListView ItemsSource="{x:Bind ViewModel.TestHistories, Mode=OneWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:TestHistory">
+                                <Grid Padding="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1.2*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="1.2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{x:Bind Title}" 
 											 Grid.Column="0"
 											 TextWrapping="Wrap"/>
-									
-									<StackPanel Grid.Column="1" Margin="5,0">
-										<TextBlock HorizontalAlignment="Center" 
-												 Text="{x:Bind SubmitTime, Converter={StaticResource DateFormatConverter}}"/>
-										<TextBlock HorizontalAlignment="Center" 
-												 Text="{x:Bind SubmitTime, Converter={StaticResource TimeFormatConverter}}"/>
-									</StackPanel>
 
-									<TextBlock Text="{x:Bind Duration}" 
+                                    <StackPanel Grid.Column="1" Margin="5,0">
+                                        <TextBlock HorizontalAlignment="Center" 
+												 Text="{x:Bind SubmitTime, Converter={StaticResource DateFormatConverter}}"/>
+                                        <TextBlock HorizontalAlignment="Center" 
+												 Text="{x:Bind SubmitTime, Converter={StaticResource TimeFormatConverter}}"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="{x:Bind Duration}" 
 											 Grid.Column="2"
 											 HorizontalAlignment="Center"/>
-									
-									<TextBlock Text="{x:Bind TotalQuestions}" 
+
+                                    <TextBlock Text="{x:Bind TotalQuestions}" 
 											 Grid.Column="3"
 											 HorizontalAlignment="Center"/>
-									
-									<TextBlock Text="{x:Bind CorrectAnswers}" 
+
+                                    <TextBlock Text="{x:Bind CorrectAnswers}" 
 											 Grid.Column="4"
 											 Foreground="Green"
 											 HorizontalAlignment="Center"/>
-									
-									<TextBlock Text="{x:Bind WrongAnswers}" 
+
+                                    <TextBlock Text="{x:Bind WrongAnswers}" 
 											 Grid.Column="5"
 											 Foreground="Red"
 											 HorizontalAlignment="Center"/>
-									
-									<TextBlock Text="{x:Bind SkippedAnswers}" 
+
+                                    <TextBlock Text="{x:Bind SkippedAnswers}" 
 											 Grid.Column="6"
 											 HorizontalAlignment="Center"/>
 
-									<StackPanel Grid.Column="7" 
+                                    <StackPanel Grid.Column="7" 
 											  Orientation="Horizontal" 
 											  HorizontalAlignment="Right"
 											  Spacing="8">
-										<Button Content="Làm lại"
+                                        <Button Content="Làm lại"
 												Command="{x:Bind RetakeCommand}"
 												Style="{ThemeResource AccentButtonStyle}"/>
-										<Button Content="Xem lại"
+                                        <Button Content="Xem lại"
 												Command="{x:Bind ViewResultCommand}"/>
-									</StackPanel>
-								</Grid>
-							</DataTemplate>
-						</ListView.ItemTemplate>
-						<ListView.HeaderTemplate>
-							<DataTemplate>
-								<Grid Padding="10" Background="#f5f5f5">
-									<Grid.Resources>
-										<Style TargetType="TextBlock">
-											<Setter Property="Foreground" Value="Black"/>
-										</Style>
-									</Grid.Resources>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="2*"/>
-										<ColumnDefinition Width="1.2*"/>
-										<ColumnDefinition Width="1*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="0.8*"/>
-										<ColumnDefinition Width="1.2*"/>
-									</Grid.ColumnDefinitions>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Padding="10" Background="#f5f5f5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1.2*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="1.2*"/>
+                                    </Grid.ColumnDefinitions>
 
-									<TextBlock Text="Tên bài" Grid.Column="0"/>
-									<TextBlock Text="Thời gian nộp" Grid.Column="1"/>
-									<TextBlock Text="Thời gian làm" Grid.Column="2"/>
-									<TextBlock Text="Tổng số câu" Grid.Column="3"/>
-									<TextBlock Text="Đúng" Grid.Column="4"/>
-									<TextBlock Text="Sai" Grid.Column="5"/>
-									<TextBlock Text="Bỏ qua" Grid.Column="6"/>
-									<TextBlock Text="Thao tác" Grid.Column="7"/>
-								</Grid>
-							</DataTemplate>
-						</ListView.HeaderTemplate>
-					</ListView>
-				</ScrollViewer>
-			</Grid>
-		</Border>
-	</Grid>
+                                    <TextBlock Text="Tên bài" Grid.Column="0"/>
+                                    <TextBlock Text="Thời gian nộp" Grid.Column="1"/>
+                                    <TextBlock Text="Thời gian làm" Grid.Column="2"/>
+                                    <TextBlock Text="Tổng số câu" Grid.Column="3"/>
+                                    <TextBlock Text="Đúng" Grid.Column="4"/>
+                                    <TextBlock Text="Sai" Grid.Column="5"/>
+                                    <TextBlock Text="Bỏ qua" Grid.Column="6"/>
+                                    <TextBlock Text="Thao tác" Grid.Column="7"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.HeaderTemplate>
+                    </ListView>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
 
 </UserControl>
