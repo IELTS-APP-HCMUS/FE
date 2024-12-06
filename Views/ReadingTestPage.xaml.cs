@@ -40,10 +40,10 @@ namespace login_full.Views
 		{
 			base.OnNavigatedTo(e);
 
-			if (e.Parameter is ReadingItemModels item)
+			if (e.Parameter is string item)
 			{
 				// Load test dựa trên TestId của item được chọn
-				await ViewModel.LoadTestAsync(item.TestId);
+				await ViewModel.LoadTestAsync(item);
 			}
 		}
 	}

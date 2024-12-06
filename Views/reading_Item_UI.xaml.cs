@@ -85,7 +85,7 @@ namespace login_full.Views
 			}
 			else
 			{
-				Frame.Navigate(typeof(Views.ReadingTestPage), item);
+				Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
 			}
 		}
 

@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,15 +31,46 @@ namespace login_full.Views.ForgotPasswordPage
 		}
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
-			string email = OTPTextBox.Text;
-			if (string.IsNullOrEmpty(email))
+			string otp = OTPTextBox.Text;
+			if (string.IsNullOrEmpty(otp))
 			{
 				// Hiển thị thông báo lỗi
-				//ErrorMessageTextBlock.Text = "Please enter your email.";
+				ErrorMessageTextBlock.Text = "Please enter your otp.";
 			}
 			else
 			{
-				// Xử lý gửi yêu cầu khôi phục mật khẩu
+				try
+				{
+					// call api
+					//string response = await SendEmail(email);
+					string response = "{\"code\":\"200\", \"otp\":123456}";
+					var jsonResponse = JObject.Parse(response);
+					if (jsonResponse["code"].ToString() != "200")
+					{
+						try
+						{
+							if(otp == jsonResponse["otp"].ToString())
+							{
+								ErrorMessageTextBlock.Text = "OTP is correct.";
+								await NavigateToPasswordReset();
+							}
+							else
+							{
+								ErrorMessageTextBlock.Text = "OTP is incorrect.";
+							}
+						}
+						catch (Exception ex)
+						{
+							ErrorMessageTextBlock.Text = ex.Message;
+							Console.WriteLine(ex.Message);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					//ErrorMessageTextBlock.Text = ex.Message;
+					Console.WriteLine(ex.Message);
+				}
 			}
 			await NavigateToPasswordReset();
 		}

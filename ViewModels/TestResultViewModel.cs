@@ -105,10 +105,7 @@ namespace login_full.ViewModels
             BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
-            ViewDetailCommand = new RelayCommand(() => 
-            {
-                _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testDetail);
-            });
+            ViewDetailCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testDetail.Id));
 
 
             TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";

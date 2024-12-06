@@ -15,16 +15,17 @@ namespace login_full.ViewModels
 {
     public class TestDetailResultViewModel : ObservableObject
     {
-        private readonly INavigationService _navigationService;
+		private readonly IReadingTestService _testService;
+		private readonly INavigationService _navigationService;
         private ReadingTestDetail _testDetail;
         private double _score;
 
-        public TestDetailResultViewModel(
-            INavigationService navigationService,
-            ReadingTestDetail testDetail)
-        {
+        public TestDetailResultViewModel(IReadingTestService testService, INavigationService navigationService)
+
+		{
+            //_testDetail = testDetail;
+            _testService = testService;
             _navigationService = navigationService;
-            _testDetail = testDetail;
             
             // Tính điểm
             CalculateScore();
@@ -35,9 +36,18 @@ namespace login_full.ViewModels
             ToggleExplanationCommand = new RelayCommand<Question>(ToggleExplanation);
         }
 
-        public ReadingTestDetail TestDetail => _testDetail;
+        //public ReadingTestDetail TestDetail => _testDetail;
+		public ReadingTestDetail TestDetail
+		{
+			get => _testDetail;
+			private set
+			{
+				_testDetail = value;
+				OnPropertyChanged();
+			}
+		}
 
-        public double Score
+		public double Score
         {
             get => _score;
             private set => SetProperty(ref _score, value);
@@ -70,8 +80,11 @@ namespace login_full.ViewModels
         {
             _navigationService.NavigateToAsync(typeof(HomePage));
         }
-
-        private void ToggleExplanation(Question question)
+		public async Task LoadTestAsync(string testId)
+		{
+			TestDetail = await _testService.GetTestDetailAsync(testId);
+		}
+		private void ToggleExplanation(Question question)
         {
             if (question != null)
             {

@@ -41,6 +41,7 @@
     <None Remove="Assets\google.png" />
     <None Remove="BlankPage1.xaml" />
     <None Remove="Components\Footer.xaml" />
+    <None Remove="Components\ForgotHeader.xaml" />
     <None Remove="Components\Header.xaml" />
     <None Remove="Components\Home\Banner.xaml" />
     <None Remove="Components\Home\Calendar.xaml" />
@@ -168,6 +169,9 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Components\ForgotHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\ForgotPasswordPage\PasswordReset.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

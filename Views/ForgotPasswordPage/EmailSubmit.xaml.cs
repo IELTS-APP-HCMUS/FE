@@ -38,21 +38,19 @@ namespace login_full.Views.ForgotPasswordPage
 			if (string.IsNullOrEmpty(email))
 			{
 				// Hiển thị thông báo lỗi
-				//ErrorMessageTextBlock.Text = "Please enter your email.";
+				ErrorMessageTextBlock.Text = "Please enter your email.";
 			}
 			else
 			{
 				// Xử lý gửi yêu cầu khôi phục mật khẩu
-				await NavigateToOTPVerify();
-				return;
 				try
 				{
-					string response = await SendEmail(email);
+					// call api
+					//string response = await SendEmail(email);
+					string response = "{\"code\":\"200\"}";
 					var jsonResponse = JObject.Parse(response);
-
 					if (jsonResponse["code"].ToString() != "200")
 					{
-						
 						await NavigateToOTPVerify();
 					}
 				}
