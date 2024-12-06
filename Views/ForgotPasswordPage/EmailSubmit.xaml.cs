@@ -39,6 +39,8 @@ namespace login_full.Views.ForgotPasswordPage
 			{
 				// Hiển thị thông báo lỗi
 				ErrorMessageTextBlock.Text = "Please enter your email.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				return;
 			}
 			else
 			{
@@ -49,7 +51,7 @@ namespace login_full.Views.ForgotPasswordPage
 					//string response = await SendEmail(email);
 					string response = "{\"code\":\"200\"}";
 					var jsonResponse = JObject.Parse(response);
-					if (jsonResponse["code"].ToString() != "200")
+					if (jsonResponse["code"].ToString() == "200")
 					{
 						await NavigateToOTPVerify();
 					}

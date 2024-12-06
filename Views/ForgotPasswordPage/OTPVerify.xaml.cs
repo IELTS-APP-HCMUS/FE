@@ -36,6 +36,8 @@ namespace login_full.Views.ForgotPasswordPage
 			{
 				// Hiển thị thông báo lỗi
 				ErrorMessageTextBlock.Text = "Please enter your otp.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				return;
 			}
 			else
 			{
@@ -45,18 +47,19 @@ namespace login_full.Views.ForgotPasswordPage
 					//string response = await SendEmail(email);
 					string response = "{\"code\":\"200\", \"otp\":123456}";
 					var jsonResponse = JObject.Parse(response);
-					if (jsonResponse["code"].ToString() != "200")
+					if (jsonResponse["code"].ToString() == "200")
 					{
 						try
 						{
 							if(otp == jsonResponse["otp"].ToString())
 							{
-								ErrorMessageTextBlock.Text = "OTP is correct.";
 								await NavigateToPasswordReset();
 							}
 							else
 							{
 								ErrorMessageTextBlock.Text = "OTP is incorrect.";
+								ErrorMessageTextBlock.Visibility = Visibility.Visible;
+								return;
 							}
 						}
 						catch (Exception ex)
