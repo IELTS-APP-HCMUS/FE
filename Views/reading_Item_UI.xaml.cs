@@ -16,15 +16,14 @@ namespace login_full.Views
 		public reading_Item_UI()
 		{
 			this.InitializeComponent();
-
+			System.Diagnostics.Debug.WriteLine("reading_Item_UI, start getting quizzes");
 			// Create instances of the services
-			var readingItemsService = new MockReadingItemsService();
+			var readingItemsService = new ReadingItemsService();
 			var navigationService = new NavigationService();
 			var paginationService = new PaginationService();
-			// Lấy danh sách items từ MockReadingItemsService
-			var items = readingItemsService.GetReadingItemsAsync().Result.ToList();
+			// Lấy danh sách items từ ReadingItemsService
 
-			var searchService = new SearchService(items, paginationService);
+			var searchService = new SearchService(new List<ReadingItemModels>(), paginationService);
 
 			var completedItemsService = new CompletedItemsService(new List<ReadingItemModels>(), paginationService);
 
@@ -76,7 +75,7 @@ namespace login_full.Views
 			var item = button.DataContext as ReadingItemModels;
 
 			// Nếu bài đã làm, chuyển thẳng đến trang kết quả
-			if (item.IsCompleted)
+			if (item.IsSubmitted)
 			{
 				//var testService = new MockReadingTestService();
 				//var test = testService.GetTestDetailAsync(item.testId).Result;

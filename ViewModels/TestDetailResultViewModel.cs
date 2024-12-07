@@ -33,7 +33,7 @@ namespace login_full.ViewModels
             // Khởi tạo commands
             BackCommand = new RelayCommand(GoBack);
             HomeCommand = new RelayCommand(GoHome);
-            ToggleExplanationCommand = new RelayCommand<Question>(ToggleExplanation);
+            ToggleExplanationCommand = new RelayCommand<ReadingTestQuestion>(ToggleExplanation);
         }
 
         //public ReadingTestDetail TestDetail => _testDetail;
@@ -55,7 +55,7 @@ namespace login_full.ViewModels
 
         public IRelayCommand BackCommand { get; }
         public IRelayCommand HomeCommand { get; }
-        public IRelayCommand<Question> ToggleExplanationCommand { get; }
+        public IRelayCommand<ReadingTestQuestion> ToggleExplanationCommand { get; }
 
         private void CalculateScore()
         {
@@ -84,7 +84,7 @@ namespace login_full.ViewModels
 		{
 			TestDetail = await _testService.GetTestDetailAsync(testId);
 		}
-		private void ToggleExplanation(Question question)
+		private void ToggleExplanation(ReadingTestQuestion question)
         {
             if (question != null)
             {

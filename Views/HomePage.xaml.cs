@@ -1,35 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
-using Microsoft.UI;
-using Windows.Graphics;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
-using System.Windows;
-
-using Microsoft.UI.Windowing;
-using System.Data;
-using System.Text;
-using Windows.Networking;
-using YamlDotNet.Core.Tokens;
-using System.Threading.Tasks;
 using login_full.Models;
 using login_full.Context;
-using login_full.Components.Home.Performance;
 using System.ComponentModel;
 
 

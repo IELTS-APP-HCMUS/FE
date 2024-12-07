@@ -35,7 +35,7 @@ namespace login_full
             
             // Register services
             services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IReadingTestService, MockReadingTestService>();
+            services.AddSingleton<IReadingTestService, ReadingTestService>();
             
             // Register ViewModels
             services.AddTransient<HistoryViewModel>();
