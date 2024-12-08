@@ -20,13 +20,13 @@ namespace login_full.ViewModels
         private ReadingTestDetail _testDetail;
         private double _score;
 
-        public TestDetailResultViewModel(IReadingTestService testService, INavigationService navigationService)
+        public TestDetailResultViewModel(IReadingTestService testService, INavigationService navigationService, ReadingTestDetail testDetail)
 
 		{
-            //_testDetail = testDetail;
+            _testDetail = testDetail;
             _testService = testService;
             _navigationService = navigationService;
-            
+
             // Tính điểm
             CalculateScore();
             

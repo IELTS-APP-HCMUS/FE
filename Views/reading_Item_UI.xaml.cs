@@ -74,18 +74,9 @@ namespace login_full.Views
 			var button = sender as Button;
 			var item = button.DataContext as ReadingItemModels;
 
-			// Nếu bài đã làm, chuyển thẳng đến trang kết quả
-			if (item.IsSubmitted)
-			{
-				//var testService = new MockReadingTestService();
-				//var test = testService.GetTestDetailAsync(item.testId).Result;
-				//var resultViewModel = new TestResultViewModel(test, TimeSpan.Zero, (App.Current as App).ChartService,);
-				//Frame.Navigate(typeof(Views.TestResultPage), resultViewModel);
-			}
-			else
-			{
-				Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
-			}
+		
+			Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
+			
 		}
 
 		private void ClearSearch_Click(object sender, RoutedEventArgs e)
@@ -133,12 +124,10 @@ namespace login_full.Views
 		{
 			if (args.ChosenSuggestion != null)
 			{
-				// Người dùng chọn một gợi ý
 				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
 			}
 			else
 			{
-				// Người dùng nhấn Enter
 				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
 			}
 		}

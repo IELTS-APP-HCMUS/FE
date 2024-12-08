@@ -143,36 +143,78 @@ namespace login_full.Services
 				if (_mockTests.ContainsKey(testId))
 				{
 					var test = _mockTests[testId];
-					test.Progress.IsCompleted = true;
 
-					// Tính toán kết quả
-					var correctAnswers = test.Questions.Count(q => q.UserAnswer == q.CorrectAnswer);
-					var wrongAnswers = test.Questions.Count(q => !string.IsNullOrEmpty(q.UserAnswer) && q.UserAnswer != q.CorrectAnswer);
-					var skippedAnswers = test.Questions.Count(q => string.IsNullOrEmpty(q.UserAnswer));
-
-					// Tạo đối tượng lịch sử mới
-					var testHistory = new TestHistory
+					// Prepare data for the API request
+					var payload = new
 					{
-						TestId = testId,
-						Title = test.Title,
-						SubmitTime = DateTime.Now,
-						Duration = TimeSpan.FromSeconds(test.TimeLimit * 60 - test.Progress.RemainingTime),
-						TotalQuestions = test.Questions.Count,
-						CorrectAnswers = correctAnswers,
-						WrongAnswers = wrongAnswers,
-						SkippedAnswers = skippedAnswers
+						question = test.Questions.Select(q => new
+						{
+							id = int.Parse(q.Id), // Ensure ID is numeric
+							success_count = q.IsCorrectAnswer ? 1 : 0,
+							total = 1 // Assuming 1 sub-question per question (adjust if necessary)
+						}),
+						answer = new
+						{
+							detail = new Dictionary<string, object>
+					{
+						{
+							"0", test.Questions.Select((q, index) => new
+							{
+								answer = new
+								{
+									title = q.Options?.Where(opt => opt == q.UserAnswer).ToList()
+								},
+								type = MapQuestionTypeForApi(q.Type),
+								correct = q.IsCorrectAnswer,
+								question = index + 1,
+								id_question = int.Parse(q.Id)
+							}).ToList()
+						}
+					},
+							quiz = int.Parse(testId), 
+							type = 1, 
+							status = "reviewed",
+							completed_duration = test.Progress.RemainingTime,
+							summary = new
+							{
+								correct = test.Questions.Count(q => q.IsCorrectAnswer),
+								total = test.Questions.Count,
+								left_time = TimeSpan.FromSeconds(test.Progress.RemainingTime).ToString(@"hh\:mm\:ss"),
+								mocktest_time = test.TimeLimit, 
+								type = "practice"
+							}
+						}
 					};
 
-					// Thêm vào list (đã được khởi tạo trong constructor)
-					_testHistory.Add(testHistory);
-					_localStorageService.SaveTestHistory(_testHistory);
+					string jsonPayload = JsonConvert.SerializeObject(payload);
+					System.Diagnostics.Debug.WriteLine($"Submitting payload: {jsonPayload}");
 
+					string apiUrl = $"https://ielts-app-api-4.onrender.com/v1/quizzes/{testId}/answer";
+					var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-					// Cập nhật Progress
-					test.Progress.AnsweredQuestions = correctAnswers;
-					await UpdateTestCompletionStatus(testId, true);
-					return true;
+					using (HttpClient client = new HttpClient())
+					{
+						string accessToken = GlobalState.Instance.AccessToken;
+						client.DefaultRequestHeaders.Authorization =
+							new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+						HttpResponseMessage response = await client.PostAsync(apiUrl, requestContent);
+
+						if (response.IsSuccessStatusCode)
+						{
+							string responseContent = await response.Content.ReadAsStringAsync();
+							System.Diagnostics.Debug.WriteLine($"Submit API Response: {responseContent}");
+
+							var result = JsonConvert.DeserializeObject<dynamic>(responseContent);
+							return true;
+						}
+						else
+						{
+							System.Diagnostics.Debug.WriteLine($"Error submitting test: {response.StatusCode} - {response.ReasonPhrase}");
+						}
+					}
 				}
+
 				return false;
 			}
 			catch (Exception ex)
@@ -186,7 +228,7 @@ namespace login_full.Services
 		{
 			try
 			{
-				await Task.Delay(100); // Simulate network delay
+				await Task.Delay(100); 
 				return _localStorageService.GetTestHistory().OrderByDescending(h => h.SubmitTime).ToList();
 			}
 			catch (Exception ex)
@@ -207,6 +249,18 @@ namespace login_full.Services
 				"TRUE_FALSE" => QuestionType.TrueFalseNotGiven,
 				"YES_NO_NOT_GIVEN" => QuestionType.YesNoNotGiven,
 				"MATCHING_HEADING" => QuestionType.GapFilling,
+				_ => throw new ArgumentException($"Unknown question type: {questionType}")
+			};
+		}
+
+		private string MapQuestionTypeForApi(QuestionType questionType)
+		{
+			return questionType switch
+			{
+				QuestionType.MultipleChoice => "MULTIPLE_CHOICE",
+				QuestionType.GapFilling => "FILL_IN_THE_BLANK",
+				QuestionType.TrueFalseNotGiven => "TRUE_FALSE",
+				QuestionType.YesNoNotGiven => "YES_NO",
 				_ => throw new ArgumentException($"Unknown question type: {questionType}")
 			};
 		}

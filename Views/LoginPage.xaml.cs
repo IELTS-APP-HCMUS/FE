@@ -18,6 +18,7 @@ using System.Linq;
 using Microsoft.UI;
 using login_full.Views;
 using login_full.Views.ForgotPasswordPage;
+using System.Text.RegularExpressions;
 
 namespace login_full
 {
@@ -265,6 +266,18 @@ namespace login_full
 			string confirmPassword = ConfirmPasswordBox.Password;
 			string fullName = FullNameTextBox.Text;
 
+			if (!IsValidEmail(email))
+			{
+				await ShowErrorDialogAsync("Invalid email format. Please enter a valid email.");
+				return;
+			}
+
+			if (!IsStrongPassword(password))
+			{
+				await ShowErrorDialogAsync("Password is too weak. It must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+				return;
+			}
+
 			if (password != confirmPassword)
 			{
 				await ShowErrorDialogAsync("Passwords do not match.");
@@ -306,6 +319,19 @@ namespace login_full
 			{
 				await ShowErrorDialogAsync($"Unexpected error during signup: {ex.Message}");
 			}
+		}
+		private bool IsValidEmail(string email)
+		{
+			var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+			return emailRegex.IsMatch(email);
+		}
+
+		
+		private bool IsStrongPassword(string password)
+		{
+			
+			var passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+			return passwordRegex.IsMatch(password);
 		}
 	}
 }

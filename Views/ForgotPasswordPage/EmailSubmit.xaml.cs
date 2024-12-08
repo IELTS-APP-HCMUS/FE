@@ -32,32 +32,62 @@ namespace login_full.Views.ForgotPasswordPage
 			this.InitializeComponent();
 			_loginApiService = new LoginApiService();
 		}
+
+		private async Task<string> SendOtpToEmail(string email)
+		{
+			string json = JsonConvert.SerializeObject(new { email });
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				HttpClient client = new HttpClient();
+			
+				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/request-reset-password", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadAsStringAsync();
+				}
+				else
+				{
+					return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
+				}
+			}
+			catch (Exception ex)
+			{
+				return $"Exception: {ex.Message}";
+			}
+		}
+
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
 			string email = EmailTextBox.Text;
 			if (string.IsNullOrEmpty(email))
 			{
-				// Hiển thị thông báo lỗi
 				ErrorMessageTextBlock.Text = "Please enter your email.";
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 				return;
 			}
 			else
 			{
-				// Xử lý gửi yêu cầu khôi phục mật khẩu
 				try
 				{
-					// call api
-					//string response = await SendEmail(email);
-					string response = "{\"code\":\"200\"}";
+					string response = await SendOtpToEmail(email);
 					var jsonResponse = JObject.Parse(response);
+
 					if (jsonResponse["code"].ToString() == "200")
 					{
-						await NavigateToOTPVerify();
+						await NavigateToOTPVerify(email);
+					}
+					else
+					{
+						ErrorMessageTextBlock.Text = jsonResponse["message"].ToString();
+						ErrorMessageTextBlock.Visibility = Visibility.Visible;
 					}
 				}
-				catch (Exception ex) {
-					//ErrorMessageTextBlock.Text = ex.Message;
+				catch (Exception ex)
+				{
+					ErrorMessageTextBlock.Text = "An error occurred. Please try again later.";
 					Console.WriteLine(ex.Message);
 				}
 			}
@@ -202,9 +232,9 @@ namespace login_full.Views.ForgotPasswordPage
 			});
 		}
 
-		private static async Task NavigateToOTPVerify()
+		private async Task NavigateToOTPVerify(string email)
 		{
-			await App.NavigationService.NavigateToAsync(typeof(OTPVerify));
+			await App.NavigationService.NavigateToAsync(typeof(OTPVerify), email);
 		}
 
 		private async Task NavigateToHomePage()

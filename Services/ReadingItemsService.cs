@@ -45,7 +45,6 @@ namespace login_full.Services
 				ImagePath = "/Assets/reading_win.png",
 				IsSubmitted = false
 			},
-            // ... Add more mock items as needed ...
         };
 
 		}
@@ -162,13 +161,6 @@ namespace login_full.Services
 		}
 
 
-		// Public methods that implement the interface
-		//public Task<ObservableCollection<ReadingItemModels>> GetReadingItemsAsync()
-		//{
-		//	System.Diagnostics.Debug.WriteLine("Fetching items from the service...");
-		//	System.Diagnostics.Debug.WriteLine($"Items in service: {_items?.Count ?? 0}");
-		//	return Task.FromResult(_items);
-		//}
 
 		public async Task<ObservableCollection<ReadingItemModels>> GetReadingItemsAsync()
 		{
@@ -182,13 +174,6 @@ namespace login_full.Services
 			return _items;
 		}
 
-		//public Task<ObservableCollection<ReadingItemModels>> GetCompletedItemsAsync()
-		//{
-		//	var completedItems = new ObservableCollection<ReadingItemModels>(
-		//		_items.Where(item => item.IsCompleted)
-		//	);
-		//	return Task.FromResult(completedItems);
-		//}
 		public async Task<ObservableCollection<ReadingItemModels>> GetCompletedItemsAsync()
 		{
 			if (!_isInitialized)
@@ -202,14 +187,6 @@ namespace login_full.Services
 			return completedItems;
 		}
 
-		//public Task<ObservableCollection<ReadingItemModels>> GetUncompletedItemsAsync()
-		//{
-		//	var uncompletedItems = new ObservableCollection<ReadingItemModels>(
-		//		_items.Where(item => !item.IsCompleted)
-		//	);
-		//	return Task.FromResult(uncompletedItems);
-		//}
-
 		public async Task<ObservableCollection<ReadingItemModels>> GetUncompletedItemsAsync()
 		{
 			if (!_isInitialized)
@@ -222,17 +199,6 @@ namespace login_full.Services
 			);
 			return uncompletedItems;
 		}
-
-		//public Task<ObservableCollection<ReadingItemModels>> SearchItemsAsync(string searchTerm)
-		//{
-		//	var filteredItems = new ObservableCollection<ReadingItemModels>(
-		//		_items.Where(item =>
-		//			item.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-		//			item.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-		//	);
-		//	return Task.FromResult(filteredItems);
-		//}
-
 		public async Task<ObservableCollection<ReadingItemModels>> SearchItemsAsync(string searchTerm)
 		{
 			if (!_isInitialized)
@@ -248,18 +214,28 @@ namespace login_full.Services
 			return filteredItems;
 		}
 
-
-		// Helper methods to map additional data from tags
 		private string ExtractDifficultyFromTags(IEnumerable<login_full.Models.Tag> tags)
 		{
-			var difficultyTag = tags.FirstOrDefault(tag => tag.Code.Equals("passage_1", StringComparison.OrdinalIgnoreCase));
-			return difficultyTag?.Title ?? "Unknown";
+			var passageTag = tags.FirstOrDefault(tag =>
+				tag.Code.StartsWith("passage_", StringComparison.OrdinalIgnoreCase));
+			return passageTag?.Title ?? "Unknown";
 		}
 
 		private string ExtractCategoryFromTags(IEnumerable<login_full.Models.Tag> tags)
 		{
-			var categoryTag = tags.FirstOrDefault(tag => tag.Code.Equals("MATCHING_HEADING", StringComparison.OrdinalIgnoreCase));
-			return categoryTag?.Title ?? "General";
+			// Look for tags related to reading question types
+			var questionTypeTag = tags.FirstOrDefault(tag =>
+				tag.Code.Equals("MATCHING_HEADING", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("MATCHING_INFO", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("MULTIPLE_CHOICE_MANY", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("MAP_DIAGRAM_LABEL", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("OTHERS", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("FILL_BLANK", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("TRUE_FALSE", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("YES_NO", StringComparison.OrdinalIgnoreCase) ||
+				tag.Code.Equals("MULTIPLE_CHOICE_ONE", StringComparison.OrdinalIgnoreCase));
+
+			return questionTypeTag?.Title ?? "General";
 		}
 	}
 

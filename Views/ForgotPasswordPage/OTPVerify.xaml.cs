@@ -1,19 +1,13 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -25,61 +19,101 @@ namespace login_full.Views.ForgotPasswordPage
 	/// </summary>
 	public sealed partial class OTPVerify : Page
 	{
+		private string Email { get; set; }
 		public OTPVerify()
 		{
 			this.InitializeComponent();
 		}
-		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
+
+		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			string otp = OTPTextBox.Text;
-			if (string.IsNullOrEmpty(otp))
+			base.OnNavigatedTo(e);
+
+			if (e.Parameter is string email)
 			{
-				// Hiển thị thông báo lỗi
-				ErrorMessageTextBlock.Text = "Please enter your otp.";
-				ErrorMessageTextBlock.Visibility = Visibility.Visible;
-				return;
+				Email = email; // Store the email parameter
 			}
 			else
 			{
-				try
+				ErrorMessageTextBlock.Text = "No email was provided for OTP verification.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+			}
+		}
+
+		private async Task<string> VerifyOtpAsync(string email, string otp)
+		{
+			string json = JsonConvert.SerializeObject(new { email, otp });
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				using HttpClient client = new HttpClient();
+			
+				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/validate-otp", content);
+
+				if (response.IsSuccessStatusCode)
 				{
-					// call api
-					//string response = await SendEmail(email);
-					string response = "{\"code\":\"200\", \"otp\":123456}";
-					var jsonResponse = JObject.Parse(response);
-					if (jsonResponse["code"].ToString() == "200")
-					{
-						try
-						{
-							if(otp == jsonResponse["otp"].ToString())
-							{
-								await NavigateToPasswordReset();
-							}
-							else
-							{
-								ErrorMessageTextBlock.Text = "OTP is incorrect.";
-								ErrorMessageTextBlock.Visibility = Visibility.Visible;
-								return;
-							}
-						}
-						catch (Exception ex)
-						{
-							ErrorMessageTextBlock.Text = ex.Message;
-							Console.WriteLine(ex.Message);
-						}
-					}
+					return await response.Content.ReadAsStringAsync();
 				}
-				catch (Exception ex)
+				else
 				{
-					//ErrorMessageTextBlock.Text = ex.Message;
-					Console.WriteLine(ex.Message);
+					return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
 				}
 			}
-			await NavigateToPasswordReset();
+			catch (Exception ex)
+			{
+				return $"Exception: {ex.Message}";
+			}
 		}
-		private static async Task NavigateToPasswordReset()
+
+		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
-			await App.NavigationService.NavigateToAsync(typeof(PasswordReset));
+			string otp = OTPTextBox.Text;
+
+			if (string.IsNullOrEmpty(otp))
+			{
+				ErrorMessageTextBlock.Text = "Please enter the OTP.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				return;
+			}
+
+			if (string.IsNullOrEmpty(Email))
+			{
+				ErrorMessageTextBlock.Text = "Email is missing. Please try again.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				return;
+			}
+
+			try
+			{
+				string response = await VerifyOtpAsync(Email, otp);
+				var jsonResponse = JObject.Parse(response);
+
+				if (jsonResponse["code"]?.ToString() == "200")
+				{
+					await NavigateToPasswordReset(Email);
+				}
+				else
+				{
+					ErrorMessageTextBlock.Text = jsonResponse["message"]?.ToString() ?? "Verification failed.";
+					ErrorMessageTextBlock.Visibility = Visibility.Visible;
+				}
+			}
+			catch (JsonException)
+			{
+				ErrorMessageTextBlock.Text = "Unexpected response from the server.";
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+			}
+			catch (Exception ex)
+			{
+				ErrorMessageTextBlock.Text = "An error occurred. Please try again later.";
+				Console.WriteLine($"Error: {ex.Message}");
+				ErrorMessageTextBlock.Visibility = Visibility.Visible;
+			}
+		}
+		private async Task NavigateToPasswordReset(string email)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(PasswordReset), email);
 		}
 	}
 }
