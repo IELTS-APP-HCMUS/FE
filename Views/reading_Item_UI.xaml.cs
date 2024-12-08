@@ -75,7 +75,7 @@ namespace login_full.Views
 			var item = button.DataContext as ReadingItemModels;
 
 		
-			Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
+				Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
 			
 		}
 

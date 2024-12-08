@@ -53,6 +53,11 @@
                                         <ColumnDefinition Width="0.8*"/>
                                         <ColumnDefinition Width="1.2*"/>
                                     </Grid.ColumnDefinitions>
+									<Grid.Resources>
+										<Style TargetType="TextBlock">
+											<Setter Property="Foreground" Value="DarkBlue"/>
+										</Style>
+									</Grid.Resources>
 
                                     <TextBlock Text="{x:Bind Title}" 
 											 Grid.Column="0"

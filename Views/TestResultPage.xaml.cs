@@ -1,3 +1,5 @@
+Ôªøusing ABI.System;
+using login_full.Services;
 using login_full.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -46,7 +48,7 @@ namespace login_full.Views
 
 		//private void RetryButton_Click(object sender, RoutedEventArgs e)
 		//{
-		//    // Logic ?? l‡m l?i b‡i thi
+		//    // Logic ?? l√†m l?i b√†i thi
 		//}
 
 		//private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -72,7 +74,7 @@ namespace login_full.Views
 		//    double radius = 80;
 		//    double startAngle = 0;
 
-		//    // V? ph?n c‚u ?˙ng (m‡u xanh)
+		//    // V? ph?n c√¢u ?√∫ng (m√†u xanh)
 		//    if (ViewModel.CorrectAnswers > 0)
 		//    {
 		//        DrawPieSlice(centerX, centerY, radius, startAngle,
@@ -81,7 +83,7 @@ namespace login_full.Views
 		//    }
 		//    startAngle += (double)ViewModel.CorrectAnswers / ViewModel.TotalQuestions * 360;
 
-		//    // V? ph?n c‚u sai (m‡u ??)
+		//    // V? ph?n c√¢u sai (m√†u ??)
 		//    if (ViewModel.WrongAnswers > 0)
 		//    {
 		//        DrawPieSlice(centerX, centerY, radius, startAngle,
@@ -90,7 +92,7 @@ namespace login_full.Views
 		//    }
 		//    startAngle += (double)ViewModel.WrongAnswers / ViewModel.TotalQuestions * 360;
 
-		//    // V? ph?n ch?a l‡m (m‡u x·m)
+		//    // V? ph?n ch?a l√†m (m√†u x√°m)
 		//    if (ViewModel.UnansweredQuestions > 0)
 		//    {
 		//        DrawPieSlice(centerX, centerY, radius, startAngle,
@@ -144,12 +146,17 @@ namespace login_full.Views
 			this.InitializeComponent();
 		}
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 
 			// L?y ViewModel t? App
 			ViewModel = (App.Current as App)?.CurrentTestResult;
+			if (e.Parameter is string item)
+			{
+				// Load test d·ª±a tr√™n TestId c·ªßa item ƒë∆∞·ª£c ch·ªçn
+				await ViewModel.LoadSummaryAsync(item);
+			}
 			if (ViewModel != null)
 			{
 				this.DataContext = ViewModel;

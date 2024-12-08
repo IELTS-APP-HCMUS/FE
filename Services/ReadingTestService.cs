@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using login_full.Context;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace login_full.Services
@@ -136,7 +137,7 @@ namespace login_full.Services
 
 
 		// đã update vs testID bên cs
-		public async Task<bool> SubmitTestAsync(string testId)
+		public async Task<string> SubmitTestAsync(string testId)
 		{
 			try
 			{
@@ -206,7 +207,7 @@ namespace login_full.Services
 							System.Diagnostics.Debug.WriteLine($"Submit API Response: {responseContent}");
 
 							var result = JsonConvert.DeserializeObject<dynamic>(responseContent);
-							return true;
+							return result.data.id;
 						}
 						else
 						{
@@ -215,21 +216,63 @@ namespace login_full.Services
 					}
 				}
 
-				return false;
+				return "";
 			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"Error in SubmitTestAsync: {ex.Message}");
-				return false;
+				return "";
 			}
 		}
 
 		public async Task<List<TestHistory>> GetTestHistoryAsync()
 		{
+			HttpClient client = new HttpClient();
+			string accessToken = GlobalState.Instance.AccessToken;
+
+			client.DefaultRequestHeaders.Authorization =
+				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 			try
 			{
-				await Task.Delay(100); 
-				return _localStorageService.GetTestHistory().OrderByDescending(h => h.SubmitTime).ToList();
+				HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=64");
+
+				if (response.IsSuccessStatusCode)
+				{
+					string stringResponse = await response.Content.ReadAsStringAsync();
+					JObject jsonResponse = JObject.Parse(stringResponse);
+
+					JObject dataResponse = (JObject)jsonResponse["data"];
+					JArray items = (JArray)dataResponse["items"];
+					var histories = new List<TestHistory>();
+					foreach (var i in items)
+					{
+						int quizID = int.Parse(i["quiz_id"].ToString());
+						HttpResponseMessage i_response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/quizzes/" + quizID);
+						if (i_response.IsSuccessStatusCode)
+						{
+							string i_stringResponse = await i_response.Content.ReadAsStringAsync();
+							JObject i_jsonResponse = JObject.Parse(i_stringResponse);
+
+							JObject i_dataResponse = (JObject)i_jsonResponse["data"];
+							string i_title = i_dataResponse["title"].ToString();
+							DateTime date_created = DateTime.Now;
+							TestHistory history = new TestHistory
+							{
+								Title = i_title,
+								SubmitTime = date_created,
+								Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
+								TotalQuestions = int.Parse(i["total"].ToString()),
+								CorrectAnswers = int.Parse(i["success"].ToString()),
+								WrongAnswers = int.Parse(i["failed"].ToString()),
+								SkippedAnswers = int.Parse(i["skipped"].ToString())
+							};
+							histories.Add(history);
+						}
+					}
+					return histories;
+				}
+				return new List<TestHistory>();
+				//return _localStorageService.GetTestHistory().OrderByDescending(h => h.SubmitTime).ToList();
 			}
 			catch (Exception ex)
 			{
