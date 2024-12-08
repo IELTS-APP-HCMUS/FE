@@ -201,6 +201,8 @@ namespace login_full.Services
 			return questionType switch
 			{
 				"MULTIPLE_CHOICE_ONE" => QuestionType.MultipleChoice,
+				"MULTIPLE_CHOICE_MANY" => QuestionType.MultipleChoice,
+				"FILL_BLANK" => QuestionType.GapFilling,
 				"FILL-IN-THE-BLANK" => QuestionType.GapFilling,
 				"TRUE_FALSE" => QuestionType.TrueFalseNotGiven,
 				"YES_NO_NOT_GIVEN" => QuestionType.YesNoNotGiven,

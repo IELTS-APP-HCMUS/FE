@@ -87,26 +87,34 @@ namespace login_full
 					if (response.IsSuccessStatusCode)
 					{
 						string stringResponse = await response.Content.ReadAsStringAsync();
+						System.Diagnostics.Debug.WriteLine(stringResponse);
 
 						JObject jsonResponse = JObject.Parse(stringResponse);
 						JObject dataResponse = (JObject)jsonResponse["data"];
 						dataResponse.Remove("id");
 						UserTarget userTarget = dataResponse.ToObject<UserTarget>();
 
-						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
-						int remainingDays = (dateTime.ToDateTime(TimeOnly.MinValue) - DateTime.Today).Days;
+						DateTime dateTime = DateTime.ParseExact(userTarget.NextExamDate, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
-						if (dateTime.Year == 1900)
+						// Check if the date is in the past
+						if (dateTime < DateTime.Now)
 						{
-							dateTime = DateOnly.FromDateTime(DateTime.Now); 
+							dateTime = DateTime.Now; // Use today's date if it's in the past
 						}
+
+						// Format the date as dd/MM/yyyy
+						string formattedDate = dateTime.ToString("dd/MM/yyyy");
+
+						// Remaning days to the exam
+						int remainingDays = (dateTime - DateTime.Now).Days;
+
 
 						Target.TargetListening = userTarget.TargetListening == -1 ? 0 : userTarget.TargetListening;
 						Target.TargetReading = userTarget.TargetReading == -1 ? 0 : userTarget.TargetReading;
 						Target.TargetSpeaking = userTarget.TargetSpeaking == -1 ? 0 : userTarget.TargetSpeaking;
 						Target.TargetWriting = userTarget.TargetWriting == -1 ? 0 : userTarget.TargetWriting;
 						Target.TargetStudyDuration = remainingDays >= 0 ? remainingDays : 0;
-						Target.NextExamDate = dateTime.ToString("yyyy-MM-dd");
+						Target.NextExamDate = formattedDate;
 
 					}
 					else
