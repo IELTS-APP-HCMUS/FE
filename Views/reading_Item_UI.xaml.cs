@@ -12,7 +12,9 @@ namespace login_full.Views
 	public sealed partial class reading_Item_UI : Page
 	{
 		public ReadingItemsViewModel ViewModel { get; }
-
+		/// <summary>
+		/// Khởi tạo lớp `reading_Item_UI` và tải dữ liệu các bài đọc từ dịch vụ `ReadingItemsService`.
+		/// </summary>
 		public reading_Item_UI()
 		{
 			this.InitializeComponent();
@@ -38,23 +40,38 @@ namespace login_full.Views
 
 			this.DataContext = ViewModel;
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "OnNavigatedTo" để xử lý sự kiện khi điều hướng đến trang này.
+		/// </summary>
+		/// <param name="e"></param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			ViewModel.LoadItemsCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "Home_Click" để xử lý sự kiện khi nhấn vào nút "Home".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Home_Click(object sender, RoutedEventArgs e)
 		{
 			Frame.Navigate(typeof(HomePage));
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "AboutUs_Click" để xử lý sự kiện khi nhấn vào nút "About Us".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void AboutUs_Click(object sender, RoutedEventArgs e)
 		{
 			ViewModel.AboutUsCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "UserProfileButton_Click" để xử lý sự kiện khi nhấn vào nút "User Profile".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void UserProfileButton_Click(object sender, RoutedEventArgs e)
 		{
 			var flyout = (sender as Button)?.Flyout;
@@ -63,12 +80,20 @@ namespace login_full.Views
 				flyout.ShowAt(sender as FrameworkElement);
 			}
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "LogoutButton_Click" để xử lý sự kiện khi nhấn vào nút "Logout".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void LogoutButton_Click(object sender, RoutedEventArgs e)
 		{
 			ViewModel.LogoutCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "StartTest_Click" để xử lý sự kiện khi nhấn vào nút "Start Test".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void StartTest_Click(object sender, RoutedEventArgs e)
 		{
 			var button = sender as Button;

@@ -255,7 +255,7 @@ namespace login_full.Services
 
 							JObject i_dataResponse = (JObject)i_jsonResponse["data"];
 							string i_title = i_dataResponse["title"].ToString();
-							DateTime date_created = DateTime.Now;
+							DateTime date_created = DateTime.Parse(i["date_created"].ToString());
 							TestHistory history = new TestHistory
 							{
 								Title = i_title,

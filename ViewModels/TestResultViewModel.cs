@@ -86,6 +86,7 @@ namespace login_full.ViewModels
 
         private void InitializeQuestionTypeStats()
         {
+
             var stats = _testDetail.Questions
                 .GroupBy(q => q.Type)
                 .Select(g => new QuestionTypeStats
@@ -134,7 +135,7 @@ namespace login_full.ViewModels
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"http://localhost:8080/api/answers/{testId}");
+                HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/{testId}");
 
                 if (response.IsSuccessStatusCode)
                 {
