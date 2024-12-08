@@ -31,7 +31,10 @@ namespace login_full
     {
 
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-        public AboutUsPage()
+		/// <summary>
+		/// Khởi tạo lớp `AboutUsPage`, thiết lập giao diện người dùng và tải dữ liệu hồ sơ người dùng.
+		/// </summary>
+		public AboutUsPage()
         {
             this.InitializeComponent();
 			System.Diagnostics.Debug.WriteLine("Loading About Us Page successfully");
@@ -41,7 +44,9 @@ namespace login_full
 			System.Diagnostics.Debug.WriteLine("done");
 
 		}
-		
+		/// <summary>
+		/// Tải thông tin hồ sơ người dùng từ trạng thái toàn cục và xử lý lỗi nếu có.
+		/// </summary>
 		private void LoadUserProfile()
 		{
 			try
