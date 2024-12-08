@@ -22,17 +22,26 @@ using System.Threading;
 namespace login_full.Views.ForgotPasswordPage
 {
 	/// <summary>
-	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// Trang xử lý việc nhập email để gửi OTP và hỗ trợ các phương thức xác thực.
 	/// </summary>
 	public sealed partial class EmailSubmit : Page
 	{
 		private readonly LoginApiService _loginApiService;
+
+		/// <summary>
+		/// Khởi tạo lớp EmailSubmit và thiết lập LoginApiService.
+		/// </summary>
 		public EmailSubmit()
 		{
 			this.InitializeComponent();
 			_loginApiService = new LoginApiService();
 		}
 
+		/// <summary>
+		/// Gửi yêu cầu OTP đến email của người dùng thông qua API.
+		/// </summary>
+		/// <param name="email">Địa chỉ email của người dùng.</param>
+		/// <returns>Chuỗi JSON phản hồi từ API hoặc thông báo lỗi.</returns>
 		private async Task<string> SendOtpToEmail(string email)
 		{
 			string json = JsonConvert.SerializeObject(new { email });
@@ -59,6 +68,11 @@ namespace login_full.Views.ForgotPasswordPage
 			}
 		}
 
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút Submit, kiểm tra email và gửi yêu cầu OTP.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
 			string email = EmailTextBox.Text;
@@ -118,6 +132,11 @@ namespace login_full.Views.ForgotPasswordPage
 				return $"Exception: {ex.Message}";
 			}
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút Google Sign-In, thực hiện xác thực qua OAuth và xử lý phản hồi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		public async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -177,6 +196,10 @@ namespace login_full.Views.ForgotPasswordPage
 			}
 		}
 
+		/// <summary>
+		/// Hiển thị hộp thoại thông báo lỗi khi xảy ra sự cố trong quá trình xử lý.
+		/// </summary>
+		/// <param name="message">Thông báo lỗi cần hiển thị.</param>
 		private async Task ShowErrorDialogAsync(string message)
 		{
 			DispatcherQueue.TryEnqueue(async () =>
@@ -191,7 +214,10 @@ namespace login_full.Views.ForgotPasswordPage
 				await dialog.ShowAsync();
 			});
 		}
-
+		/// <summary>
+		/// Xử lý phản hồi sau khi đăng nhập bằng OAuth Google, kiểm tra trạng thái và điều hướng.
+		/// </summary>
+		/// <param name="response">Chuỗi JSON phản hồi từ API đăng nhập Google.</param>
 		private async Task HandleLoginResponseAsync(string response)
 		{
 			try
@@ -217,6 +243,10 @@ namespace login_full.Views.ForgotPasswordPage
 			}
 		}
 
+		/// <summary>
+		/// Hiển thị hộp thoại thông báo thành công khi người dùng thực hiện đăng nhập hoặc hành động thành công.
+		/// </summary>
+		/// <param name="message">Thông báo cần hiển thị.</param>
 		private async Task ShowSuccessDialogAsync(string message)
 		{
 			DispatcherQueue.TryEnqueue(async () =>
@@ -232,11 +262,17 @@ namespace login_full.Views.ForgotPasswordPage
 			});
 		}
 
+		/// <summary>
+		/// Điều hướng đến trang xác minh OTP với email đã nhập.
+		/// </summary>
+		/// <param name="email">Địa chỉ email cần xác minh.</param>
 		private async Task NavigateToOTPVerify(string email)
 		{
 			await App.NavigationService.NavigateToAsync(typeof(OTPVerify), email);
 		}
-
+		/// <summary>
+		/// Điều hướng đến trang chính sau khi người dùng đăng nhập thành công.
+		/// </summary>
 		private async Task NavigateToHomePage()
 		{
 			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây

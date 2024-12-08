@@ -24,8 +24,12 @@ using login_full.Context;
 
 namespace login_full
 {
-    public sealed partial class AboutUsPage : Page
+	/// <summary>
+	/// Trang hiển thị thông tin "Giới thiệu" về ứng dụng, cùng với việc tải dữ liệu hồ sơ người dùng.
+	/// </summary>
+	public sealed partial class AboutUsPage : Page
     {
+
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         public AboutUsPage()
         {

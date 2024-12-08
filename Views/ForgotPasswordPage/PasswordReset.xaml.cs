@@ -16,16 +16,22 @@ using Newtonsoft.Json.Linq;
 namespace login_full.Views.ForgotPasswordPage
 {
 	/// <summary>
-	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// Trang đặt lại mật khẩu, hỗ trợ người dùng nhập mật khẩu mới và xác nhận.
 	/// </summary>
 	public sealed partial class PasswordReset : Page
 	{
 		private string Email { get; set; }
+		/// <summary>
+		/// Trang đặt lại mật khẩu, hỗ trợ người dùng nhập mật khẩu mới và xác nhận.
+		/// </summary>
 		public PasswordReset()
 		{
 			this.InitializeComponent();
 		}
-
+		/// <summary>
+		/// Được gọi khi điều hướng đến trang này, nhận email từ tham số điều hướng.
+		/// </summary>
+		/// <param name="e">Đối tượng sự kiện điều hướng chứa tham số truyền vào.</param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
@@ -40,20 +46,33 @@ namespace login_full.Views.ForgotPasswordPage
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 			}
 		}
-
+		/// <summary>
+		/// Kiểm tra xem mật khẩu có đáp ứng yêu cầu về độ mạnh hay không.
+		/// </summary>
+		/// <param name="password">Mật khẩu cần kiểm tra.</param>
+		/// <returns>True nếu mật khẩu mạnh, ngược lại là False.</returns>
 		private bool IsPasswordStrong(string password)
 		{
 			// At least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special character
 			var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
 			return regex.IsMatch(password);
 		}
-
+		/// <summary>
+		/// Kiểm tra xem email có hợp lệ không.
+		/// </summary>
+		/// <param name="email">Địa chỉ email cần kiểm tra.</param>
+		/// <returns>True nếu email hợp lệ, ngược lại là False.</returns>
 		private bool IsEmailValid(string email)
 		{
 			var regex = new Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$");
 			return regex.IsMatch(email);
 		}
-
+		/// <summary>
+		/// Gửi yêu cầu đặt lại mật khẩu đến API với email và mật khẩu mới.
+		/// </summary>
+		/// <param name="email">Địa chỉ email của người dùng.</param>
+		/// <param name="newPassword">Mật khẩu mới của người dùng.</param>
+		/// <returns>Kết quả phản hồi từ API dưới dạng chuỗi JSON hoặc thông báo lỗi.</returns>
 		private async Task<string> ResetPasswordAsync(string email, string newPassword)
 		{
 			string json = JsonConvert.SerializeObject(new { email, new_password = newPassword });
@@ -80,7 +99,11 @@ namespace login_full.Views.ForgotPasswordPage
 				return $"Exception: {ex.Message}";
 			}
 		}
-
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút Submit, kiểm tra mật khẩu mới và gửi yêu cầu đặt lại mật khẩu.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
 			string newPassword = NewPassword.Password;
@@ -142,6 +165,11 @@ namespace login_full.Views.ForgotPasswordPage
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 			}
 		}
+		/// <summary>
+		/// Hiển thị hộp thoại thông báo thành công khi đặt lại mật khẩu thành công.
+		/// </summary>
+		/// <param name="message">Thông báo cần hiển thị.</param>
+
 		private async Task ShowSuccessDialogAsync(string message)
 		{
 			var mainWindow = App.MainWindow;

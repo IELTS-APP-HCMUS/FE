@@ -15,16 +15,24 @@ using System.Threading.Tasks;
 namespace login_full.Views.ForgotPasswordPage
 {
 	/// <summary>
-	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// Trang xác minh OTP được sử dụng để người dùng nhập mã OTP và xác nhận.
 	/// </summary>
+
 	public sealed partial class OTPVerify : Page
 	{
 		private string Email { get; set; }
+
+		/// <summary>
+		/// Khởi tạo lớp `OTPVerify` và thiết lập giao diện người dùng.
+		/// </summary>
 		public OTPVerify()
 		{
 			this.InitializeComponent();
 		}
-
+		/// <summary>
+		/// Được gọi khi điều hướng đến trang này, nhận email từ tham số điều hướng.
+		/// </summary>
+		/// <param name="e">Đối tượng sự kiện điều hướng chứa tham số truyền vào.</param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
@@ -39,6 +47,12 @@ namespace login_full.Views.ForgotPasswordPage
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 			}
 		}
+		/// <summary>
+		/// Gửi yêu cầu xác minh OTP đến API với email và mã OTP.
+		/// </summary>
+		/// <param name="email">Địa chỉ email của người dùng.</param>
+		/// <param name="otp">Mã OTP được người dùng nhập.</param>
+		/// <returns>Kết quả phản hồi từ API dưới dạng chuỗi JSON hoặc thông báo lỗi.</returns>
 
 		private async Task<string> VerifyOtpAsync(string email, string otp)
 		{
@@ -65,6 +79,11 @@ namespace login_full.Views.ForgotPasswordPage
 				return $"Exception: {ex.Message}";
 			}
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút Submit, kiểm tra mã OTP và gửi yêu cầu xác minh.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 
 		private async void SubmitButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -111,6 +130,11 @@ namespace login_full.Views.ForgotPasswordPage
 				ErrorMessageTextBlock.Visibility = Visibility.Visible;
 			}
 		}
+		/// <summary>
+		/// Điều hướng đến trang đặt lại mật khẩu với email đã xác minh.
+		/// </summary>
+		/// <param name="email">Địa chỉ email của người dùng đã được xác minh.</param>
+
 		private async Task NavigateToPasswordReset(string email)
 		{
 			await App.NavigationService.NavigateToAsync(typeof(PasswordReset), email);

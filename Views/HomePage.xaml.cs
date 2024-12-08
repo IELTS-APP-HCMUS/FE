@@ -12,13 +12,18 @@ using System.ComponentModel;
 
 namespace login_full
 {
-    public sealed partial class HomePage : Page
+	/// <summary>
+	/// Trang chính của ứng dụng, hiển thị thông tin hồ sơ người dùng và mục tiêu học tập.
+	/// </summary>
+	public sealed partial class HomePage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
   
 		public UserProfile Profile { get; } = new UserProfile();
 		public UserTarget Target { get; } = new UserTarget();
-
+		/// <summary>
+		/// Khởi tạo lớp `HomePage`, thiết lập giao diện người dùng và đăng ký các sự kiện cần thiết.
+		/// </summary>
 		public HomePage()
         {
             this.InitializeComponent();
@@ -27,12 +32,19 @@ namespace login_full
 			LoadUserTarget();
 			PerformanceComponent.TargetComponentControl.TargetUpdatePopUpCompControl.RequestLoadUserTarget += TargetComponent_RequestLoadUserTarget;
 		}
-        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+		/// <summary>
+		/// Xử lý sự kiện khi chế độ xem của ScrollViewer thay đổi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+		private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             
         }
 
-		
+		/// <summary>
+		/// Tải thông tin hồ sơ người dùng từ API và cập nhật vào trạng thái toàn cục.
+		/// </summary>
 		private async void LoadUserProfile()
 		{
 			try
@@ -72,7 +84,9 @@ namespace login_full
 			}
 		}
 
-		
+		/// <summary>
+		/// Xử lý sự kiện yêu cầu tải lại thông tin mục tiêu học tập từ giao diện người dùng.
+		/// </summary>
 		public async void LoadUserTarget()
 		{
 			try
@@ -129,12 +143,22 @@ namespace login_full
 			}
 			
 		}
-	
+
+		/// <summary>
+		/// Xử lý sự kiện yêu cầu tải lại thông tin mục tiêu học tập từ giao diện người dùng.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private void TargetComponent_RequestLoadUserTarget(object sender, EventArgs e)
 		{
 			LoadUserTarget();
 		}
 
+		/// <summary>
+		/// Xử lý sự kiện khi trạng thái toàn cục (`GlobalState`) thay đổi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private void GlobalState_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(GlobalState.UserProfile))
