@@ -20,12 +20,15 @@ namespace login_full.Views
 		public ReadingTestPage()
 		{
 			this.InitializeComponent();
+            var readingTestService = ServiceLocator.GetService<IReadingTestService>();
+            var navigationService = App.NavigationService;
 
-			// Sử dụng NavigationService từ App
-			ViewModel = new ReadingTestViewModel(
-				new MockReadingTestService(),
-				App.NavigationService
-			);
+
+            // Sử dụng NavigationService từ App
+            ViewModel = new					(
+                readingTestService,
+                navigationService
+            );
 			//  Loaded += ReadingTestPage_Loaded;
 		}
 
@@ -37,10 +40,10 @@ namespace login_full.Views
 		{
 			base.OnNavigatedTo(e);
 
-			if (e.Parameter is ReadingItemModels item)
+			if (e.Parameter is string item)
 			{
 				// Load test dựa trên TestId của item được chọn
-				await ViewModel.LoadTestAsync(item.TestId);
+				await ViewModel.LoadTestAsync(item);
 			}
 		}
 	}

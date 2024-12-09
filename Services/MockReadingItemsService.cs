@@ -23,7 +23,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Gap Filling",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = true  // Đã hoàn thành
+                    IsSubmitted = true  // Đã hoàn thành
                 },
                 new ReadingItemModels
                 {
@@ -34,7 +34,7 @@ namespace login_full.Services
                     Difficulty = "Intermediate",
                     Category = "Matching",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false // Chưa hoàn thành
+                    IsSubmitted = false // Chưa hoàn thành
                 },
                 new ReadingItemModels
                 {
@@ -45,7 +45,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Gap Filling",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = true
+                    IsSubmitted = true
                 },
                 new ReadingItemModels
                 {
@@ -56,7 +56,7 @@ namespace login_full.Services
                     Difficulty = "Intermediate",
                     Category = "Matching",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -67,7 +67,7 @@ namespace login_full.Services
                     Difficulty = "Hard",
                     Category = "True/False",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = true
+                    IsSubmitted = true
                 },
                 new ReadingItemModels
                 {
@@ -78,7 +78,7 @@ namespace login_full.Services
                     Difficulty = "Medium",
                     Category = "Reading",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -89,7 +89,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Listening",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -100,7 +100,7 @@ namespace login_full.Services
                     Difficulty = "Hard",
                     Category = "Reading",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = true
+                    IsSubmitted = true
                 },
                 new ReadingItemModels
                 {
@@ -111,7 +111,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Reading",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -122,7 +122,7 @@ namespace login_full.Services
                     Difficulty = "Medium",
                     Category = "Listening",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -133,7 +133,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Reading",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -144,7 +144,7 @@ namespace login_full.Services
                     Difficulty = "Medium",
                     Category = "Listening",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -155,7 +155,7 @@ namespace login_full.Services
                     Difficulty = "Easy",
                     Category = "Gap Filling",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -166,7 +166,7 @@ namespace login_full.Services
                     Difficulty = "Intermediate",
                     Category = "Matching",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -177,7 +177,7 @@ namespace login_full.Services
                     Difficulty = "Hard",
                     Category = "True/False",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 },
                 new ReadingItemModels
                 {
@@ -188,7 +188,7 @@ namespace login_full.Services
                     Difficulty = "Medium",
                     Category = "Reading",
                     ImagePath = "/Assets/reading_win.png",
-                    IsCompleted = false
+                    IsSubmitted = false
                 }
             };
         }
@@ -201,7 +201,7 @@ namespace login_full.Services
         public Task<ObservableCollection<ReadingItemModels>> GetCompletedItemsAsync()
         {
             var completedItems = new ObservableCollection<ReadingItemModels>(
-                _items.Where(item => item.IsCompleted)
+                _items.Where(item => item.IsSubmitted)
             );
             return Task.FromResult(completedItems);
         }
@@ -209,7 +209,7 @@ namespace login_full.Services
         public Task<ObservableCollection<ReadingItemModels>> GetUncompletedItemsAsync()
         {
             var uncompletedItems = new ObservableCollection<ReadingItemModels>(
-                _items.Where(item => !item.IsCompleted)
+                _items.Where(item => !item.IsSubmitted)
             );
             return Task.FromResult(uncompletedItems);
         }

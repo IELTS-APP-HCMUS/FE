@@ -3,7 +3,8 @@ using Microsoft.UI.Xaml.Controls;
 using login_full.ViewModels;
 using login_full.Services;
 using login_full.API_Services;
-
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace login_full
 {
@@ -20,13 +21,32 @@ namespace login_full
 		//  public TestResultService TestResultService { get; } = new TestResultService();
 		public IChartService ChartService { get; } = new ChartService();
 
+		private IServiceProvider _serviceProvider;
+
 		public App()
         {
             this.InitializeComponent();
-			var configService = new ConfigService(); 
-			var dbService = new DatabaseService(configService);
-			dbService.ConnectToDatabase(); 
+			ConfigureServices();
 		}
+
+        private void ConfigureServices()
+        {
+            var services = new ServiceCollection();
+            
+            // Register services
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IReadingTestService, ReadingTestService>();
+            
+            // Register ViewModels
+            services.AddTransient<HistoryViewModel>();
+            
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
+        public T GetService<T>() where T : class
+        {
+            return _serviceProvider.GetService<T>();
+        }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {

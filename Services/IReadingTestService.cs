@@ -11,8 +11,9 @@ namespace login_full.Services
     {
         Task<ReadingTestDetail> GetTestDetailAsync(string testId);
         Task SaveAnswerAsync(string testId, string questionId, string answer);
-        Task<bool> SubmitTestAsync(string testId);
+        Task<string> SubmitTestAsync(string testId);
 
         Task<bool> UpdateTestCompletionStatus(string testId, bool isCompleted);
+        Task<List<TestHistory>> GetTestHistoryAsync();
     }
 }

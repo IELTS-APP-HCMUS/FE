@@ -86,7 +86,7 @@ namespace login_full.Components.Home.Performance
 			{
 				// Tính trung bình các giá trị
 				var average = (data.TargetReading + data.TargetListening + data.TargetWriting + data.TargetSpeaking) / 4.0;
-				OverallScore = average.ToString("F1"); // Định dạng 1 chữ số thập phân
+				OverallScore = average.ToString("F1");
 				OverallScoreTextBlock.Text = OverallScore;
 			}
 			else

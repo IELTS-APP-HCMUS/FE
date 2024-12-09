@@ -12,19 +12,20 @@ namespace login_full.Views
 	public sealed partial class reading_Item_UI : Page
 	{
 		public ReadingItemsViewModel ViewModel { get; }
-
+		/// <summary>
+		/// Khởi tạo lớp `reading_Item_UI` và tải dữ liệu các bài đọc từ dịch vụ `ReadingItemsService`.
+		/// </summary>
 		public reading_Item_UI()
 		{
 			this.InitializeComponent();
-
+			System.Diagnostics.Debug.WriteLine("reading_Item_UI, start getting quizzes");
 			// Create instances of the services
-			var readingItemsService = new MockReadingItemsService();
+			var readingItemsService = new ReadingItemsService();
 			var navigationService = new NavigationService();
 			var paginationService = new PaginationService();
-			// Lấy danh sách items từ MockReadingItemsService
-			var items = readingItemsService.GetReadingItemsAsync().Result.ToList();
+			// Lấy danh sách items từ ReadingItemsService
 
-			var searchService = new SearchService(items, paginationService);
+			var searchService = new SearchService(new List<ReadingItemModels>(), paginationService);
 
 			var completedItemsService = new CompletedItemsService(new List<ReadingItemModels>(), paginationService);
 
@@ -39,23 +40,38 @@ namespace login_full.Views
 
 			this.DataContext = ViewModel;
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "OnNavigatedTo" để xử lý sự kiện khi điều hướng đến trang này.
+		/// </summary>
+		/// <param name="e"></param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			ViewModel.LoadItemsCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "Home_Click" để xử lý sự kiện khi nhấn vào nút "Home".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Home_Click(object sender, RoutedEventArgs e)
 		{
 			Frame.Navigate(typeof(HomePage));
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "AboutUs_Click" để xử lý sự kiện khi nhấn vào nút "About Us".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void AboutUs_Click(object sender, RoutedEventArgs e)
 		{
 			ViewModel.AboutUsCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "UserProfileButton_Click" để xử lý sự kiện khi nhấn vào nút "User Profile".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void UserProfileButton_Click(object sender, RoutedEventArgs e)
 		{
 			var flyout = (sender as Button)?.Flyout;
@@ -64,29 +80,28 @@ namespace login_full.Views
 				flyout.ShowAt(sender as FrameworkElement);
 			}
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "LogoutButton_Click" để xử lý sự kiện khi nhấn vào nút "Logout".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void LogoutButton_Click(object sender, RoutedEventArgs e)
 		{
 			ViewModel.LogoutCommand.Execute(null);
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp "StartTest_Click" để xử lý sự kiện khi nhấn vào nút "Start Test".
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void StartTest_Click(object sender, RoutedEventArgs e)
 		{
 			var button = sender as Button;
 			var item = button.DataContext as ReadingItemModels;
 
-			// Nếu bài đã làm, chuyển thẳng đến trang kết quả
-			if (item.IsCompleted)
-			{
-				//var testService = new MockReadingTestService();
-				//var test = testService.GetTestDetailAsync(item.testId).Result;
-				//var resultViewModel = new TestResultViewModel(test, TimeSpan.Zero, (App.Current as App).ChartService,);
-				//Frame.Navigate(typeof(Views.TestResultPage), resultViewModel);
-			}
-			else
-			{
-				Frame.Navigate(typeof(Views.ReadingTestPage), item);
-			}
+		
+				Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
+			
 		}
 
 		private void ClearSearch_Click(object sender, RoutedEventArgs e)
@@ -134,12 +149,10 @@ namespace login_full.Views
 		{
 			if (args.ChosenSuggestion != null)
 			{
-				// Người dùng chọn một gợi ý
 				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
 			}
 			else
 			{
-				// Người dùng nhấn Enter
 				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
 			}
 		}
