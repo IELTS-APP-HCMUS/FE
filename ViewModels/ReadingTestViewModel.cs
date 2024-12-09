@@ -151,8 +151,8 @@ namespace login_full.ViewModels
 
             if (result == ContentDialogResult.Primary)
             {
-                var success = await _testService.SubmitTestAsync(TestDetail.Id);
-                if (success)
+                string success = await _testService.SubmitTestAsync(TestDetail.Id);
+                if (success != "")
                 {
                     TestDetail.Progress.IsCompleted = true;
 
@@ -162,8 +162,9 @@ namespace login_full.ViewModels
 
                     // Tạo TestResultViewModel và chuyển hướng
                     var resultViewModel = new TestResultViewModel(TestDetail, timeSpent, (App.Current as App).ChartService, _navigationService);
-                    (App.Current as App).CurrentTestResult = resultViewModel;
-                    await _navigationService.NavigateToAsync(typeof(TestResultPage));
+                    await resultViewModel.LoadSummaryAsync(success);
+					(App.Current as App).CurrentTestResult = resultViewModel;
+                    await _navigationService.NavigateToAsync(typeof(TestResultPage), success);
                 }
             }
             else

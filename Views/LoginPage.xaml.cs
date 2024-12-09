@@ -18,13 +18,21 @@ using System.Linq;
 using Microsoft.UI;
 using login_full.Views;
 using login_full.Views.ForgotPasswordPage;
+using System.Text.RegularExpressions;
 
 namespace login_full
 {
+	/// <summary>
+	/// Trang đăng nhập, hỗ trợ đăng nhập qua Google OAuth, đăng nhập bằng tài khoản và mật khẩu, cũng như chức năng đăng ký.
+	/// </summary>
+
 	public sealed partial class LoginPage : Page
 	{
 		private readonly UserAuthenticationService _authService;
 		private readonly LoginApiService _loginApiService;
+		/// <summary>
+		/// Khởi tạo lớp `LoginPage`, thiết lập giao diện và các dịch vụ xác thực.
+		/// </summary>
 
 		public LoginPage()
 		{
@@ -37,10 +45,21 @@ namespace login_full
 			// Check for saved credentials on page load
 			//CheckSavedCredentials();
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi trang được tải, thực hiện các thao tác khởi tạo.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+
 		private async void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			await InitializeAsync();
 		}
+
+		/// <summary>
+		/// Khởi tạo trang, kiểm tra xem có thông tin đăng nhập đã lưu hay không và điều hướng nếu cần.
+		/// </summary>
+		/// <returns>Task đại diện cho thao tác bất đồng bộ.</returns>
 
 		private async Task InitializeAsync()
 		{
@@ -57,6 +76,12 @@ namespace login_full
 				System.Diagnostics.Debug.WriteLine($"Initialization error: {ex.Message}");
 			}
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút đăng nhập qua Google, thực hiện xác thực OAuth và xử lý phản hồi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+
 		public async void GoogleSignInButton_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -116,6 +141,12 @@ namespace login_full
 			}
 		}
 
+		/// <summary>
+		/// Xử lý phản hồi từ API sau khi đăng nhập thành công hoặc thất bại.
+		/// </summary>
+		/// <param name="response">Chuỗi JSON phản hồi từ API.</param>
+		/// <returns>Task đại diện cho thao tác bất đồng bộ.</returns>
+
 		private async Task HandleLoginResponseAsync(string response)
 		{
 			try
@@ -141,6 +172,12 @@ namespace login_full
 			}
 		}
 
+		/// <summary>
+		/// Hiển thị hộp thoại thông báo lỗi với thông điệp được cung cấp.
+		/// </summary>
+		/// <param name="message">Thông báo lỗi cần hiển thị.</param>
+		/// <returns>Task đại diện cho thao tác bất đồng bộ.</returns>
+
 		private async Task ShowErrorDialogAsync(string message)
 		{
 			DispatcherQueue.TryEnqueue(async () =>
@@ -155,6 +192,7 @@ namespace login_full
 				await dialog.ShowAsync();
 			});
 		}
+
 
 		private async Task ShowSuccessDialogAsync(string message)
 		{
@@ -171,6 +209,12 @@ namespace login_full
 			});
 		}
 
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng chuyển sang giao diện đăng nhập.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+
 		private void LoginButton_Click(object sender, RoutedEventArgs e)
 		{
 			LoginButton.Background = new SolidColorBrush(Colors.White);
@@ -178,6 +222,11 @@ namespace login_full
 			LoginPanel.Visibility = Visibility.Visible;
 			RegisterPanel.Visibility = Visibility.Collapsed;
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng chuyển sang giao diện đăng ký.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 
 		private void RegisterButtonToggle_Click(object sender, RoutedEventArgs e)
 		{
@@ -186,6 +235,11 @@ namespace login_full
 			LoginPanel.Visibility = Visibility.Collapsed;
 			RegisterPanel.Visibility = Visibility.Visible;
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút đăng nhập, gửi yêu cầu đăng nhập và xử lý phản hồi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 
 		private async void Login1Button_Click(object sender, RoutedEventArgs e)
 		{
@@ -234,6 +288,12 @@ namespace login_full
 			}
 		}
 
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn vào "Quên mật khẩu", điều hướng đến trang quên mật khẩu.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+
 		private async void ForgotPassword_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -246,17 +306,31 @@ namespace login_full
 			}
 		}
 
+		/// <summary>
+		/// Điều hướng đến trang chính sau khi người dùng đăng nhập thành công.
+		/// </summary>
+		/// <returns>Task đại diện cho thao tác bất đồng bộ.</returns>
+
 		private async Task NavigateToHomePage()
 		{
 			LoginGrid.Visibility = Visibility.Collapsed;
 			Frame.Visibility = Visibility.Visible;
 			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
 		}
+		/// <summary>
+		/// Điều hướng đến trang "Quên mật khẩu".
+		/// </summary>
+		/// <returns>Task đại diện cho thao tác bất đồng bộ.</returns>
 
 		private static async Task NavigateToForgotPassword()
 		{
 			await App.NavigationService.NavigateToAsync(typeof(EmailSubmit));
 		}
+		/// <summary>
+		/// Xử lý sự kiện khi người dùng nhấn nút đăng ký, kiểm tra thông tin và gửi yêu cầu đăng ký.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 
 		private async void RegisterButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -264,6 +338,18 @@ namespace login_full
 			string password = RegisterPasswordBox.Password;
 			string confirmPassword = ConfirmPasswordBox.Password;
 			string fullName = FullNameTextBox.Text;
+
+			if (!IsValidEmail(email))
+			{
+				await ShowErrorDialogAsync("Invalid email format. Please enter a valid email.");
+				return;
+			}
+
+			if (!IsStrongPassword(password))
+			{
+				await ShowErrorDialogAsync("Password is too weak. It must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+				return;
+			}
 
 			if (password != confirmPassword)
 			{
@@ -306,6 +392,30 @@ namespace login_full
 			{
 				await ShowErrorDialogAsync($"Unexpected error during signup: {ex.Message}");
 			}
+		}
+		/// <summary>
+		 /// Kiểm tra xem địa chỉ email có hợp lệ hay không.
+		 /// </summary>
+		 /// <param name="email">Địa chỉ email cần kiểm tra.</param>
+		 /// <returns>True nếu email hợp lệ, ngược lại False.</returns>
+
+		private bool IsValidEmail(string email)
+		{
+			var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+			return emailRegex.IsMatch(email);
+		}
+
+		/// <summary>
+		/// Kiểm tra xem mật khẩu có đáp ứng các tiêu chí về độ mạnh hay không.
+		/// </summary>
+		/// <param name="password">Mật khẩu cần kiểm tra.</param>
+		/// <returns>True nếu mật khẩu mạnh, ngược lại False.</returns>
+
+		private bool IsStrongPassword(string password)
+		{
+			
+			var passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+			return passwordRegex.IsMatch(password);
 		}
 	}
 }

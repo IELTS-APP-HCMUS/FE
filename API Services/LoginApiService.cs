@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace login_full.API_Services
 {
@@ -96,7 +97,8 @@ namespace login_full.API_Services
 				}
 				else
 				{
-					return $"Error: {response.StatusCode}";
+					string errorContent = await response.Content.ReadAsStringAsync();
+					return $"Error: {response.StatusCode} - {errorContent}";
 				}
 			}
 			catch (Exception ex)

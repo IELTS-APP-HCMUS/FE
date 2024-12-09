@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using login_full.Context;
 using login_full.Models;
 using login_full.Services;
 using login_full.Views;
@@ -10,12 +11,15 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -31,6 +35,7 @@ namespace login_full.ViewModels
 
         private readonly INavigationService _navigationService;
 
+        private Dictionary<string, int> _summary;
 
         // Điều hướng
         public IRelayCommand BackCommand { get; }
@@ -40,10 +45,10 @@ namespace login_full.ViewModels
 
 
         public string TestDuration { get; }
-        public int TotalQuestions => _testDetail.Questions.Count;
-        public int CorrectAnswers => _testDetail.Questions.Count(q => q.UserAnswer == q.CorrectAnswer);
-        public int WrongAnswers => _testDetail.Questions.Count(q => q.UserAnswer != null && q.UserAnswer != q.CorrectAnswer);
-        public int UnansweredQuestions => _testDetail.Questions.Count(q => q.UserAnswer == null);
+        public int TotalQuestions => _summary["total"];
+        public int CorrectAnswers => _summary["correct"];
+        public int WrongAnswers => _summary["wrong"];
+        public int UnansweredQuestions => _summary["skip"];
 
         // Thêm properties cho biểu đồ
         public double CorrectPercentage => (double)CorrectAnswers / TotalQuestions * 100;
@@ -81,6 +86,7 @@ namespace login_full.ViewModels
 
         private void InitializeQuestionTypeStats()
         {
+
             var stats = _testDetail.Questions
                 .GroupBy(q => q.Type)
                 .Select(g => new QuestionTypeStats
@@ -101,7 +107,6 @@ namespace login_full.ViewModels
             _chartService = chartService;
             _testDetail = testDetail;
 
-
             BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
@@ -111,8 +116,65 @@ namespace login_full.ViewModels
             TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
             InitializeQuestionTypeStats();
         }
+		public Dictionary<string, int> Summary
+		{
+			get => _summary;
+			private set
+			{
+				_summary = value;
+				OnPropertyChanged();
+			}
+		}
+		public async Task LoadSummaryAsync(string testId)
+		{
+			HttpClient client = new HttpClient();
+			string accessToken = GlobalState.Instance.AccessToken;
 
-        private async Task RetryTest()
+			client.DefaultRequestHeaders.Authorization =
+				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/{testId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string stringResponse = await response.Content.ReadAsStringAsync();
+                    JObject jsonResponse = JObject.Parse(stringResponse);
+
+                    JObject dataResponse = (JObject)jsonResponse["data"];
+                    JObject summary = (JObject)dataResponse["summary"];
+                    int did = dataResponse["detail"]["0"].Count();
+
+                    //Dictionary<string, int> summary = 
+                    //       {
+                    //        { "correct", int.Parse(summary["correct"].ToString()) },
+                    //        { "total", int.Parse(summary["total"].ToString()) },
+                    //        { "skip", int.Parse(summary["total"].ToString()) - did }
+                    //       };
+                    Summary = new Dictionary<string, int>
+                {
+                    { "correct", int.Parse(summary["correct"].ToString()) },
+                    { "wrong", did - int.Parse(summary["correct"].ToString())},
+                    { "total", int.Parse(summary["total"].ToString()) },
+                    { "skip", int.Parse(summary["total"].ToString()) - did }
+                };
+                    return;
+                }
+            }
+            catch
+            {
+                //Summary = await _testService.GetTestDetailAsync(testId);
+                Summary = new Dictionary<string, int>
+                {
+                    { "correct", 0 },
+                    { "wrong", 0 },
+                    { "total", 0 },
+                    { "skip", 0 }
+                };
+            }
+		}
+		private async Task RetryTest()
         {
             // Logic để làm lại bài thi
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), _testDetail.Id);
@@ -136,7 +198,11 @@ namespace login_full.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-    }
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 
     public class QuestionTypeStats
     {

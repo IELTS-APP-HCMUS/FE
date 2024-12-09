@@ -25,7 +25,7 @@ namespace login_full.Views
 
 
             // Sử dụng NavigationService từ App
-            ViewModel = new ReadingTestViewModel(
+            ViewModel = new					(
                 readingTestService,
                 navigationService
             );

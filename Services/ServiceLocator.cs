@@ -15,7 +15,7 @@ namespace login_full.Services
 
             // Register services
             services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IReadingTestService, MockReadingTestService>();
+            services.AddSingleton<IReadingTestService, ReadingTestService>();
             services.AddSingleton<LocalStorageService>();
 
             // Register ViewModels
