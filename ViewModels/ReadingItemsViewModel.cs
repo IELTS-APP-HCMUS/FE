@@ -40,8 +40,18 @@ namespace login_full.ViewModels
         private double _windowHeight;
         private bool _isCompletedFilterActive;
 
-        public ObservableCollection<ReadingItemModels> Items { get; private set; }
-        public ObservableCollection<ReadingItemModels> DisplayedItems => _paginationService.State.CurrentPageItems;
+        public ObservableCollection<ReadingItemModels> _items { get; private set; }
+
+		public ObservableCollection<ReadingItemModels> Items
+		{
+			get => _items;
+			private set
+			{
+				_items = value;
+				OnPropertyChanged(nameof(Items)); // Notify UI when the collection changes
+			}
+		}
+		public ObservableCollection<ReadingItemModels> DisplayedItems => _paginationService.State.CurrentPageItems;
 
         // Properties
         public bool IsFilterExpanded
@@ -151,8 +161,8 @@ namespace login_full.ViewModels
         private void OnSearchResultsUpdated(object sender, IEnumerable<ReadingItemModels> results)
         {
             var filteredResults = ShowingCompletedItems
-                ? results.Where(i => i.IsCompleted)
-                : results.Where(i => !i.IsCompleted);
+                ? results.Where(i => i.IsSubmitted)
+                : results.Where(i => !i.IsSubmitted);
 
             _paginationService.UpdateItems(filteredResults);
             OnPropertyChanged(nameof(DisplayedItems));
@@ -160,16 +170,32 @@ namespace login_full.ViewModels
 
         private async Task LoadItemsAsync()
         {
-            var items = await _readingItemsService.GetReadingItemsAsync();
-            Items = new ObservableCollection<ReadingItemModels>(items);
-            InitializePagination();
-        }
+			try
+			{
+                var items = await _readingItemsService.GetReadingItemsAsync();
+				if (items != null)
+				{
+					// Switch back to the main thread if necessary (WPF/WinUI usually auto does this)
+					Items = new ObservableCollection<ReadingItemModels>(items);
+					System.Diagnostics.Debug.WriteLine($"Count: {Items.Count}");
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("No items fetched from service.");
+				}
+				InitializePagination();
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Error in LoadItemsAsync: {ex.Message}");
+			}
+		}
 
         private void InitializePagination()
         {
             var filteredItems = ShowingCompletedItems
-                ? Items.Where(i => i.IsCompleted).ToList()
-                : Items.Where(i => !i.IsCompleted).ToList();
+                ? Items.Where(i => i.IsSubmitted).ToList()
+                : Items.Where(i => !i.IsSubmitted).ToList();
 
             _paginationService.UpdateItems(filteredItems);
             _paginationService.UpdateItemsPerPage(IsFilterExpanded);

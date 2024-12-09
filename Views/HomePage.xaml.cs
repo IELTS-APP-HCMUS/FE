@@ -1,35 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
-using Microsoft.UI;
-using Windows.Graphics;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
-using System.Windows;
-
-using Microsoft.UI.Windowing;
-using System.Data;
-using System.Text;
-using Windows.Networking;
-using YamlDotNet.Core.Tokens;
-using System.Threading.Tasks;
 using login_full.Models;
 using login_full.Context;
-using login_full.Components.Home.Performance;
 using System.ComponentModel;
 
 
@@ -37,13 +12,18 @@ using System.ComponentModel;
 
 namespace login_full
 {
-    public sealed partial class HomePage : Page
+	/// <summary>
+	/// Trang chính của ứng dụng, hiển thị thông tin hồ sơ người dùng và mục tiêu học tập.
+	/// </summary>
+	public sealed partial class HomePage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
   
 		public UserProfile Profile { get; } = new UserProfile();
 		public UserTarget Target { get; } = new UserTarget();
-
+		/// <summary>
+		/// Khởi tạo lớp `HomePage`, thiết lập giao diện người dùng và đăng ký các sự kiện cần thiết.
+		/// </summary>
 		public HomePage()
         {
             this.InitializeComponent();
@@ -52,12 +32,19 @@ namespace login_full
 			LoadUserTarget();
 			PerformanceComponent.TargetComponentControl.TargetUpdatePopUpCompControl.RequestLoadUserTarget += TargetComponent_RequestLoadUserTarget;
 		}
-        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+		/// <summary>
+		/// Xử lý sự kiện khi chế độ xem của ScrollViewer thay đổi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
+		private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             
         }
 
-		
+		/// <summary>
+		/// Tải thông tin hồ sơ người dùng từ API và cập nhật vào trạng thái toàn cục.
+		/// </summary>
 		private async void LoadUserProfile()
 		{
 			try
@@ -97,7 +84,9 @@ namespace login_full
 			}
 		}
 
-		
+		/// <summary>
+		/// Xử lý sự kiện yêu cầu tải lại thông tin mục tiêu học tập từ giao diện người dùng.
+		/// </summary>
 		public async void LoadUserTarget()
 		{
 			try
@@ -112,22 +101,34 @@ namespace login_full
 					if (response.IsSuccessStatusCode)
 					{
 						string stringResponse = await response.Content.ReadAsStringAsync();
+						System.Diagnostics.Debug.WriteLine(stringResponse);
 
 						JObject jsonResponse = JObject.Parse(stringResponse);
 						JObject dataResponse = (JObject)jsonResponse["data"];
 						dataResponse.Remove("id");
 						UserTarget userTarget = dataResponse.ToObject<UserTarget>();
 
-						DateOnly dateTime = DateOnly.Parse(userTarget.NextExamDate.Split(" ")[0]);
-						int remainingDays = (dateTime.ToDateTime(TimeOnly.MinValue) - DateTime.Today).Days;
+						DateTime dateTime = DateTime.ParseExact(userTarget.NextExamDate, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
-						
-						Target.TargetListening = userTarget.TargetListening;
-						Target.TargetReading = userTarget.TargetReading;
-						Target.TargetSpeaking = userTarget.TargetSpeaking;
-						Target.TargetWriting = userTarget.TargetWriting;
-						Target.TargetStudyDuration = remainingDays;
-						Target.NextExamDate = userTarget.NextExamDate;
+						// Check if the date is in the past
+						if (dateTime < DateTime.Now)
+						{
+							dateTime = DateTime.Now; // Use today's date if it's in the past
+						}
+
+						// Format the date as dd/MM/yyyy
+						string formattedDate = dateTime.ToString("dd/MM/yyyy");
+
+						// Remaning days to the exam
+						int remainingDays = (dateTime - DateTime.Now).Days;
+
+
+						Target.TargetListening = userTarget.TargetListening == -1 ? 0 : userTarget.TargetListening;
+						Target.TargetReading = userTarget.TargetReading == -1 ? 0 : userTarget.TargetReading;
+						Target.TargetSpeaking = userTarget.TargetSpeaking == -1 ? 0 : userTarget.TargetSpeaking;
+						Target.TargetWriting = userTarget.TargetWriting == -1 ? 0 : userTarget.TargetWriting;
+						Target.TargetStudyDuration = remainingDays >= 0 ? remainingDays : 0;
+						Target.NextExamDate = formattedDate;
 
 					}
 					else
@@ -142,12 +143,22 @@ namespace login_full
 			}
 			
 		}
-	
+
+		/// <summary>
+		/// Xử lý sự kiện yêu cầu tải lại thông tin mục tiêu học tập từ giao diện người dùng.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private void TargetComponent_RequestLoadUserTarget(object sender, EventArgs e)
 		{
 			LoadUserTarget();
 		}
 
+		/// <summary>
+		/// Xử lý sự kiện khi trạng thái toàn cục (`GlobalState`) thay đổi.
+		/// </summary>
+		/// <param name="sender">Nguồn sự kiện.</param>
+		/// <param name="e">Thông tin sự kiện.</param>
 		private void GlobalState_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(GlobalState.UserProfile))

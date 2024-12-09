@@ -11,7 +11,9 @@ namespace login_full
 	{
 		private const int MinWindowWidth = 850;
 		private const int MinWindowHeight = 600;
-
+		/// <summary>
+		/// Khởi tạo lớp `MainWindow`
+		/// </summary>
 		public MainWindow()
 		{
 			this.InitializeComponent();
@@ -20,7 +22,9 @@ namespace login_full
 
 			this.SizeChanged += MainWindow_SizeChanged;
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp `MainWindow_SizeChanged` để xử lý sự kiện thay đổi kích thước cửa sổ.
+		/// </summary>
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
 			IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -33,7 +37,9 @@ namespace login_full
 
 			appWindow.Resize(new SizeInt32(newWidth, newHeight));
 		}
-
+		/// <summary>
+		/// Khởi tạo lớp `MainFrame_NavigationFailed` để xử lý sự kiện thất bại khi điều hướng.
+		/// </summary>
 		private void MainFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine($"Navigation failed: {e.SourcePageType.FullName}");

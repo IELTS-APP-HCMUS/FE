@@ -43,8 +43,8 @@ namespace login_full.Services
                 }
 
                 var filteredItems = _showingCompletedOnly
-                    ? _allItems.Where(item => item.IsCompleted).ToList()
-                    : _allItems.Where(item => !item.IsCompleted).ToList();
+                    ? _allItems.Where(item => item.IsSubmitted).ToList()
+                    : _allItems.Where(item => !item.IsSubmitted).ToList();
 
                 DisplayListUpdated?.Invoke(this, filteredItems);
                 await _paginationService.UpdateItemsAsync(filteredItems);

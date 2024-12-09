@@ -41,6 +41,7 @@
     <None Remove="Assets\google.png" />
     <None Remove="BlankPage1.xaml" />
     <None Remove="Components\Footer.xaml" />
+    <None Remove="Components\ForgotHeader.xaml" />
     <None Remove="Components\Header.xaml" />
     <None Remove="Components\Home\Banner.xaml" />
     <None Remove="Components\Home\Calendar.xaml" />
@@ -52,9 +53,13 @@
     <None Remove="Components\Home\Suggestion.xaml" />
     <None Remove="Components\Home\TargetUpdatePopUp.xaml" />
     <None Remove="HomePage.xaml" />
+    <None Remove="Views\ForgotPasswordPage\EmailSubmit.xaml" />
+    <None Remove="Views\ForgotPasswordPage\OTPVerify.xaml" />
+    <None Remove="Views\ForgotPasswordPage\PasswordReset.xaml" />
     <None Remove="Views\LoginPage.xaml" />
     <None Remove="Views\ReadingTestPage.xaml" />
     <None Remove="Views\reading_Item_UI.xaml" />
+    <None Remove="Views\TestDetailResultPage.xaml" />
     <None Remove="Views\TestResultPage.xaml" />
   </ItemGroup>
 
@@ -76,7 +81,10 @@
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+
+	  <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
@@ -161,6 +169,21 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Components\ForgotHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ForgotPasswordPage\PasswordReset.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ForgotPasswordPage\OTPVerify.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ForgotPasswordPage\EmailSubmit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\TestDetailResultPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\TestResultPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

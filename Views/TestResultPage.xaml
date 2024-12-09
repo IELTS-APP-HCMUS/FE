@@ -151,6 +151,10 @@
                             Margin="0,0,10,0"/>
                     <Button Content="Về trang chủ"
                            Command="{x:Bind ViewModel.HomeCommand}"/>
+                    <Button Content="Xem chi tiết bài làm"
+                            Command="{x:Bind ViewModel.ViewDetailCommand}"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Margin="0,0,10,0"/>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
