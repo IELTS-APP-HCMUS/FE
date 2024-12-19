@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Collections.ObjectModel;
 
 namespace login_full.Services
 {
@@ -11,8 +12,10 @@ namespace login_full.Services
     {
         private readonly List<ReadingItemModels> _allItems;
         private readonly IPaginationService _paginationService;
+		private Task<ObservableCollection<ReadingItemModels>> readingItems;
+		private PaginationService paginationService;
 
-        public event EventHandler<IEnumerable<ReadingItemModels>> SearchResultsUpdated;
+		public event EventHandler<IEnumerable<ReadingItemModels>> SearchResultsUpdated;
 
         public SearchService(
             IEnumerable<ReadingItemModels> items,
@@ -22,7 +25,13 @@ namespace login_full.Services
             _paginationService = paginationService;
         }
 
-        public async Task<IEnumerable<ReadingItemModels>> GetSuggestionsAsync(string query)
+		public SearchService(Task<ObservableCollection<ReadingItemModels>> readingItems, PaginationService paginationService)
+		{
+			this.readingItems = readingItems;
+			this.paginationService = paginationService;
+		}
+
+		public async Task<IEnumerable<ReadingItemModels>> GetSuggestionsAsync(string query)
         {
             await Task.Delay(50);
             if (string.IsNullOrEmpty(query))
@@ -35,7 +44,7 @@ namespace login_full.Services
                     item.Description.ToLower().Contains(query) ||
                     item.Category.ToLower().Contains(query) ||
                     item.Difficulty.ToLower().Contains(query))
-                .Take(5)
+                .Take(15)
                 .ToList();
 
             return suggestions;
