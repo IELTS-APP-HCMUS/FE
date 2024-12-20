@@ -1,14 +1,6 @@
-﻿using login_full.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.UI.Xaml.Data;
 using Windows.UI;
+using System;
 
 namespace login_full.Converters
 {
@@ -16,15 +8,13 @@ namespace login_full.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value != null && parameter != null)
+            if (value is int currentPage && parameter is int pageNumber)
             {
-                int pageNumber = System.Convert.ToInt32(value);
-                int currentPage = System.Convert.ToInt32(parameter);
-                return pageNumber == currentPage
-                    ? new SolidColorBrush(Colors.CornflowerBlue)
-                    : new SolidColorBrush(Color.FromArgb(255, 39, 80, 81));
+                return currentPage == pageNumber 
+                    ? Color.FromArgb(255, 39, 80, 81)  // #275051
+                    : Color.FromArgb(255, 73, 187, 189); // #49BBBD
             }
-            return new SolidColorBrush(Color.FromArgb(255, 39, 80, 81));
+            return Color.FromArgb(255, 73, 187, 189); // #49BBBD
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

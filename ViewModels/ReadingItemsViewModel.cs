@@ -148,14 +148,14 @@ namespace login_full.ViewModels
         public bool CanGoToNextPage => _paginationService.State.CurrentPage < _paginationService.State.TotalPages;
         public bool CanGoToPreviousPage => _paginationService.State.CurrentPage > 1;
 
-        public ObservableCollection<int> PageNumbers { get; private set; }
-
         private int _currentPage = 1;
         public int CurrentPage
         {
             get => _currentPage;
             set => SetProperty(ref _currentPage, value);
         }
+
+        public ObservableCollection<int> PageNumbers { get; private set; }
 
 		public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
@@ -191,6 +191,9 @@ namespace login_full.ViewModels
 
             // Subscribe to search service events
             _searchService.SearchResultsUpdated += OnSearchResultsUpdated;
+
+            // Khởi tạo trang đầu tiên là 1
+            CurrentPage = 1;
         }
 
         private void OnSearchResultsUpdated(object sender, IEnumerable<ReadingItemModels> results)
@@ -225,7 +228,13 @@ namespace login_full.ViewModels
 
             _paginationService.UpdateItems(filteredItems);
             _paginationService.UpdateItemsPerPage(IsFilterExpanded);
+            
+            // Reset về trang 1 khi khởi tạo lại pagination
+            CurrentPage = 1;
+            _paginationService.GoToPage(1);
+            
             OnPropertyChanged(nameof(DisplayedItems));
+            UpdatePageNumbers();
         }
 
         private async Task HandleSearchAsync(AutoSuggestBox searchBox)
@@ -239,6 +248,9 @@ namespace login_full.ViewModels
             if (searchBox == null) return;
             searchBox.Text = string.Empty;
             _searchService.ResetSearch();
+            
+            // Reset về trang 1 khi clear tìm kiếm
+            CurrentPage = 1;
             InitializePagination();
         }
 
@@ -256,6 +268,9 @@ namespace login_full.ViewModels
             ShowingCompletedItems = showCompleted;
             ShowingUncompletedItems = !showCompleted;
             _completedItemsService.ToggleCompletedItems();
+            
+            // Reset về trang 1 khi lọc items
+            CurrentPage = 1;
             InitializePagination();
         }
 
@@ -319,11 +334,15 @@ namespace login_full.ViewModels
 
         private void GoToPage(int pageNumber)
         {
-            _paginationService.GoToPage(pageNumber);
-            UpdatePageNumbers();
-            OnPropertyChanged(nameof(CanGoToNextPage));
-            OnPropertyChanged(nameof(CanGoToPreviousPage));
-            OnPropertyChanged(nameof(DisplayedItems));
+            if (pageNumber >= 1 && pageNumber <= _paginationService.State.TotalPages)
+            {
+                _paginationService.GoToPage(pageNumber);
+                CurrentPage = pageNumber;
+                UpdatePageNumbers();
+                OnPropertyChanged(nameof(CanGoToNextPage));
+                OnPropertyChanged(nameof(CanGoToPreviousPage));
+                OnPropertyChanged(nameof(DisplayedItems));
+            }
         }
 
         public void UpdateWindowSize(double width, double height)
@@ -346,7 +365,6 @@ namespace login_full.ViewModels
             {
                 PageNumbers.Add(pageNum);
             }
-            CurrentPage = _paginationService.State.CurrentPage;
             OnPropertyChanged(nameof(PageNumbers));
         }
 

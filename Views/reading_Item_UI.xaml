@@ -17,6 +17,7 @@
         <local1:BooleanNegationConverter x:Key="BooleanNegationConverter"/>
         <local1:DivideByFourConverter x:Key="DivideByFourConverter"/>
         <local1:DivideByThreeConverter x:Key="DivideByThreeConverter"/>
+        <local1:PageNumberBackgroundConverter x:Key="PageNumberBackgroundConverter"/>
 
         <Style x:Key="CustomAutoSuggestBoxStyle" TargetType="AutoSuggestBox">
             <Setter Property="Background" Value="White"/>
@@ -333,40 +334,52 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-
                             <StackPanel Orientation="Horizontal" 
                                         HorizontalAlignment="Center" 
                                         Margin="0,20,0,40">
                                 <Button Content="&lt;" 
-                                        Click="PreviousPage_Click"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        Background="#275051"
-                                        Margin="5,0"/>
+                                                Command="{x:Bind ViewModel.PreviousPageCommand}"
+                                              
+                                                Background="#275051"
+                                                Width="40"
+                                                Height="40"
+                                                Margin="5,0"
+                                                />
 
-                                <ItemsControl x:Name="PaginationNumbers" ItemsSource="{x:Bind ViewModel.PageNumbers}">
+                                <ItemsControl x:Name="PaginationItemsControl"
+                                     ItemsSource="{x:Bind ViewModel.PageNumbers, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <StackPanel Orientation="Horizontal"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate x:DataType="x:Int32">
                                             <Button Content="{Binding}"
-                                                    Click="PageNumber_Click"
-                                                    Style="{StaticResource AccentButtonStyle}"
-                                                    Background="#275051"
+                                                    Command="{Binding ElementName=PaginationItemsControl, Path=DataContext.GoToPageCommand}"
+                                                    CommandParameter="{Binding}"
                                                     Width="40"
                                                     Height="40"
-                                                    Margin="5,0"/>
+                                                    Margin="5,0"
+                                                    >
+                                                <Button.Background>
+                                                    <SolidColorBrush Color="{Binding ElementName=PaginationItemsControl, 
+                                                        Path=DataContext.CurrentPage, 
+                                                        Converter={StaticResource PageNumberBackgroundConverter}, 
+                                                        ConverterParameter={Binding}}"/>
+                                                </Button.Background>
+                                            </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
                                 <Button Content="&gt;" 
-                                        Click="NextPage_Click"
-                                        Style="{StaticResource AccentButtonStyle}"
+                                        Command="{x:Bind ViewModel.NextPageCommand}"                                     
                                         Background="#275051"
-                                        Margin="5,0"/>
+                                        Width="40"
+                                        Height="40"
+                                        Margin="5,0"
+                                        />  
                             </StackPanel>
 
 

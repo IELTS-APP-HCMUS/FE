@@ -23,10 +23,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
                     <Button Content="Theo tên bài" 
 							Command="{x:Bind ViewModel.SortByNameCommand}"
 							Background="#FFF0F0" 
@@ -38,100 +39,144 @@
                 </StackPanel>
 
                 <!-- History Table -->
-                <ScrollViewer Grid.Row="1">
-                    <ListView ItemsSource="{x:Bind ViewModel.TestHistories, Mode=OneWay}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:TestHistory">
-                                <Grid Padding="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="1.2*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="1.2*"/>
-                                    </Grid.ColumnDefinitions>
-									<Grid.Resources>
-										<Style TargetType="TextBlock">
-											<Setter Property="Foreground" Value="DarkBlue"/>
-										</Style>
-									</Grid.Resources>
+                <ListView Grid.Row="1" 
+                          ItemsSource="{x:Bind ViewModel.DisplayedHistories, Mode=OneWay}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TestHistory">
+                            <Grid Padding="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                </Grid.ColumnDefinitions>
+								<Grid.Resources>
+									<Style TargetType="TextBlock">
+										<Setter Property="Foreground" Value="DarkBlue"/>
+									</Style>
+								</Grid.Resources>
 
-                                    <TextBlock Text="{x:Bind Title}" 
-											 Grid.Column="0"
-											 TextWrapping="Wrap"/>
+                                <TextBlock Text="{x:Bind Title}" 
+										 Grid.Column="0"
+										 TextWrapping="Wrap"/>
 
-                                    <StackPanel Grid.Column="1" Margin="5,0">
-                                        <TextBlock HorizontalAlignment="Center" 
-												 Text="{x:Bind SubmitTime, Converter={StaticResource DateFormatConverter}}"/>
-                                        <TextBlock HorizontalAlignment="Center" 
-												 Text="{x:Bind SubmitTime, Converter={StaticResource TimeFormatConverter}}"/>
-                                    </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="5,0">
+                                    <TextBlock HorizontalAlignment="Center" 
+											 Text="{x:Bind SubmitTime, Converter={StaticResource DateFormatConverter}}"/>
+                                    <TextBlock HorizontalAlignment="Center" 
+											 Text="{x:Bind SubmitTime, Converter={StaticResource TimeFormatConverter}}"/>
+                                </StackPanel>
 
-                                    <TextBlock Text="{x:Bind Duration}" 
-											 Grid.Column="2"
-											 HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind Duration}" 
+										 Grid.Column="2"
+										 HorizontalAlignment="Center"/>
 
-                                    <TextBlock Text="{x:Bind TotalQuestions}" 
-											 Grid.Column="3"
-											 HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind TotalQuestions}" 
+										 Grid.Column="3"
+										 HorizontalAlignment="Center"/>
 
-                                    <TextBlock Text="{x:Bind CorrectAnswers}" 
-											 Grid.Column="4"
-											 Foreground="Green"
-											 HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind CorrectAnswers}" 
+										 Grid.Column="4"
+										 Foreground="Green"
+										 HorizontalAlignment="Center"/>
 
-                                    <TextBlock Text="{x:Bind WrongAnswers}" 
-											 Grid.Column="5"
-											 Foreground="Red"
-											 HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind WrongAnswers}" 
+										 Grid.Column="5"
+										 Foreground="Red"
+										 HorizontalAlignment="Center"/>
 
-                                    <TextBlock Text="{x:Bind SkippedAnswers}" 
-											 Grid.Column="6"
-											 HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind SkippedAnswers}" 
+										 Grid.Column="6"
+										 HorizontalAlignment="Center"/>
 
-                                    <StackPanel Grid.Column="7" 
-											  Orientation="Horizontal" 
-											  HorizontalAlignment="Right"
-											  Spacing="8">
-                                        <Button Content="Làm lại"
-												Command="{x:Bind RetakeCommand}"
-												Style="{ThemeResource AccentButtonStyle}"/>
-                                        <Button Content="Xem lại"
-												Command="{x:Bind ViewResultCommand}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                        <ListView.HeaderTemplate>
-                            <DataTemplate>
-                                <Grid Padding="10" Background="#f5f5f5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="1.2*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="0.8*"/>
-                                        <ColumnDefinition Width="1.2*"/>
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="7" 
+										  Orientation="Horizontal" 
+										  HorizontalAlignment="Right"
+										  Spacing="8">
+                                    <Button Content="Làm lại"
+											Command="{x:Bind RetakeCommand}"
+											Style="{ThemeResource AccentButtonStyle}"/>
+                                    <Button Content="Xem lại"
+											Command="{x:Bind ViewResultCommand}"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10" Background="#f5f5f5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="Tên bài" Grid.Column="0"/>
-                                    <TextBlock Text="Thời gian nộp" Grid.Column="1"/>
-                                    <TextBlock Text="Thời gian làm" Grid.Column="2"/>
-                                    <TextBlock Text="Tổng số câu" Grid.Column="3"/>
-                                    <TextBlock Text="Đúng" Grid.Column="4"/>
-                                    <TextBlock Text="Sai" Grid.Column="5"/>
-                                    <TextBlock Text="Bỏ qua" Grid.Column="6"/>
-                                    <TextBlock Text="Thao tác" Grid.Column="7"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.HeaderTemplate>
-                    </ListView>
-                </ScrollViewer>
+                                <TextBlock Text="Tên bài" Grid.Column="0"/>
+                                <TextBlock Text="Thời gian nộp" Grid.Column="1"/>
+                                <TextBlock Text="Thời gian làm" Grid.Column="2"/>
+                                <TextBlock Text="Tổng số câu" Grid.Column="3"/>
+                                <TextBlock Text="Đúng" Grid.Column="4"/>
+                                <TextBlock Text="Sai" Grid.Column="5"/>
+                                <TextBlock Text="Bỏ qua" Grid.Column="6"/>
+                                <TextBlock Text="Thao tác" Grid.Column="7"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.HeaderTemplate>
+                </ListView>
+
+                <!-- Pagination Controls -->
+                <Grid Grid.Row="2" Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Rows per page selector -->
+                    <StackPanel Orientation="Horizontal" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="0">
+                        <TextBlock Text="Số dòng mỗi trang: " 
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <ComboBox ItemsSource="{x:Bind ViewModel.AvailableItemsPerPage}" 
+                                  SelectedItem="{x:Bind ViewModel.ItemsPerPage, Mode=TwoWay}"
+                                  MinWidth="70"/>
+                    </StackPanel>
+
+                    <!-- Pagination controls -->
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Center"
+                                Grid.Column="1">
+                        <Button Command="{x:Bind ViewModel.PreviousPageCommand}"
+                                Content="&#xE72B;"
+                                FontFamily="Segoe MDL2 Assets"
+                                Width="32"
+                                Height="32"
+                                Margin="0,0,8,0"/>
+                        
+                        <TextBlock Text="{x:Bind ViewModel.PageInfo, Mode=OneWay}"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0"/>
+                        
+                        <Button Command="{x:Bind ViewModel.NextPageCommand}"
+                                Content="&#xE72A;"
+                                FontFamily="Segoe MDL2 Assets"
+                                Width="32"
+                                Height="32"
+                                Margin="8,0,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
