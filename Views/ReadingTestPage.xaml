@@ -6,6 +6,7 @@
     xmlns:local="using:login_full.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -120,11 +121,11 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Nội dung bài đọc -->
-            <ScrollViewer Grid.Column="0" Padding="20">
+           <ScrollViewer x:Name="MainScrollViewer" Grid.Column="0" Padding="20" HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
                 <!-- Thêm thanh công cụ cho bài đọc -->
                 <StackPanel>
                     <CommandBar Background="Transparent" 
@@ -145,10 +146,15 @@
                           Style="{ThemeResource TitleTextBlockStyle}"
                           TextWrapping="Wrap"/>
 
-                    <TextBlock Text="{x:Bind ViewModel.TestDetail.Content, Mode=OneWay}"
-                          TextWrapping="Wrap"
-                          Margin="0,20,0,0"
-                          Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <RichTextBlock x:Name="ContentRichTextBlock" 
+                                   Margin="0,20,0,0" 
+                                   TextWrapping="Wrap">
+                        <Paragraph x:Name="ContentParagraph"/>
+                    </RichTextBlock>
+
+
+
+
                 </StackPanel>
             </ScrollViewer>
 
@@ -195,6 +201,18 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,0,0,20">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="Question " 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                        <TextBlock Text="{Binding ElementName=QuestionsItemsControl, 
+                                                        Path=ItemsSource.IndexOf[DataContext]}" 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                        <TextBlock Text=":" 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                    </StackPanel>
                                     <TextBlock Text="{Binding QuestionText}"
                                          TextWrapping="Wrap"
                                          Style="{ThemeResource BodyTextBlockStyle}"

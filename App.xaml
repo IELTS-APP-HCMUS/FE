@@ -20,6 +20,7 @@
             <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
             <converters:DateFormatConverter x:Key="DateFormatConverter"/>
             <converters:TimeFormatConverter x:Key="TimeFormatConverter"/>
+            <converters:PageNumberBackgroundConverter x:Key="PageNumberBackgroundConverter"/>
 
             <!-- Other app resources here -->
             <Style x:Key="AccentButtonStyle" TargetType="Button">

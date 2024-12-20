@@ -147,24 +147,48 @@ namespace login_full.Views
 
 		private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
 		{
-			if (args.ChosenSuggestion != null)
+			try 
 			{
-				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
+				ViewModel.IsLoading = true;
+				if (args.ChosenSuggestion != null)
+				{
+					await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
+				}
+				else
+				{
+					await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
+				}
 			}
-			else
+			finally
 			{
-				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
+				ViewModel.IsLoading = false;
 			}
 		}
 
-		private void UncompletedFilter_Click(object sender, RoutedEventArgs e)
+		private async void UncompletedFilter_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.FilterCommand.Execute(false);
+			try
+			{
+				ViewModel.IsLoading = true;
+				ViewModel.FilterCommand.Execute(false);
+			}
+			finally 
+			{
+				ViewModel.IsLoading = false;
+			}
 		}
 
-		private void CompletedFilter_Click(object sender, RoutedEventArgs e)
+		private async void CompletedFilter_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.FilterCommand.Execute(true);
+			try
+			{
+				ViewModel.IsLoading = true;
+				ViewModel.FilterCommand.Execute(true);
+			}
+			finally
+			{
+				ViewModel.IsLoading = false;
+			}
 		}
 		private void ToggleFilter_Click(object sender, RoutedEventArgs e)
 		{

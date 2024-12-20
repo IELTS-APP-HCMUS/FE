@@ -39,6 +39,7 @@ namespace login_full.ViewModels
         private double _windowWidth;
         private double _windowHeight;
         private bool _isCompletedFilterActive;
+        private bool _isLoading;
 
         public ObservableCollection<ReadingItemModels> _items { get; private set; }
 
@@ -106,6 +107,13 @@ namespace login_full.ViewModels
             set => SetProperty(ref _isCompletedFilterActive, value);
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
+
         // Commands
         public IAsyncRelayCommand LoadItemsCommand { get; }
         public IAsyncRelayCommand<AutoSuggestBox> SearchCommand { get; }
@@ -122,7 +130,19 @@ namespace login_full.ViewModels
 
         public ISearchService SearchService => _searchService;
 
+        public IPaginationService PaginationService => _paginationService;
 
+        public bool CanGoToNextPage => _paginationService.State.CurrentPage < _paginationService.State.TotalPages;
+        public bool CanGoToPreviousPage => _paginationService.State.CurrentPage > 1;
+
+        public ObservableCollection<int> PageNumbers { get; private set; }
+
+        private int _currentPage = 1;
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set => SetProperty(ref _currentPage, value);
+        }
 
         public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
@@ -153,6 +173,8 @@ namespace login_full.ViewModels
 
             // Initialize collections
             Items = new ObservableCollection<ReadingItemModels>();
+            PageNumbers = new ObservableCollection<int>();
+            UpdatePageNumbers();
 
             // Subscribe to search service events
             _searchService.SearchResultsUpdated += OnSearchResultsUpdated;
@@ -168,28 +190,19 @@ namespace login_full.ViewModels
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
-        private async Task LoadItemsAsync()
+        public async Task LoadItemsAsync()
         {
 			try
 			{
                 var items = await _readingItemsService.GetReadingItemsAsync();
-				if (items != null)
-				{
-					// Switch back to the main thread if necessary (WPF/WinUI usually auto does this)
-					Items = new ObservableCollection<ReadingItemModels>(items);
-					System.Diagnostics.Debug.WriteLine($"Count: {Items.Count}");
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("No items fetched from service.");
-				}
+                Items = new ObservableCollection<ReadingItemModels>(items);
 				InitializePagination();
 			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Error in LoadItemsAsync: {ex.Message}");
-			}
-		}
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         private void InitializePagination()
         {
@@ -276,18 +289,27 @@ namespace login_full.ViewModels
         private void NextPage()
         {
             _paginationService.NextPage();
+            UpdatePageNumbers();
+            OnPropertyChanged(nameof(CanGoToNextPage));
+            OnPropertyChanged(nameof(CanGoToPreviousPage));
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
         private void PreviousPage()
         {
             _paginationService.PreviousPage();
+            UpdatePageNumbers();
+            OnPropertyChanged(nameof(CanGoToNextPage));
+            OnPropertyChanged(nameof(CanGoToPreviousPage));
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
         private void GoToPage(int pageNumber)
         {
             _paginationService.GoToPage(pageNumber);
+            UpdatePageNumbers();
+            OnPropertyChanged(nameof(CanGoToNextPage));
+            OnPropertyChanged(nameof(CanGoToPreviousPage));
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
@@ -304,15 +326,14 @@ namespace login_full.ViewModels
             _searchService.SearchResultsUpdated -= OnSearchResultsUpdated;
         }
 
-        public ObservableCollection<int> PageNumbers { get; private set; }
-
         private void UpdatePageNumbers()
         {
             PageNumbers.Clear();
-            for (int i = 1; i <= _paginationService.State.TotalPages; i++)
+            foreach (var pageNum in _paginationService.VisiblePageNumbers)
             {
-                PageNumbers.Add(i);
+                PageNumbers.Add(pageNum);
             }
+            CurrentPage = _paginationService.State.CurrentPage;
             OnPropertyChanged(nameof(PageNumbers));
         }
 
