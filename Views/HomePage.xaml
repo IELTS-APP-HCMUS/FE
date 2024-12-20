@@ -45,7 +45,7 @@
 		<components:Header Grid.Row="0" DataContext="{Binding Profile}"/>
 
 		<!-- Scrollable Content -->
-		<ScrollViewer Grid.Row="1" Background="#F6EBE5" ViewChanged="ScrollViewer_ViewChanged">
+		<ScrollViewer Grid.Row="1" Background="White" ViewChanged="ScrollViewer_ViewChanged">
 			<StackPanel>
                 <!-- Main content -->
 				<homeComp:Banner />

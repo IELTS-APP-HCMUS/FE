@@ -18,7 +18,7 @@
 
         <TextBlock Text="Lịch sử làm bài" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="28" Padding="15">
+        <Border Grid.Row="1" Background="#DFEEF9" CornerRadius="28" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -30,7 +30,7 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
                     <Button Content="Theo tên bài" 
 							Command="{x:Bind ViewModel.SortByNameCommand}"
-							Background="#FFF0F0" 
+							Background="White" 
 							Foreground="#FF7575" 
 							BorderThickness="0" 
 							CornerRadius="20" 
@@ -40,6 +40,7 @@
 
                 <!-- History Table -->
                 <ListView Grid.Row="1" 
+                          Background="White"
                           ItemsSource="{x:Bind ViewModel.DisplayedHistories, Mode=OneWay}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <ListView.ItemTemplate>
@@ -57,7 +58,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="DarkBlue"/>
+                                        <Setter Property="Foreground" Value="Black"/>
                                     </Style>
                                 </Grid.Resources>
 
@@ -117,7 +118,7 @@
                     </ListView.ItemTemplate>
                     <ListView.HeaderTemplate>
                         <DataTemplate>
-                            <Grid Padding="10" Background="#f5f5f5">
+                            <Grid Padding="10" Background="#1B76A1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition Width="1.2*"/>

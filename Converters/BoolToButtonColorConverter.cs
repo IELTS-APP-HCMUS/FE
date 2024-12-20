@@ -12,7 +12,7 @@ namespace login_full.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return (bool)value ? Colors.LightBlue : Colors.Gray;
+            return (bool)value ? Colors.LightBlue : Colors.White;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

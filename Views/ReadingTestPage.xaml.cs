@@ -21,6 +21,8 @@ namespace login_full.Views
 {
     public sealed partial class ReadingTestPage : Page
     {
+
+        
         public ReadingTestViewModel ViewModel { get; }
 
         public ReadingTestPage()
@@ -37,6 +39,7 @@ namespace login_full.Views
             );
             //  Loaded += ReadingTestPage_Loaded;
             ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
+          
         }
 
         //private async void ReadingTestPage_Loaded(object sender, RoutedEventArgs e)

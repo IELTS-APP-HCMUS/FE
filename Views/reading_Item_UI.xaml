@@ -200,7 +200,7 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="1">
-                <Grid Height="Auto" MinHeight="76" VerticalAlignment="Top" Background="#49BBBD">
+                <Grid Height="Auto" MinHeight="76" VerticalAlignment="Top" Background="White">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -212,16 +212,21 @@
                               Orientation="Horizontal" 
                               Margin="20,15,0,15">
                         <Button Content="Bài chưa làm"
-            Click="UncompletedFilter_Click"
-            Style="{StaticResource FilterButtonStyle}">
+                                Click="UncompletedFilter_Click"
+                                CornerRadius="10"
+                                BorderBrush="Black"
+                                Margin="0,0,10,0"
+            >
                             <Button.Background>
                                 <SolidColorBrush Color="{x:Bind ViewModel.ShowingUncompletedItems, Mode=OneWay, Converter={StaticResource BoolToButtonColorConverter}}"/>
                             </Button.Background>
                         </Button>
 
                         <Button Content="Bài đã làm"
-            Click="CompletedFilter_Click"
-            Style="{StaticResource FilterButtonStyle}">
+                                Click="CompletedFilter_Click"
+                                CornerRadius="10"
+                                BorderBrush="Black"
+            >
                             <Button.Background>
                                 <SolidColorBrush Color="{x:Bind ViewModel.ShowingCompletedItems, Mode=OneWay, Converter={StaticResource BoolToButtonColorConverter}}"/>
                             </Button.Background>
@@ -287,10 +292,10 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Margin="0,77,0,0">
-                    <Rectangle Fill="#9DCCFF" 
+                    <Rectangle Fill="White" 
                                Opacity="0.3"/>
 
-                    <ScrollViewer Margin="0,0,0,0">
+                    <ScrollViewer Margin="0,0,0,0" Background="White">
                         <StackPanel HorizontalAlignment="Center" >
                             <ItemsControl x:Name="MyItemsControl" 
                                              ItemsSource="{Binding DisplayedItems}"
@@ -298,14 +303,14 @@
                                              HorizontalAlignment="Center">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="White" 
+                                        <Border Background="#CCE8FD" 
                                             Margin="8" 
                                             CornerRadius="20" 
                                             Padding="15"
-                                            BorderBrush="#D9D9D9" 
+                                            BorderBrush="White" 
                                             BorderThickness="1"
                                             Width="270"
-                                            Height="350">
+                                            Height="300">
                                             <StackPanel>
                                                 <Image Source="/Assets/reading_win.png" 
                                                    Height="auto" 
@@ -340,7 +345,8 @@
                                 <Button Content="&lt;" 
                                                 Command="{x:Bind ViewModel.PreviousPageCommand}"
                                               
-                                                Background="#275051"
+                                                Background="#BFF7F8"
+                                                
                                                 Width="40"
                                                 Height="40"
                                                 Margin="5,0"
@@ -375,7 +381,7 @@
 
                                 <Button Content="&gt;" 
                                         Command="{x:Bind ViewModel.NextPageCommand}"                                     
-                                        Background="#275051"
+                                        Background="#BFF7F8"
                                         Width="40"
                                         Height="40"
                                         Margin="5,0"

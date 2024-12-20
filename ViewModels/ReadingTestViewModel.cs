@@ -85,6 +85,27 @@ namespace login_full.ViewModels
         public IRelayCommand ProcessContentCommand { get; }
 
 
+        private bool _isHighlightMode;
+        public bool IsHighlightMode
+        {
+            get => _isHighlightMode;
+            set
+            {
+                _isHighlightMode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private List<HighlightInfo> _highlights;
+        public List<HighlightInfo> Highlights
+        {
+            get => _highlights;
+            set
+            {
+                _highlights = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService/*, IHighlightService highlightService*/)
         {
@@ -115,11 +136,18 @@ namespace login_full.ViewModels
             {
                 OnContentProcessingRequested?.Invoke(this, EventArgs.Empty);
             });
+
+            _highlights = new List<HighlightInfo>();
         }
 
         private void ZoomIn() { /* Implementation */ }
         private void ZoomOut() { /* Implementation */ }
-        private void ToggleHighlight() { /* Implementation */ }
+        private void ToggleHighlight()
+        {
+            IsHighlightMode = !IsHighlightMode;
+            OnHighlightModeChanged?.Invoke(this, IsHighlightMode);
+        }
+
         private void AddNote() { /* Implementation */ }
         private void SaveProgress() { /* Implementation */ }
 
@@ -230,5 +258,49 @@ namespace login_full.ViewModels
         }
 
         public event EventHandler OnContentProcessingRequested;
+
+        // Event to notify view that content needs to be reprocessed
+        //public event EventHandler OnContentProcessingRequested;
+
+        public void AddHighlight(string text, int startIndex, int length)
+        {
+            if (IsHighlightMode)
+            {
+                var highlight = new HighlightInfo
+                {
+                    Text = text,
+                    StartIndex = startIndex,
+                    Length = length,
+                    Color = Windows.UI.Color.FromArgb(255, 255, 255, 0) // Yellow highlight
+                };
+
+                Highlights.Add(highlight);
+                OnPropertyChanged(nameof(Highlights));
+                OnHighlightAdded?.Invoke(this, highlight);
+            }
+        }
+
+        public void RemoveHighlight(HighlightInfo highlight)
+        {
+            if (Highlights.Remove(highlight))
+            {
+                OnPropertyChanged(nameof(Highlights));
+                OnHighlightRemoved?.Invoke(this, highlight);
+            }
+        }
+
+        // Events for highlight changes
+        public event EventHandler<bool> OnHighlightModeChanged;
+        public event EventHandler<HighlightInfo> OnHighlightAdded;
+        public event EventHandler<HighlightInfo> OnHighlightRemoved;
+    }
+
+
+    public class HighlightInfo
+    {
+        public string Text { get; set; }
+        public int StartIndex { get; set; }
+        public int Length { get; set; }
+        public Windows.UI.Color Color { get; set; }
     }
 }
