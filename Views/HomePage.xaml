@@ -111,12 +111,12 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Calendar -->
-                    <Border Background="White" CornerRadius="28" Padding="20" Margin="0,0,10,0">
+                    <Border Background="#DFEEF9" CornerRadius="28" Padding="20" Margin="0,0,10,0">
 						<homeComp:Calendar />
 					</Border>
 
                     <!-- Schedule -->
-                    <Border Grid.Column="1" Background="White" CornerRadius="28" Padding="20" Margin="10,0,0,0">
+                    <Border Grid.Column="1" Background="#DFEEF9" CornerRadius="28" Padding="20" Margin="10,0,0,0">
 						<homeComp:Schedule />
 					</Border>
                 </Grid>

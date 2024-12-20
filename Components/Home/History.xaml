@@ -31,7 +31,7 @@
                     <Button Content="Theo tên bài" 
 							Command="{x:Bind ViewModel.SortByNameCommand}"
 							Background="White" 
-							Foreground="#FF7575" 
+							Foreground="Black" 
 							BorderThickness="0" 
 							CornerRadius="20" 
 							Padding="15,10" 
@@ -130,14 +130,14 @@
                                     <ColumnDefinition Width="1.2*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="Tên bài" Grid.Column="0"/>
-                                <TextBlock Text="Thời gian nộp" Grid.Column="1"/>
-                                <TextBlock Text="Thời gian làm" Grid.Column="2"/>
-                                <TextBlock Text="Tổng số câu" Grid.Column="3"/>
-                                <TextBlock Text="Đúng" Grid.Column="4"/>
-                                <TextBlock Text="Sai" Grid.Column="5"/>
-                                <TextBlock Text="Bỏ qua" Grid.Column="6"/>
-                                <TextBlock Text="Thao tác" Grid.Column="7"/>
+                                <TextBlock Text="Tên bài" Grid.Column="0" Foreground="White"/>
+                                <TextBlock Text="Thời gian nộp" Grid.Column="1" Foreground="White"/>
+                                <TextBlock Text="Thời gian làm" Grid.Column="2" Foreground="White"/>
+                                <TextBlock Text="Tổng số câu" Grid.Column="3" Foreground="White"/>
+                                <TextBlock Text="Đúng" Grid.Column="4" Foreground="White"/>
+                                <TextBlock Text="Sai" Grid.Column="5" Foreground="White"/>
+                                <TextBlock Text="Bỏ qua" Grid.Column="6" Foreground="White" />
+                                <TextBlock Text="Thao tác" Grid.Column="7" Foreground="White"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.HeaderTemplate>
