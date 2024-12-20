@@ -136,7 +136,17 @@
                         <AppBarButton Icon="ZoomOut" Label="Zoom Out"/>
                         <AppBarSeparator/>
                         <AppBarButton x:Name="HighlightButton"  Icon="Highlight" Label="Highlight" />
-                        <AppBarButton Icon="Comment" Label="Vocab Mode"/>
+                        <AppBarToggleButton x:Name="VocabMode" 
+                                        Icon="Font" 
+                                        Label="Vocab Mode"
+                                        IsChecked="{x:Bind ViewModel.IsVocabMode, Mode=TwoWay}">
+                            <AppBarToggleButton.Resources>
+                                <ResourceDictionary>
+                                    <SolidColorBrush x:Key="ToggleButtonCheckedBackground" Color="#FF0078D4"/>
+                                    <SolidColorBrush x:Key="ToggleButtonCheckedForeground" Color="White"/>
+                                </ResourceDictionary>
+                            </AppBarToggleButton.Resources>
+                        </AppBarToggleButton>
                         <AppBarSeparator/>
                         <AppBarButton Icon="Save" Label="Save Progress"/>
                     </CommandBar>

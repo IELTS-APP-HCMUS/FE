@@ -19,42 +19,46 @@ using Microsoft.UI.Xaml.Media;
 
 namespace login_full.Views
 {
-	public sealed partial class ReadingTestPage : Page
-	{
-		public ReadingTestViewModel ViewModel { get; }
+    public sealed partial class ReadingTestPage : Page
+    {
+        public ReadingTestViewModel ViewModel { get; }
 
-		public ReadingTestPage()
-		{
-			this.InitializeComponent();
+        public ReadingTestPage()
+        {
+            this.InitializeComponent();
             var readingTestService = ServiceLocator.GetService<IReadingTestService>();
             var navigationService = App.NavigationService;
 
 
             // Sử dụng NavigationService từ App
-            ViewModel = new					(
+            ViewModel = new(
                 readingTestService,
                 navigationService
             );
-			//  Loaded += ReadingTestPage_Loaded;
-		}
+            //  Loaded += ReadingTestPage_Loaded;
+            ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
+        }
 
-		//private async void ReadingTestPage_Loaded(object sender, RoutedEventArgs e)
-		//{
-		//    await ViewModel.LoadTestAsync("test1");
-		//}
-		protected override async void OnNavigatedTo(NavigationEventArgs e)
-		{
-			base.OnNavigatedTo(e);
+        //private async void ReadingTestPage_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    await ViewModel.LoadTestAsync("test1");
+        //}
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
 
-			if (e.Parameter is string item)
-			{
-				// Load test dựa trên TestId của item được chọn
-				await ViewModel.LoadTestAsync(item);
-                               ProcessContent();
+            if (e.Parameter is string item)
+            {
+                // Load test dựa trên TestId của item được chọn
+                await ViewModel.LoadTestAsync(item);
+                ProcessContent();
             }
-		}
+        }
 
-
+        private void ViewModel_OnContentProcessingRequested(object sender, EventArgs e)
+        {
+            ProcessContent();
+        }
 
         private void ProcessContent()
         {
@@ -63,7 +67,19 @@ namespace login_full.Views
             // Xóa nội dung cũ trong paragraph
             ContentParagraph.Inlines.Clear();
 
-            // Tách văn bản thành các đoạn theo ký tự xuống dòng
+            if (ViewModel.IsVocabMode)
+            {
+                ProcessVocabMode();
+            }
+            else
+            {
+                ProcessNormalMode();
+            }
+        }
+
+        private void ProcessNormalMode()
+        {
+            // Hiển thị văn bản bình thường không có button
             string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
 
             for (int p = 0; p < paragraphs.Length; p++)
@@ -71,14 +87,33 @@ namespace login_full.Views
                 string paragraph = paragraphs[p].Trim();
                 if (string.IsNullOrEmpty(paragraph)) continue;
 
-                // Tách đoạn thành các từ
+                ContentParagraph.Inlines.Add(new Run { Text = paragraph });
+
+                // Thêm xuống dòng sau mỗi đoạn (trừ đoạn cuối)
+                if (p < paragraphs.Length - 1)
+                {
+                    ContentParagraph.Inlines.Add(new LineBreak());
+                    ContentParagraph.Inlines.Add(new LineBreak());
+                }
+            }
+        }
+
+        private void ProcessVocabMode()
+        {
+            // Code xử lý vocab mode (code cũ của ProcessContent)
+            string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
+
+            for (int p = 0; p < paragraphs.Length; p++)
+            {
+                string paragraph = paragraphs[p].Trim();
+                if (string.IsNullOrEmpty(paragraph)) continue;
+
                 string[] words = paragraph.Split(' ');
 
                 for (int i = 0; i < words.Length; i++)
                 {
                     string word = words[i];
 
-                    // Xử lý dấu câu
                     if (word.EndsWith(".") || word.EndsWith(",") ||
                         word.EndsWith("!") || word.EndsWith("?") ||
                         word.EndsWith(";") || word.EndsWith(":"))
@@ -97,18 +132,16 @@ namespace login_full.Views
                         AddWordButton(word);
                     }
 
-                    // Thêm khoảng trắng sau mỗi từ (trừ từ cuối cùng)
                     if (i < words.Length - 1)
                     {
                         ContentParagraph.Inlines.Add(new Run { Text = " " });
                     }
                 }
 
-                // Thêm xuống dòng sau mỗi đoạn (trừ đoạn cuối cùng)
                 if (p < paragraphs.Length - 1)
                 {
                     ContentParagraph.Inlines.Add(new LineBreak());
-                    ContentParagraph.Inlines.Add(new LineBreak()); // Thêm dòng trống giữa các đoạn
+                    ContentParagraph.Inlines.Add(new LineBreak());
                 }
             }
         }
@@ -120,13 +153,14 @@ namespace login_full.Views
                 Content = new TextBlock
                 {
                     Text = word,
-                    FontSize = 16,
+                    FontSize = 14,
                     TextWrapping = TextWrapping.NoWrap
                 },
                 Padding = new Thickness(0, 0, 0, 0),
                 Background = new SolidColorBrush(Colors.Transparent),
                 BorderThickness = new Thickness(0),
-                Margin = new Thickness(0)
+                Margin = new Thickness(0,0,0,-4.5),
+                
             };
 
             button.Click += WordButton_Click;

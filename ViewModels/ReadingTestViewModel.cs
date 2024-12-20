@@ -68,6 +68,24 @@ namespace login_full.ViewModels
         }
 
 
+        private bool _isVocabMode;
+        public bool IsVocabMode
+        {
+            get => _isVocabMode;
+            set
+            {
+                _isVocabMode = value;
+                OnPropertyChanged();
+                // Trigger content reprocessing when mode changes
+                ProcessContentCommand.Execute(null);
+            }
+        }
+
+        // Add ProcessContentCommand
+        public IRelayCommand ProcessContentCommand { get; }
+
+
+
         public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService/*, IHighlightService highlightService*/)
         {
             _testService = testService;
@@ -91,6 +109,12 @@ namespace login_full.ViewModels
             AddNoteCommand = new RelayCommand(AddNote);
             SaveProgressCommand = new RelayCommand(SaveProgress);
             ExitCommand = new AsyncRelayCommand(ShowExitDialog);
+
+            // Initialize ProcessContentCommand
+            ProcessContentCommand = new RelayCommand(() =>
+            {
+                OnContentProcessingRequested?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         private void ZoomIn() { /* Implementation */ }
@@ -204,5 +228,7 @@ namespace login_full.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public event EventHandler OnContentProcessingRequested;
     }
 }

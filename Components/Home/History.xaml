@@ -18,7 +18,7 @@
 
         <TextBlock Text="Lịch sử làm bài" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="28" Padding="20">
+        <Border Grid.Row="1" Background="White" CornerRadius="28" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -55,17 +55,18 @@
                                     <ColumnDefinition Width="0.8*"/>
                                     <ColumnDefinition Width="1.2*"/>
                                 </Grid.ColumnDefinitions>
-								<Grid.Resources>
-									<Style TargetType="TextBlock">
-										<Setter Property="Foreground" Value="DarkBlue"/>
-									</Style>
-								</Grid.Resources>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="DarkBlue"/>
+                                    </Style>
+                                </Grid.Resources>
 
                                 <TextBlock Text="{x:Bind Title}" 
 										 Grid.Column="0"
-										 TextWrapping="Wrap"/>
+										 TextWrapping="Wrap"
+                                           Margin="-15,0,0,0"/>
 
-                                <StackPanel Grid.Column="1" Margin="5,0">
+                                <StackPanel Grid.Column="1" Margin="-95,0,0,0">
                                     <TextBlock HorizontalAlignment="Center" 
 											 Text="{x:Bind SubmitTime, Converter={StaticResource DateFormatConverter}}"/>
                                     <TextBlock HorizontalAlignment="Center" 
@@ -74,33 +75,40 @@
 
                                 <TextBlock Text="{x:Bind Duration}" 
 										 Grid.Column="2"
-										 HorizontalAlignment="Center"/>
+										 HorizontalAlignment="Center"
+                                           Margin="-65,0,0,0"/>
 
                                 <TextBlock Text="{x:Bind TotalQuestions}" 
 										 Grid.Column="3"
-										 HorizontalAlignment="Center"/>
+										 HorizontalAlignment="Center"
+                                           Margin="-55,0,0,0"/>
 
                                 <TextBlock Text="{x:Bind CorrectAnswers}" 
 										 Grid.Column="4"
 										 Foreground="Green"
-										 HorizontalAlignment="Center"/>
+										 HorizontalAlignment="Center"
+                                           Margin="-75,0,0,0"/>
 
                                 <TextBlock Text="{x:Bind WrongAnswers}" 
 										 Grid.Column="5"
 										 Foreground="Red"
-										 HorizontalAlignment="Center"/>
+										 HorizontalAlignment="Center"
+                                           Margin="-95,0,0,0"/>
 
                                 <TextBlock Text="{x:Bind SkippedAnswers}" 
 										 Grid.Column="6"
-										 HorizontalAlignment="Center"/>
+										 HorizontalAlignment="Center"
+                                           Margin="-70,0,0,0"/>
 
                                 <StackPanel Grid.Column="7" 
 										  Orientation="Horizontal" 
 										  HorizontalAlignment="Right"
-										  Spacing="8">
+										  Spacing="8"
+                                            Margin="-5,0,20,0">
                                     <Button Content="Làm lại"
+                                            Background="#4EACD2"
 											Command="{x:Bind RetakeCommand}"
-											Style="{ThemeResource AccentButtonStyle}"/>
+											/>
                                     <Button Content="Xem lại"
 											Command="{x:Bind ViewResultCommand}"/>
                                 </StackPanel>
@@ -145,7 +153,7 @@
                     <!-- Rows per page selector -->
                     <StackPanel Orientation="Horizontal" 
                                 VerticalAlignment="Center" 
-                                Grid.Column="0">
+                                Grid.Column="1">
                         <TextBlock Text="Số dòng mỗi trang: " 
                                    VerticalAlignment="Center"
                                    Margin="0,0,8,0"/>
@@ -157,22 +165,22 @@
                     <!-- Pagination controls -->
                     <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Center"
-                                Grid.Column="1">
+                                Grid.Column="2">
                         <Button Command="{x:Bind ViewModel.PreviousPageCommand}"
                                 Content="&#xE72B;"
                                 FontFamily="Segoe MDL2 Assets"
-                                Width="32"
+                                Width="42"
                                 Height="32"
                                 Margin="0,0,8,0"/>
-                        
+
                         <TextBlock Text="{x:Bind ViewModel.PageInfo, Mode=OneWay}"
                                    VerticalAlignment="Center"
                                    Margin="8,0"/>
-                        
+
                         <Button Command="{x:Bind ViewModel.NextPageCommand}"
                                 Content="&#xE72A;"
                                 FontFamily="Segoe MDL2 Assets"
-                                Width="32"
+                                Width="42"
                                 Height="32"
                                 Margin="8,0,0,0"/>
                     </StackPanel>
