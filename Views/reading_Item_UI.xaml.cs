@@ -11,7 +11,7 @@ namespace login_full.Views
 {
 	public sealed partial class reading_Item_UI : Page
 	{
-		public ReadingItemsViewModel ViewModel { get; }
+		public ReadingItemsViewModel ViewModel { get; set; }
 		/// <summary>
 		/// Khởi tạo lớp `reading_Item_UI` và tải dữ liệu các bài đọc từ dịch vụ `ReadingItemsService`.
 		/// </summary>
@@ -19,17 +19,13 @@ namespace login_full.Views
 		{
 			this.InitializeComponent();
 			System.Diagnostics.Debug.WriteLine("reading_Item_UI, start getting quizzes");
-			// Create instances of the services
+			// Initialize ViewModel synchronously with default services
 			var readingItemsService = new ReadingItemsService();
 			var navigationService = new NavigationService();
 			var paginationService = new PaginationService();
-			// Lấy danh sách items từ ReadingItemsService
-
 			var searchService = new SearchService(new List<ReadingItemModels>(), paginationService);
-
 			var completedItemsService = new CompletedItemsService(new List<ReadingItemModels>(), paginationService);
 
-			// Initialize the ViewModel with the services
 			ViewModel = new ReadingItemsViewModel(
 				readingItemsService,
 				navigationService,
@@ -37,6 +33,32 @@ namespace login_full.Views
 				paginationService,
 				completedItemsService
 			);
+
+			// Start async initialization
+			InitializeAsync();
+
+		}
+
+		private async void InitializeAsync()
+		{
+
+			var readingItemsService = new ReadingItemsService();
+			var paginationService = new PaginationService();
+
+			// Await fetching items to ensure it completes
+			var readingItems = await readingItemsService.GetReadingItemsAsync();
+
+			if (readingItems == null || !readingItems.Any())
+			{
+				System.Diagnostics.Debug.WriteLine("No reading items found. Ensure the service returns data.");
+			}
+
+			// Update ViewModel services with fetched data
+			ViewModel.SearchService = new SearchService(readingItems.ToList(), paginationService);
+			
+
+			// Optionally refresh the ViewModel's data
+			ViewModel.LoadItemsCommand.Execute(null);
 
 			this.DataContext = ViewModel;
 		}

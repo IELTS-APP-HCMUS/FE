@@ -17,7 +17,7 @@ namespace login_full.ViewModels
     {
         private readonly IReadingItemsService _readingItemsService;
         private readonly INavigationService _navigationService;
-        private readonly ISearchService _searchService;
+        private ISearchService _searchService;
         private readonly IPaginationService _paginationService;
         private readonly ICompletedItemsService _completedItemsService;
 
@@ -128,7 +128,20 @@ namespace login_full.ViewModels
         public IRelayCommand PreviousPageCommand { get; }
         public IRelayCommand<int> GoToPageCommand { get; }
 
-        public ISearchService SearchService => _searchService;
+
+		public ISearchService SearchService
+		{
+			get => _searchService;
+			set
+			{
+				if (value != _searchService)
+				{
+					_searchService.SearchResultsUpdated -= OnSearchResultsUpdated; // Unsubscribe old service events
+					_searchService = value;
+					_searchService.SearchResultsUpdated += OnSearchResultsUpdated; // Subscribe new service events
+				}
+			}
+		}
 
         public IPaginationService PaginationService => _paginationService;
 
@@ -144,7 +157,7 @@ namespace login_full.ViewModels
             set => SetProperty(ref _currentPage, value);
         }
 
-        public ReadingItemsViewModel(
+		public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
             INavigationService navigationService,
             ISearchService searchService,
