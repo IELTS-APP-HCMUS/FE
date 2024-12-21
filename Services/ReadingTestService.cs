@@ -46,7 +46,7 @@ namespace login_full.Services
 				_httpClient.DefaultRequestHeaders.Authorization =
 					new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-				string apiUrl = $"https://ielts-app-api-4.onrender.com/v1/quizzes/{testId}";
+				string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}";
 				HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
 				if (response.IsSuccessStatusCode)
@@ -195,7 +195,7 @@ namespace login_full.Services
 					string jsonPayload = JsonConvert.SerializeObject(payload);
 					System.Diagnostics.Debug.WriteLine($"Submitting payload: {jsonPayload}");
 
-					string apiUrl = $"https://ielts-app-api-4.onrender.com/v1/quizzes/{testId}/answer";
+					string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}/answer";
 					var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
 					using (HttpClient client = new HttpClient())
@@ -239,7 +239,7 @@ namespace login_full.Services
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 			try
 			{
-				HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=20");
+				HttpResponseMessage response = await client.GetAsync($"http://localhost:8080/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=20");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -252,7 +252,7 @@ namespace login_full.Services
 					foreach (var i in items)
 					{
 						int quizID = int.Parse(i["quiz_id"].ToString());
-						HttpResponseMessage i_response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/quizzes/" + quizID);
+						HttpResponseMessage i_response = await client.GetAsync($"http://localhost:8080/v1/quizzes/" + quizID);
 						if (i_response.IsSuccessStatusCode)
 						{
 							string i_stringResponse = await i_response.Content.ReadAsStringAsync();
@@ -316,7 +316,7 @@ namespace login_full.Services
 
 		public async Task<AnswerResultModel> GetAnswerDetailAsync(string answerId)
 		{
-			string apiUrl = $"https://ielts-app-api-4.onrender.com/v1/answers/{answerId}";
+			string apiUrl = $"http://localhost:8080/v1/answers/{answerId}";
 
 			using (HttpClient client = new HttpClient())
 			{
