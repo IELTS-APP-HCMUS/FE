@@ -28,6 +28,7 @@ namespace login_full.ViewModels
         private string _searchText;
         private List<VocabularyItem> _filteredData;
 
+       // xử lý API here
         public ObservableCollection<VocabularyItem> VocabularyItems
         {
             get => _vocabularyItems;
@@ -257,6 +258,7 @@ namespace login_full.ViewModels
             LoadPagedData();
         }
 
+        // xóa dựa vào VocabularyItem
         private void DeleteItem(VocabularyItem item)
         {
             if (item != null)
@@ -280,6 +282,7 @@ namespace login_full.ViewModels
             }
         }
 
+        // thay đổi trạng thái đã học -> dang học và ngược lại
         private void ToggleStatus(VocabularyItem item)
         {
             if (item != null)
@@ -293,6 +296,8 @@ namespace login_full.ViewModels
             }
         }
 
+
+        // thêm từ vựng 
         private async void ShowAddVocabDialog()
         {
             var stackPanel = new StackPanel
