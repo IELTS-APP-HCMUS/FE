@@ -258,6 +258,7 @@ namespace login_full.Services
 							DateTime date_created = DateTime.Parse(i["date_created"].ToString());
 							TestHistory history = new TestHistory
 							{
+								TestId = quizID.ToString(),
 								Title = i_title,
 								SubmitTime = date_created,
 								Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
