@@ -15,5 +15,7 @@ namespace login_full.Services
 
         Task<bool> UpdateTestCompletionStatus(string testId, bool isCompleted);
         Task<List<TestHistory>> GetTestHistoryAsync();
-    }
+
+		Task<AnswerResultModel> GetAnswerDetailAsync(string answerId);
+	}
 }

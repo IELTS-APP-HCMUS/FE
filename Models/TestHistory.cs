@@ -7,6 +7,8 @@ namespace login_full.Models
 {
     public class TestHistory
     {
+        
+        public string AnswerId { get; set; }
         public string TestId { get; set; }
         public string Title { get; set; }
         public DateTime SubmitTime { get; set; }

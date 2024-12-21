@@ -41,7 +41,7 @@ namespace login_full.ViewModels
         public IRelayCommand BackCommand { get; }
         public IRelayCommand RetryCommand { get; }
         public IRelayCommand HomeCommand { get; }
-        public IRelayCommand ViewDetailCommand { get; }
+        public IRelayCommand ViewDetailCommand { get; set; }
 
 
         public string TestDuration { get; }
@@ -55,33 +55,7 @@ namespace login_full.ViewModels
         public double WrongPercentage => (double)WrongAnswers / TotalQuestions * 100;
         public double UnansweredPercentage => (double)UnansweredQuestions / TotalQuestions * 100;
 
-        // Dictionary lưu thống kê theo loại câu hỏi
-        //public Dictionary<QuestionType, QuestionTypeStats> QuestionTypeStatistics { get; }
-
-        //public TestResultViewModel(ReadingTestDetail testDetail, TimeSpan duration)
-        //{
-        //    _testDetail = testDetail;
-        //    TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
-        //    QuestionTypeStatistics = CalculateQuestionTypeStats();
-        //}
-
-        //private Dictionary<QuestionType, QuestionTypeStats> CalculateQuestionTypeStats()
-        //{
-        //    return _testDetail.Questions
-        //        .GroupBy(q => q.Type)
-        //        .ToDictionary(
-        //            g => g.Key,
-        //            g => new QuestionTypeStats
-        //            {
-        //                QuestionType = GetQuestionTypeDisplayName(g.Key),
-        //                TotalQuestions = g.Count(),
-        //                CorrectAnswers = g.Count(q => q.UserAnswer == q.CorrectAnswer),
-        //                WrongAnswers = g.Count(q => q.UserAnswer != null && q.UserAnswer != q.CorrectAnswer),
-        //                UnansweredQuestions = g.Count(q => q.UserAnswer == null)
-        //            }
-        //        );
-        //}
-        // Thay đổi kiểu dữ liệu từ Dictionary sang ObservableCollection
+        
         public ObservableCollection<QuestionTypeStats> QuestionTypeStatistics { get; private set; }
 
         private void InitializeQuestionTypeStats()
@@ -101,19 +75,28 @@ namespace login_full.ViewModels
             QuestionTypeStatistics = new ObservableCollection<QuestionTypeStats>(stats);
         }
 
-        public TestResultViewModel(ReadingTestDetail testDetail, TimeSpan duration, IChartService chartService, INavigationService navigationService)
+        public TestResultViewModel(ReadingTestDetail testDetail, TimeSpan duration, IChartService chartService, INavigationService navigationService, string answerID)
         {
             _navigationService = navigationService;
             _chartService = chartService;
             _testDetail = testDetail;
-
-            BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
+		
+			BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
-            ViewDetailCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testDetail.Id));
+			ViewDetailCommand = new RelayCommand(async () =>
+			{
+				var parameters = new Dictionary<string, string>
+		        {
+			        { "testId", _testDetail.Id },
+			        { "answerId", answerID } 
+                };
+
+				await _navigationService.NavigateToAsync(typeof(TestDetailResultPage), parameters);
+			});
 
 
-            TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
+			TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
             InitializeQuestionTypeStats();
         }
 		public Dictionary<string, int> Summary
@@ -125,7 +108,7 @@ namespace login_full.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public async Task LoadSummaryAsync(string testId)
+		public async Task LoadSummaryAsync(string answerID)
 		{
 			HttpClient client = new HttpClient();
 			string accessToken = GlobalState.Instance.AccessToken;
@@ -135,7 +118,7 @@ namespace login_full.ViewModels
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/{testId}");
+                HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/{answerID}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -146,12 +129,7 @@ namespace login_full.ViewModels
                     JObject summary = (JObject)dataResponse["summary"];
                     int did = dataResponse["detail"]["0"].Count();
 
-                    //Dictionary<string, int> summary = 
-                    //       {
-                    //        { "correct", int.Parse(summary["correct"].ToString()) },
-                    //        { "total", int.Parse(summary["total"].ToString()) },
-                    //        { "skip", int.Parse(summary["total"].ToString()) - did }
-                    //       };
+                  
                     Summary = new Dictionary<string, int>
                 {
                     { "correct", int.Parse(summary["correct"].ToString()) },
@@ -164,7 +142,7 @@ namespace login_full.ViewModels
             }
             catch
             {
-                //Summary = await _testService.GetTestDetailAsync(testId);
+                
                 Summary = new Dictionary<string, int>
                 {
                     { "correct", 0 },
@@ -176,7 +154,6 @@ namespace login_full.ViewModels
 		}
 		private async Task RetryTest()
         {
-            // Logic để làm lại bài thi
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), _testDetail.Id);
         }
         private string GetQuestionTypeDisplayName(QuestionType type)

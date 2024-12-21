@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -140,12 +140,18 @@ namespace login_full.ViewModels
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), testId);
         }
 
-        public async void ViewResult(string testId)
-        {
-            await _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testId);
-        }
+		public async void ViewResult(string testId, string answerId)
+		{
+			// Truyền cả testId và answerId vào trang Xem lại
+			await _navigationService.NavigateToAsync(typeof(TestDetailResultPage),
+				new Dictionary<string, string>
+				{
+			{ "testId", testId },
+			{ "answerId", answerId }
+				});
+		}
 
-        public async void RefreshHistory()
+		public async void RefreshHistory()
         {
             await LoadTestHistoriesAsync();
         }
@@ -156,7 +162,7 @@ namespace login_full.ViewModels
             var testHistories = histories.Select(h =>
             {
                 h.RetakeCommand = new RelayCommand(() => RetakeTest(h.TestId));
-                h.ViewResultCommand = new RelayCommand(() => ViewResult(h.TestId));
+                h.ViewResultCommand = new RelayCommand(() => ViewResult(h.TestId, h.AnswerId));
                 return h;
             });
             _testHistories = new ObservableCollection<TestHistory>(testHistories);

@@ -67,14 +67,20 @@ namespace login_full.Services
 							TimeLimit = quizData.Time,
 							Questions = quizData.Parts
 								.SelectMany(part => part.Questions)
-								.Select(q => new ReadingTestQuestion
+								.Select(q =>
 								{
-									Id = q.Id.ToString(),
-									QuestionText = q.Title,
-									Type = MapQuestionType(q.QuestionType),
-									Options = q.Selection?.Select(opt => opt.Text).ToList(),
-									CorrectAnswer = q.Selection?.FirstOrDefault(opt => opt.Correct)?.Text,
-									Explanation = q.Explain
+									var question = new ReadingTestQuestion
+									{
+										Id = q.Id.ToString(),
+										QuestionText = q.Title,
+										Type = MapQuestionType(q.QuestionType),
+										Options = q.Selection?.Select(opt => opt.Text).ToList(),
+										CorrectAnswer = q.Selection?.FirstOrDefault(opt => opt.Correct)?.Text,
+										Explanation = q.Explain
+									};
+
+									question.InitializeOptionModels(); 
+									return question;
 								})
 								.ToList(),
 							Progress = new TestProgress
@@ -145,7 +151,6 @@ namespace login_full.Services
 				{
 					var test = _mockTests[testId];
 
-					// Prepare data for the API request
 					var payload = new
 					{
 						question = test.Questions.Select(q => new
@@ -172,8 +177,8 @@ namespace login_full.Services
 							}).ToList()
 						}
 					},
-							quiz = int.Parse(testId), 
-							type = 1, 
+							quiz = int.Parse(testId),
+							type = 1,
 							status = "reviewed",
 							completed_duration = test.Progress.RemainingTime,
 							summary = new
@@ -181,7 +186,7 @@ namespace login_full.Services
 								correct = test.Questions.Count(q => q.IsCorrectAnswer),
 								total = test.Questions.Count,
 								left_time = TimeSpan.FromSeconds(test.Progress.RemainingTime).ToString(@"hh\:mm\:ss"),
-								mocktest_time = test.TimeLimit, 
+								mocktest_time = test.TimeLimit,
 								type = "practice"
 							}
 						}
@@ -207,7 +212,7 @@ namespace login_full.Services
 							System.Diagnostics.Debug.WriteLine($"Submit API Response: {responseContent}");
 
 							var result = JsonConvert.DeserializeObject<dynamic>(responseContent);
-							return result.data.id;
+							return result.data.id.ToString();
 						}
 						else
 						{
@@ -234,7 +239,7 @@ namespace login_full.Services
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 			try
 			{
-				HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=64");
+				HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=20");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -258,6 +263,7 @@ namespace login_full.Services
 							DateTime date_created = DateTime.Parse(i["date_created"].ToString());
 							TestHistory history = new TestHistory
 							{
+								AnswerId = i["id"].ToString(),
 								TestId = quizID.ToString(),
 								Title = i_title,
 								SubmitTime = date_created,
@@ -273,7 +279,6 @@ namespace login_full.Services
 					return histories;
 				}
 				return new List<TestHistory>();
-				//return _localStorageService.GetTestHistory().OrderByDescending(h => h.SubmitTime).ToList();
 			}
 			catch (Exception ex)
 			{
@@ -307,6 +312,41 @@ namespace login_full.Services
 				QuestionType.YesNoNotGiven => "YES_NO",
 				_ => throw new ArgumentException($"Unknown question type: {questionType}")
 			};
+		}
+
+		public async Task<AnswerResultModel> GetAnswerDetailAsync(string answerId)
+		{
+			string apiUrl = $"https://ielts-app-api-4.onrender.com/v1/answers/{answerId}";
+
+			using (HttpClient client = new HttpClient())
+			{
+				string accessToken = GlobalState.Instance.AccessToken;
+
+				client.DefaultRequestHeaders.Authorization =
+					new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+				HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+				if (response.IsSuccessStatusCode)
+				{
+					string content = await response.Content.ReadAsStringAsync();
+
+					System.Diagnostics.Debug.WriteLine($"API Response Content: {content}");
+
+					var apiResponse = JsonConvert.DeserializeObject<ApiResponseModel<AnswerResultModel>>(content);
+
+					if (apiResponse != null && apiResponse.Code == 0)
+					{
+						System.Diagnostics.Debug.WriteLine($"Parsed Data: Id={apiResponse.Data.Id}, QuizId={apiResponse.Data.QuizId}");
+						return apiResponse.Data;
+					}
+					else
+					{
+						throw new Exception($"API Error: {apiResponse?.Message}");
+					}
+				}
+				throw new Exception($"Failed to fetch answer details: {response.ReasonPhrase}");
+			}
 		}
 
 	}
