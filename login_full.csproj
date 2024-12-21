@@ -61,6 +61,7 @@
     <None Remove="Views\reading_Item_UI.xaml" />
     <None Remove="Views\TestDetailResultPage.xaml" />
     <None Remove="Views\TestResultPage.xaml" />
+    <None Remove="Views\VocabularyPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -169,6 +170,9 @@
     <None Update="Assets\writing.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\VocabularyPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Components\ForgotHeader.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

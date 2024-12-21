@@ -106,48 +106,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!--<Grid x:Name="FullHeader" Height="60" Background="#4EACD2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" 
-                Text="MEPASS" 
-                FontSize="32" 
-                FontWeight="Bold" 
-                Foreground="White" 
-                VerticalAlignment="Center" 
-                Margin="37,0,50,0"/>
-
-            <StackPanel Grid.Column="1"
-                 Orientation="Horizontal" 
-                 HorizontalAlignment="Center" 
-                 VerticalAlignment="Center" Margin="10,0,0,0">
-                <HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,0,0" Click="Home_Click"/>
-                <HyperlinkButton Content="Reading " FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
-                <HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
-            </StackPanel>
-
-            <Button Grid.Column="2" 
-                Style="{StaticResource TextBlockButtonStyle}" 
-                Margin="0,0,20,0" 
-                Click="UserProfileButton_Click">
-                <StackPanel Orientation="Horizontal">
-                    <Ellipse Width="35" Height="34">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="/Assets/working_from_home.png"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
-                    <TextBlock Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="White"/>
-                    <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="White" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-        </Grid>-->
 
         <components:Header Grid.Row="0" DataContext="{Binding Profile}"/>
 

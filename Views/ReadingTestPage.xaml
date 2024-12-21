@@ -11,68 +11,84 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-    <!--<Page.Resources>
-        <ResourceDictionary>
-            <Style x:Key="DefaultContentDialogStyle" TargetType="ContentDialog">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"/>
+    <Page.Resources>
+        <!-- Template cho dialog từ điển -->
+        <DataTemplate x:Key="DictionaryDialogTemplate">
+            <StackPanel Spacing="10">
+                <!-- Header với từ và phát âm -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="{Binding Word}" 
+                             FontSize="20" 
+                             FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Pronunciation}"
+                             FontStyle="Italic"/>
+                </StackPanel>
+
+                <!-- Loại từ -->
+                <TextBlock Text="{Binding PartOfSpeech}"
+                         FontStyle="Italic"
+                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+
+                <!-- Nghĩa tiếng Anh -->
+                <StackPanel>
+                    <TextBlock Text="Definition:"
+                             FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Meaning}"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Nghĩa tiếng Việt -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Nghĩa:"
+                             FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding VietnameseMeaning}"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Từ/cấu trúc liên quan -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Related Words:"
+                             FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding RelatedWords}"
+                                Margin="10,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                         Margin="0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Ví dụ -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Examples:"
+                             FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding Examples}"
+                                Margin="10,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                         TextWrapping="Wrap"
+                                         Margin="0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+        <!-- Style cho ContentDialog -->
+        <Style x:Key="DictionaryDialogStyle" TargetType="ContentDialog">
+            <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+            <Setter Property="Foreground" Value="{ThemeResource DefaultTextForegroundThemeBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseLowBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ContentDialog">
-                        <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                -->
-    <!-- Title -->
-    <!--
-                                <TextBlock Text="{TemplateBinding Title}"
-                                     Grid.Row="0"
-                                     Margin="24,24,24,0"
-                                     Style="{ThemeResource TitleTextBlockStyle}"/>
-
-                                -->
-    <!-- Content -->
-    <!--
-                                <ContentPresenter Grid.Row="1"
-                                            Content="{TemplateBinding Content}"
-                                            Margin="24,16,24,0"/>
-
-                                -->
-    <!-- Buttons -->
-    <!--
-                                <StackPanel Grid.Row="2"
-                                      Orientation="Horizontal"
-                                      HorizontalAlignment="Right"
-                                      Margin="24,24,24,24"
-                                      Spacing="8">
-                                    <Button x:Name="SecondaryButton"
-                                        Content="{TemplateBinding SecondaryButtonText}"
-                                        Style="{StaticResource DefaultButtonStyle}"
-                                        Command="{TemplateBinding SecondaryButtonCommand}"/>
-                                    <Button x:Name="PrimaryButton"
-                                        Content="{TemplateBinding PrimaryButtonText}"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        Command="{TemplateBinding PrimaryButtonCommand}"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            </Style>
-       </ResourceDictionary>
-    </Page.Resources>-->
+            <Setter Property="MaxWidth" Value="500"/>
+            <Setter Property="MinWidth" Value="320"/>
+            <Setter Property="MaxHeight" Value="756"/>
+            <Setter Property="MinHeight" Value="184"/>
+        </Style>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>

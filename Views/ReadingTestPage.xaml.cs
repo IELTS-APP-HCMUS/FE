@@ -24,12 +24,14 @@ namespace login_full.Views
 
         
         public ReadingTestViewModel ViewModel { get; }
+        private readonly MockDictionaryService _dictionaryService;
 
         public ReadingTestPage()
         {
             this.InitializeComponent();
             var readingTestService = ServiceLocator.GetService<IReadingTestService>();
             var navigationService = App.NavigationService;
+            _dictionaryService = new MockDictionaryService();
 
 
             // Sử dụng NavigationService từ App
@@ -175,17 +177,24 @@ namespace login_full.Views
 
             ContentParagraph.Inlines.Add(container);
         }
-
         private async void WordButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Content is TextBlock textBlock)
             {
                 string word = textBlock.Text;
+                var entry = _dictionaryService.GetWord(word);
+
+                if (entry == null)
+                {
+                    return;
+                }
 
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = "Word Information",
-                    Content = $"You clicked: {word}\nHere you can add dictionary definition, translation, or any other information.",
+                    Title = "Dictionary",
+                    Content = entry,
+                    ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"],
+                    Style = (Style)Resources["DictionaryDialogStyle"],
                     CloseButtonText = "Close",
                     XamlRoot = this.XamlRoot
                 };
@@ -193,5 +202,114 @@ namespace login_full.Views
                 await dialog.ShowAsync();
             }
         }
+        //private async void WordButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (sender is Button button && button.Content is TextBlock textBlock)
+        //    {
+        //        string word = textBlock.Text;
+        //        var entry = _dictionaryService.GetWord(word);
+
+        //        if (entry == null)
+        //        {
+        //            //ContentDialog dialog = new ContentDialog
+        //            //{
+        //            //    Title = "Word Not Found",
+        //            //    Content = $"The word '{word}' was not found in the dictionary.",
+        //            //    CloseButtonText = "Close",
+        //            //    XamlRoot = this.XamlRoot
+        //            //};
+        //            //await dialog.ShowAsync();
+        //            return;
+        //        }
+
+        //        var content = new StackPanel { Spacing = 10 };
+
+        //        // Pronunciation
+        //        var pronunciationPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
+        //        pronunciationPanel.Children.Add(new TextBlock 
+        //        { 
+        //            Text = entry.Word,
+        //            FontSize = 20,
+        //            FontWeight = FontWeights.Bold
+        //        });
+        //        pronunciationPanel.Children.Add(new TextBlock 
+        //        { 
+        //            Text = entry.Pronunciation,
+        //            FontStyle = FontStyle.Italic
+        //        });
+        //        content.Children.Add(pronunciationPanel);
+
+        //        // Part of Speech
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = entry.PartOfSpeech,
+        //            FontStyle = FontStyle.Italic,
+        //            Foreground = new SolidColorBrush(Colors.Gray)
+        //        });
+
+        //        // English Meaning
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = "Definition:",
+        //            FontWeight = FontWeights.SemiBold
+        //        });
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = entry.Meaning,
+        //            TextWrapping = TextWrapping.Wrap
+        //        });
+
+        //        // Vietnamese Meaning
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = "Nghĩa:",
+        //            FontWeight = FontWeights.SemiBold,
+        //            Margin = new Thickness(0,10,0,0)
+        //        });
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = entry.VietnameseMeaning,
+        //            TextWrapping = TextWrapping.Wrap
+        //        });
+
+        //        // Related Words
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = "Related Words:",
+        //            FontWeight = FontWeights.SemiBold,
+        //            Margin = new Thickness(0,10,0,0)
+        //        });
+        //        var relatedWordsPanel = new ItemsControl
+        //        {
+        //            ItemsSource = entry.RelatedWords,
+        //            Margin = new Thickness(10,0,0,0)
+        //        };
+        //        content.Children.Add(relatedWordsPanel);
+
+        //        // Examples
+        //        content.Children.Add(new TextBlock 
+        //        { 
+        //            Text = "Examples:",
+        //            FontWeight = FontWeights.SemiBold,
+        //            Margin = new Thickness(0,10,0,0)
+        //        });
+        //        var examplesPanel = new ItemsControl
+        //        {
+        //            ItemsSource = entry.Examples,
+        //            Margin = new Thickness(10,0,0,0)
+        //        };
+        //        content.Children.Add(examplesPanel);
+
+        //        ContentDialog dialog = new ContentDialog
+        //        {
+        //            Title = "Dictionary",
+        //            Content = content,
+        //            CloseButtonText = "Close",
+        //            XamlRoot = this.XamlRoot
+        //        };
+
+        //        await dialog.ShowAsync();
+        //    }
+        //}
     }
 }
