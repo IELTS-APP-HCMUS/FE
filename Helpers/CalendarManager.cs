@@ -3,6 +3,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI;
 using System;
 using Microsoft.UI.Xaml;
+using login_full.Components.Home;
+using System.Collections.Generic;
+using Windows.UI;
 
 namespace login_full.Helpers
 {
@@ -12,6 +15,7 @@ namespace login_full.Helpers
         private readonly TextBlock MonthYearDisplay;
         private DateTime currentDate;
         private Button selectedDateButton;
+        private Dictionary<string, int> dateCount;
 
         public CalendarManager(Grid calendarGrid, TextBlock monthYearDisplay)
         {
@@ -21,6 +25,7 @@ namespace login_full.Helpers
 
             // Create the CalendarDayButtonStyle programmatically
             var calendarDayButtonStyle = new Style(typeof(Button));
+            calendarDayButtonStyle.Setters.Add(new Setter(Control.ForegroundProperty, new SolidColorBrush(Colors.Black)));
             calendarDayButtonStyle.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Colors.Transparent)));
             calendarDayButtonStyle.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(0)));
             calendarDayButtonStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(5)));
@@ -58,7 +63,8 @@ namespace login_full.Helpers
                 {
                     Text = daysOfWeek[i],
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Foreground = new SolidColorBrush(Colors.Black)
                 };
                 Grid.SetRow(dayHeader, 0);
                 Grid.SetColumn(dayHeader, i);
@@ -73,10 +79,15 @@ namespace login_full.Helpers
 
             for (int day = 1; day <= daysInMonth; day++)
             {
+                DateTime currentDate = new DateTime(date.Year, date.Month, day);
+                string dateString = currentDate.ToString("yyyy-MM-dd");
+                int count = dateCount.ContainsKey(dateString) ? dateCount[dateString] : 0;
+
                 Button dayButton = new Button
                 {
                     Content = day.ToString(),
-                    Style = (Style)Application.Current.Resources["CalendarDayButtonStyle"]
+                    Style = (Style)Application.Current.Resources["CalendarDayButtonStyle"],
+                    Background = GetColorBasedOnCount(count)
                 };
                 dayButton.Click += (sender, e) => { DayButtonClick((Button)sender); };
 
@@ -94,7 +105,38 @@ namespace login_full.Helpers
 
             MonthYearDisplay.Text = date.ToString("MMMM yyyy");
         }
+        public static SolidColorBrush GetColorBasedOnCount(int count)
+        {
+            // Tô màu xanh lá từ nhạt đến đậm dựa trên ngưỡng.
+            if (count == 0)
+                return new SolidColorBrush(Colors.Transparent);
+            else if (count <= 2)
+                return new SolidColorBrush(Color.FromArgb(255, 198, 255, 198)); // Rất nhạt
+            else if (count <= 5)
+                return new SolidColorBrush(Color.FromArgb(255, 144, 238, 144)); // Nhạt
+            else if (count <= 10)
+                return new SolidColorBrush(Color.FromArgb(255, 34, 139, 34)); // Trung bình
+            else
+                return new SolidColorBrush(Color.FromArgb(255, 0, 100, 0)); // Đậm
+        }
+        public void ProcessDateCreatedCount(List<Item> items)
+        {
+            var tempdateCount = new Dictionary<string, int>();
 
+            foreach (var item in items)
+            {
+                var date = DateTime.Parse(item.date_created).ToString("yyyy-MM-dd");
+                if (tempdateCount.ContainsKey(date))
+                {
+                    tempdateCount[date]++;
+                }
+                else
+                {
+                    tempdateCount[date] = 1;
+                }
+            }
+            dateCount = tempdateCount;
+        }
         public void PreviousMonth()
         {
             currentDate = currentDate.AddMonths(-1);
