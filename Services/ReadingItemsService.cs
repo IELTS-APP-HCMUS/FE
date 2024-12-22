@@ -112,7 +112,7 @@ namespace login_full.Services
 					if (tagQuestionType.HasValue) queryParams.Add("tag_question_type", tagQuestionType.ToString());
 
 					string queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
-					string url = $"http://localhost:8080/v1/quizzes?{queryString}";
+					string url = $"https://ielts-app-api-4.onrender.com/v1/quizzes?{queryString}";
 				
 					HttpResponseMessage response = await client.GetAsync(url);
 
