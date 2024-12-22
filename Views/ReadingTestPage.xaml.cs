@@ -14,7 +14,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-
+using System.Globalization;
 
 
 namespace login_full.Views
@@ -26,6 +26,12 @@ namespace login_full.Views
         public ReadingTestViewModel ViewModel { get; }
         private readonly MockDictionaryService _dictionaryService;
 
+        private TextHighlightService _highlightService;
+        private string _selectedText;
+        private int _selectedStartIndex;
+        private int _selectedLength;
+        private DispatcherTimer _popupTimer;
+
         public ReadingTestPage()
         {
             this.InitializeComponent();
@@ -36,6 +42,8 @@ namespace login_full.Views
                 var navigationService = App.NavigationService;
                 var pdfExportService = ServiceLocator.GetService<IPdfExportService>();
                 _dictionaryService = ServiceLocator.GetService<MockDictionaryService>();
+
+                _highlightService = ServiceLocator.GetService<TextHighlightService>();
 
                 if (readingTestService == null || navigationService == null || pdfExportService == null)
                 {
@@ -50,6 +58,12 @@ namespace login_full.Views
                 );
 
                 ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
+                ViewModel.OnHighlightModeChanged += ViewModel_OnHighlightModeChanged;
+
+                // Khởi tạo timer cho popup
+                _popupTimer = new DispatcherTimer();
+                _popupTimer.Interval = TimeSpan.FromMilliseconds(350); // Đợi 500ms
+                _popupTimer.Tick += PopupTimer_Tick;
             }
             catch (Exception ex)
             {
@@ -87,6 +101,8 @@ namespace login_full.Views
         {
             ProcessContent();
         }
+
+
 
         private void ProcessContent()
         {
@@ -225,114 +241,150 @@ namespace login_full.Views
                 await dialog.ShowAsync();
             }
         }
-        //private async void WordButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (sender is Button button && button.Content is TextBlock textBlock)
-        //    {
-        //        string word = textBlock.Text;
-        //        var entry = _dictionaryService.GetWord(word);
 
-        //        if (entry == null)
-        //        {
-        //            //ContentDialog dialog = new ContentDialog
-        //            //{
-        //            //    Title = "Word Not Found",
-        //            //    Content = $"The word '{word}' was not found in the dictionary.",
-        //            //    CloseButtonText = "Close",
-        //            //    XamlRoot = this.XamlRoot
-        //            //};
-        //            //await dialog.ShowAsync();
-        //            return;
-        //        }
+        private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            var richTextBlock = sender as RichTextBlock;
+            if (richTextBlock != null && ViewModel.IsHighlightMode)
+            {
+                var selectedText = richTextBlock.SelectedText;
+                if (!string.IsNullOrEmpty(selectedText))
+                {
+                    _selectedText = selectedText;
 
-        //        var content = new StackPanel { Spacing = 10 };
+                    // Tìm vị trí thực của text được chọn trong nội dung
+                    var fullText = GetFullText(richTextBlock);
+                    _selectedStartIndex = fullText.IndexOf(selectedText);
+                    _selectedLength = selectedText.Length;
 
-        //        // Pronunciation
-        //        var pronunciationPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-        //        pronunciationPanel.Children.Add(new TextBlock 
-        //        { 
-        //            Text = entry.Word,
-        //            FontSize = 20,
-        //            FontWeight = FontWeights.Bold
-        //        });
-        //        pronunciationPanel.Children.Add(new TextBlock 
-        //        { 
-        //            Text = entry.Pronunciation,
-        //            FontStyle = FontStyle.Italic
-        //        });
-        //        content.Children.Add(pronunciationPanel);
+                    // Get the selection bounds
+                    var start = richTextBlock.SelectionStart;
+                    var bounds = start.GetCharacterRect(LogicalDirection.Forward);
+                    HighlightPopup.HorizontalOffset = bounds.X;
+                    HighlightPopup.VerticalOffset = bounds.Y + 240;
+                    // HighlightPopup.IsOpen = true;
+                    // Restart timer
+                    _popupTimer.Stop();
+                    _popupTimer.Start();
+                }
+            }
+            else
+            {
+                HighlightPopup.IsOpen = false;
+                _popupTimer.Stop();
+            }
+        }
 
-        //        // Part of Speech
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = entry.PartOfSpeech,
-        //            FontStyle = FontStyle.Italic,
-        //            Foreground = new SolidColorBrush(Colors.Gray)
-        //        });
+        // Helper method để lấy toàn bộ text từ RichTextBlock
+        private string GetFullText(RichTextBlock richTextBlock)
+        {
+            string text = string.Empty;
+            foreach (var block in richTextBlock.Blocks)
+            {
+                if (block is Paragraph paragraph)
+                {
+                    foreach (var inline in paragraph.Inlines)
+                    {
+                        if (inline is Run run)
+                        {
+                            text += run.Text;
+                        }
+                    }
+                }
+            }
+            return text;
+        }
 
-        //        // English Meaning
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = "Definition:",
-        //            FontWeight = FontWeights.SemiBold
-        //        });
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = entry.Meaning,
-        //            TextWrapping = TextWrapping.Wrap
-        //        });
+        private void HighlightButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_selectedText)) return;
 
-        //        // Vietnamese Meaning
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = "Nghĩa:",
-        //            FontWeight = FontWeights.SemiBold,
-        //            Margin = new Thickness(0,10,0,0)
-        //        });
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = entry.VietnameseMeaning,
-        //            TextWrapping = TextWrapping.Wrap
-        //        });
+            _highlightService.AddHighlight(
+                "current_document_id",
+                _selectedText,
+                _selectedStartIndex,
+                _selectedLength
+            );
+            ApplyHighlights();
+            HighlightPopup.IsOpen = false;
+        }
 
-        //        // Related Words
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = "Related Words:",
-        //            FontWeight = FontWeights.SemiBold,
-        //            Margin = new Thickness(0,10,0,0)
-        //        });
-        //        var relatedWordsPanel = new ItemsControl
-        //        {
-        //            ItemsSource = entry.RelatedWords,
-        //            Margin = new Thickness(10,0,0,0)
-        //        };
-        //        content.Children.Add(relatedWordsPanel);
+        private void RemoveHighlightButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Tìm tất cả highlights có overlap với vùng được chọn
+            var highlights = _highlightService.GetHighlights("current_document_id");
+            var overlappingHighlights = highlights.Where(h =>
+                HasOverlap(_selectedStartIndex, _selectedLength, h.StartIndex, h.Length)).ToList();
 
-        //        // Examples
-        //        content.Children.Add(new TextBlock 
-        //        { 
-        //            Text = "Examples:",
-        //            FontWeight = FontWeights.SemiBold,
-        //            Margin = new Thickness(0,10,0,0)
-        //        });
-        //        var examplesPanel = new ItemsControl
-        //        {
-        //            ItemsSource = entry.Examples,
-        //            Margin = new Thickness(10,0,0,0)
-        //        };
-        //        content.Children.Add(examplesPanel);
+            // Xóa tất cả highlights bị overlap
+            foreach (var highlight in overlappingHighlights)
+            {
+                _highlightService.RemoveHighlight("current_document_id", highlight.StartIndex, highlight.Length);
+            }
+            ApplyHighlights();
+            HighlightPopup.IsOpen = false;
+        }
+        // Helper method để kiểm tra overlap giữa hai đoạn text
+        private bool HasOverlap(int start1, int length1, int start2, int length2)
+        {
+            int end1 = start1 + length1;
+            int end2 = start2 + length2;
+            return !(end1 <= start2 || start1 >= end2);
+        }
 
-        //        ContentDialog dialog = new ContentDialog
-        //        {
-        //            Title = "Dictionary",
-        //            Content = content,
-        //            CloseButtonText = "Close",
-        //            XamlRoot = this.XamlRoot
-        //        };
+        private void ApplyHighlights()
+        {
+            var highlights = _highlightService.GetHighlights("current_document_id");
+            var text = ViewModel.TestDetail.Content;
 
-        //        await dialog.ShowAsync();
-        //    }
-        //}
+            // Clear existing highlights
+            ContentRichTextBlock.TextHighlighters.Clear();
+
+            foreach (var highlight in highlights.OrderBy(h => h.StartIndex))
+            {
+                var textHighlighter = new TextHighlighter();
+                textHighlighter.Background = new SolidColorBrush(ColorHelper.FromArgb(
+                    255,
+                    byte.Parse(highlight.Color.Substring(1, 2), NumberStyles.HexNumber),
+                    byte.Parse(highlight.Color.Substring(3, 2), NumberStyles.HexNumber),
+                    byte.Parse(highlight.Color.Substring(5, 2), NumberStyles.HexNumber)));
+                textHighlighter.Ranges.Add(new TextRange
+                {
+                    StartIndex = highlight.StartIndex,
+                    Length = highlight.Length
+                });
+
+                ContentRichTextBlock.TextHighlighters.Add(textHighlighter);
+            }
+        }
+
+        private void ViewModel_OnHighlightModeChanged(object sender, bool isHighlightMode)
+        {
+            // Cập nhật visual state của nút highlight
+            MainHighlightButton.IsChecked = isHighlightMode;
+
+            // Nếu tắt highlight mode thì đóng popup
+            if (!isHighlightMode)
+            {
+                HighlightPopup.IsOpen = false;
+            }
+        }
+        private void MainHighlightButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as AppBarToggleButton;
+            if (button != null)
+            {
+                ViewModel.IsHighlightMode = button.IsChecked ?? false;
+            }
+        }
+
+        private void PopupTimer_Tick(object sender, object e)
+        {
+            _popupTimer.Stop();
+            if (!string.IsNullOrEmpty(_selectedText))
+            {
+                HighlightPopup.IsOpen = true;
+            }
+        }
     }
 }

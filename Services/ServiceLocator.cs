@@ -19,12 +19,14 @@ namespace login_full.Services
             services.AddSingleton<LocalStorageService>();
             services.AddSingleton<IPdfExportService, PdfExportService>();
             services.AddSingleton<MockDictionaryService>();
+            services.AddSingleton<TextHighlightService>();
 
             // Register ViewModels
             services.AddTransient<HistoryViewModel>();
 
             _serviceProvider = services.BuildServiceProvider();
         }
+      
 
         public static T GetService<T>() where T : class
         {

@@ -34,7 +34,7 @@ namespace login_full.ViewModels
         public IRelayCommand SubmitCommand { get; }
         public IAsyncRelayCommand ExitCommand { get; }
 
-        
+
 
         public IRelayCommand ZoomInCommand { get; }
         public IRelayCommand ZoomOutCommand { get; }
@@ -86,29 +86,37 @@ namespace login_full.ViewModels
             get => _isHighlightMode;
             set
             {
-                _isHighlightMode = value;
-                OnPropertyChanged();
+                if (_isHighlightMode != value)
+                {
+                    _isHighlightMode = value;
+                    OnPropertyChanged();
+                    // Thông báo cho UI biết trạng thái highlight đã thay đổi
+                    System.Diagnostics.Debug.WriteLine($"IsHighlightMode changed to: {value}"); // For debugging
+                    OnHighlightModeChanged?.Invoke(this, _isHighlightMode);
+                  
+                }
             }
         }
 
-        private List<HighlightInfo> _highlights;
-        public List<HighlightInfo> Highlights
+        // Thêm event để thông báo khi highlight mode thay đổi
+        public event EventHandler<bool> OnHighlightModeChanged;
+
+        // Thêm method để kiểm tra xem có thể highlight không
+        public bool CanHighlight()
         {
-            get => _highlights;
-            set
-            {
-                _highlights = value;
-                OnPropertyChanged();
-            }
+            return IsHighlightMode && !string.IsNullOrEmpty(TestDetail?.Content);
         }
 
         private readonly IPdfExportService _pdfExportService;
+        private readonly TextHighlightService _highlightService;
+
 
         public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService)
         {
             _testService = testService ?? throw new ArgumentNullException(nameof(testService));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
+            _highlightService = ServiceLocator.GetService<TextHighlightService>();
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -119,12 +127,12 @@ namespace login_full.ViewModels
             _timer.Tick += Timer_Tick;
 
 
-       
+
             //HighlightVM = new HighlightViewModel(highlightService);
 
             ZoomInCommand = new RelayCommand(ZoomIn);
             ZoomOutCommand = new RelayCommand(ZoomOut);
-            HighlightCommand = new RelayCommand(ToggleHighlight);
+            HighlightCommand = new RelayCommand(ToggleHighlightMode);
             AddNoteCommand = new RelayCommand(AddNote);
             SaveProgressCommand = new RelayCommand(SaveProgress);
             ExitCommand = new AsyncRelayCommand(ShowExitDialog);
@@ -135,15 +143,17 @@ namespace login_full.ViewModels
                 OnContentProcessingRequested?.Invoke(this, EventArgs.Empty);
             });
 
-            _highlights = new List<HighlightInfo>();
+            IsHighlightMode = false;
+
         }
 
         private void ZoomIn() { /* Implementation */ }
         private void ZoomOut() { /* Implementation */ }
-        private void ToggleHighlight()
+
+        private void ToggleHighlightMode()
         {
             IsHighlightMode = !IsHighlightMode;
-            OnHighlightModeChanged?.Invoke(this, IsHighlightMode);
+            System.Diagnostics.Debug.WriteLine($"Highlight mode: {IsHighlightMode}");
         }
 
         private void AddNote() { /* Implementation */ }
@@ -256,11 +266,11 @@ namespace login_full.ViewModels
             else
             {
                 _timer.Stop();
-                _= SubmitTest();
+                _ = SubmitTest();
             }
         }
 
-       
+
 
         private async Task SubmitTest()
         {
@@ -295,7 +305,7 @@ namespace login_full.ViewModels
                     // Tạo TestResultViewModel và chuyển hướng
                     var resultViewModel = new TestResultViewModel(TestDetail, timeSpent, (App.Current as App).ChartService, _navigationService);
                     await resultViewModel.LoadSummaryAsync(success);
-					(App.Current as App).CurrentTestResult = resultViewModel;
+                    (App.Current as App).CurrentTestResult = resultViewModel;
                     await _navigationService.NavigateToAsync(typeof(TestResultPage), success);
                 }
             }
@@ -339,48 +349,12 @@ namespace login_full.ViewModels
 
         public event EventHandler OnContentProcessingRequested;
 
-        // Event to notify view that content needs to be reprocessed
-        //public event EventHandler OnContentProcessingRequested;
+     
 
-        public void AddHighlight(string text, int startIndex, int length)
-        {
-            if (IsHighlightMode)
-            {
-                var highlight = new HighlightInfo
-                {
-                    Text = text,
-                    StartIndex = startIndex,
-                    Length = length,
-                    Color = Windows.UI.Color.FromArgb(255, 255, 255, 0) // Yellow highlight
-                };
 
-                Highlights.Add(highlight);
-                OnPropertyChanged(nameof(Highlights));
-                OnHighlightAdded?.Invoke(this, highlight);
-            }
-        }
 
-        public void RemoveHighlight(HighlightInfo highlight)
-        {
-            if (Highlights.Remove(highlight))
-            {
-                OnPropertyChanged(nameof(Highlights));
-                OnHighlightRemoved?.Invoke(this, highlight);
-            }
-        }
-
-        // Events for highlight changes
-        public event EventHandler<bool> OnHighlightModeChanged;
-        public event EventHandler<HighlightInfo> OnHighlightAdded;
-        public event EventHandler<HighlightInfo> OnHighlightRemoved;
     }
 
 
-    public class HighlightInfo
-    {
-        public string Text { get; set; }
-        public int StartIndex { get; set; }
-        public int Length { get; set; }
-        public Windows.UI.Color Color { get; set; }
-    }
+
 }
