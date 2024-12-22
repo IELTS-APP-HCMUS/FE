@@ -42,7 +42,8 @@ namespace login_full
             services.AddSingleton<IReadingTestService, ReadingTestService>();
             services.AddSingleton<IPdfExportService, PdfExportService>();
             services.AddSingleton<MockDictionaryService>();
-            
+            services.AddSingleton<TextHighlightService>();
+
             // Register ViewModels
             services.AddTransient<HistoryViewModel>();
             

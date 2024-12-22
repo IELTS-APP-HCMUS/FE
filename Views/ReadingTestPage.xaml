@@ -6,7 +6,7 @@
     xmlns:local="using:login_full.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:local1="using:login_full.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -88,6 +88,12 @@
             <Setter Property="MaxHeight" Value="756"/>
             <Setter Property="MinHeight" Value="184"/>
         </Style>
+
+        <SolidColorBrush x:Key="HighlightActiveBrush" Color="#FFE6B8"/>
+
+        <local1:BoolToSolidColorBrushConverter x:Key="BoolToHighlightBackgroundConverter" 
+                                             TrueBrush="{StaticResource HighlightActiveBrush}"
+                                             FalseBrush="Transparent"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -155,10 +161,12 @@
                                       Label="Zoom Out"
                                       Command="{x:Bind ViewModel.ZoomOutCommand}"/>
                         <AppBarSeparator/>
-                        <AppBarButton x:Name="HighlightButton"  
-                                      Icon="Highlight" 
-                                      Label="Highlight"
-                                      Command="{x:Bind ViewModel.HighlightCommand}"/>
+                        <AppBarToggleButton x:Name="MainHighlightButton" 
+                                            Icon="Highlight" 
+                                            Label="Highlight"
+                                            IsChecked="{x:Bind ViewModel.IsHighlightMode, Mode=TwoWay}"
+                                            Click="MainHighlightButton_Click"/>
+                 
                         <AppBarToggleButton x:Name="VocabMode" 
                                             Icon="Font" 
                                             Label="Vocab Mode"
@@ -176,7 +184,10 @@
 
                     <RichTextBlock x:Name="ContentRichTextBlock" 
                                    Margin="0,20,0,0" 
-                                   TextWrapping="Wrap">
+                                   TextWrapping="Wrap"
+                                 
+                                  SelectionChanged="ContentRichTextBlock_SelectionChanged"
+                                   IsTextSelectionEnabled="True">
                         <Paragraph x:Name="ContentParagraph"/>
                     </RichTextBlock>
 
@@ -279,5 +290,32 @@
                     Margin="20"/>
             </Grid>
         </Grid>
+
+        <!-- Add this popup -->
+        <Popup x:Name="HighlightPopup" 
+               IsLightDismissEnabled="True">
+            <Border Background="White" 
+                    BorderBrush="Gray" 
+                    BorderThickness="1" 
+                    CornerRadius="4"
+                    Padding="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="HighlightButton" 
+                            Click="HighlightButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE1D9;"/>
+                            <TextBlock Text="Highlight" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="RemoveHighlightButton" 
+                            Click="RemoveHighlightButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE1D8;"/>
+                            <TextBlock Text="Remove" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </Page>
