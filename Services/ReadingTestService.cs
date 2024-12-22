@@ -167,62 +167,65 @@ namespace login_full.Services
 		{
 			try
 			{
-				// Kiểm tra testId có tồn tại không
 				if (_mockTests.ContainsKey(testId))
 				{
 					var test = _mockTests[testId];
 
-					// Lấy các câu hỏi đã được trả lời
-					var answeredQuestions = test.Questions
-						.Where(q => !string.IsNullOrWhiteSpace(q.UserAnswer)) // Chỉ lấy câu đã trả lời
-						.ToList();
-
-					// Tạo payload gửi lên server
+					
 					var payload = new
 					{
-						question = test.Questions.Select(q => new
-						{
-							id = int.Parse(q.Id), // ID câu hỏi
-							success_count = q.Type == QuestionType.GapFilling
-								? q.UserAnswer == q.CorrectAnswer ? 1 : 0
-								: q.IsCorrectAnswer ? 1 : 0,
-							total = 1 // Luôn mặc định là 1 cho từng câu hỏi
-						}),
+						
+						question = test.Questions
+							.Where(q => !string.IsNullOrWhiteSpace(q.UserAnswer)) 
+							.Select(q => new
+							{
+								id = int.Parse(q.Id), 
+								success_count = q.Type == QuestionType.GapFilling
+									? (q.UserAnswer == q.CorrectAnswer ? 1 : 0) 
+									: (q.IsCorrectAnswer ? 1 : 0), 
+								total = 1 
+							}),
 
 						answer = new
 						{
 							detail = new Dictionary<string, object>
 					{
 						{
-							"0", test.Questions.Select((q, index) => new
-							{
-								answer = new
+							"0", test.Questions
+								.Select((q, index) => new
 								{
-									title = q.Type == QuestionType.GapFilling
-										? new List<string> { q.UserAnswer } 
-                                        : q.Options?.Where(opt => opt == q.UserAnswer).ToList()
-								},
-								type = MapQuestionTypeForApi(q.Type),
-								correct = q.Type == QuestionType.GapFilling
-									? q.UserAnswer == q.CorrectAnswer
-									: q.IsCorrectAnswer,
-								question = index + 1,
-								id_question = int.Parse(q.Id)
-							}).ToList()
+									answer = new
+									{
+										title = q.Type == QuestionType.GapFilling
+											? (!string.IsNullOrWhiteSpace(q.UserAnswer) ? new List<string> { q.UserAnswer } : new List<string>())
+											: q.Options?.Where(opt => opt == q.UserAnswer).ToList()
+									},
+									type = MapQuestionTypeForApi(q.Type),
+									correct = q.Type == QuestionType.GapFilling
+										? q.UserAnswer == q.CorrectAnswer 
+                                        : q.IsCorrectAnswer, 
+                                    question = index + 1,
+									id_question = int.Parse(q.Id)
+								})
+								.Where(q => q.answer.title.Count > 0) 
+                                .ToList()
 						}
 					},
 							quiz = int.Parse(testId),
 							type = 1,
 							status = "reviewed",
 							completed_duration = test.Progress.RemainingTime,
+
+							// Thống kê tổng số câu hỏi, số câu trả lời đúng và thời gian còn lại
 							summary = new
 							{
-								correct = answeredQuestions.Count(q =>
-									q.Type == QuestionType.GapFilling
+								correct = test.Questions.Count(q =>
+									!string.IsNullOrWhiteSpace(q.UserAnswer) && // Chỉ đếm câu đã trả lời
+									(q.Type == QuestionType.GapFilling
 										? q.UserAnswer == q.CorrectAnswer
-										: q.IsCorrectAnswer),
+										: q.IsCorrectAnswer)),
 
-								total = test.Questions.Count, // Tính tổng số câu hỏi BAO GỒM cả câu bỏ qua
+								total = test.Questions.Count, // Tổng số câu hỏi bao gồm cả bỏ qua
 
 								left_time = TimeSpan.FromSeconds(test.Progress.RemainingTime).ToString(@"hh\:mm\:ss"),
 								mocktest_time = test.TimeLimit,
@@ -273,6 +276,7 @@ namespace login_full.Services
 				return "";
 			}
 		}
+
 
 
 
