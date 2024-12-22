@@ -36,29 +36,33 @@ namespace login_full.Services
 		{
 			if (_mockTests.ContainsKey(testId))
 			{
-				// Fetch from local cache if available
+				// Fetch từ bộ nhớ cache
 				return _mockTests[testId];
 			}
 
 			try
 			{
+				// Tạo header Authorization
 				string accessToken = GlobalState.Instance.AccessToken;
 				_httpClient.DefaultRequestHeaders.Authorization =
 					new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
+				// Gọi API để lấy chi tiết bài kiểm tra
 				string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}";
 				HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
 				if (response.IsSuccessStatusCode)
 				{
+					// Đọc dữ liệu trả về
 					string content = await response.Content.ReadAsStringAsync();
 					var apiResponse = JsonConvert.DeserializeObject<QuizDetailApiResponse>(content);
 
+					// Kiểm tra dữ liệu hợp lệ
 					if (apiResponse?.Data != null)
 					{
 						var quizData = apiResponse.Data;
 
-						// Map API data to ReadingTestDetail
+						// Map dữ liệu API sang Model
 						var readingTestDetail = new ReadingTestDetail
 						{
 							Id = quizData.Id.ToString(),
@@ -69,20 +73,32 @@ namespace login_full.Services
 								.SelectMany(part => part.Questions)
 								.Select(q =>
 								{
+									bool isGapFilling = q.QuestionType == "FILL-IN-THE-BLANK";
+					
 									var question = new ReadingTestQuestion
 									{
 										Id = q.Id.ToString(),
 										QuestionText = q.Title,
 										Type = MapQuestionType(q.QuestionType),
-										Options = q.Selection?.Select(opt => opt.Text).ToList(),
-										CorrectAnswer = q.Selection?.FirstOrDefault(opt => opt.Correct)?.Text,
+
+										CorrectAnswer = isGapFilling
+											? q.GapFillInBlankCorrectAnswer 
+											: q.Selection?.FirstOrDefault(opt => opt.Correct)?.Text,
+
+										Options = isGapFilling
+											? null // Gap Filling không có options
+											: q.Selection?.Select(opt => opt.Text).ToList(),
+
 										Explanation = q.Explain
 									};
 
-									question.InitializeOptionModels(); 
+									question.InitializeOptionModels();
+
 									return question;
 								})
 								.ToList(),
+
+							// Thêm thông tin tiến độ
 							Progress = new TestProgress
 							{
 								TotalQuestions = quizData.Parts.Sum(part => part.Questions.Count),
@@ -92,8 +108,12 @@ namespace login_full.Services
 							}
 						};
 
-						// Cache the fetched test in _mockTests
+						// Lưu cache để dùng sau
 						_mockTests[testId] = readingTestDetail;
+
+						// Log dữ liệu nhận được
+						string jsonOutput = JsonConvert.SerializeObject(readingTestDetail, Formatting.Indented);
+						System.Diagnostics.Debug.WriteLine($"Fetched test detail: {jsonOutput}");
 
 						return readingTestDetail;
 					}
@@ -147,18 +167,28 @@ namespace login_full.Services
 		{
 			try
 			{
+				// Kiểm tra testId có tồn tại không
 				if (_mockTests.ContainsKey(testId))
 				{
 					var test = _mockTests[testId];
 
+					// Lấy các câu hỏi đã được trả lời
+					var answeredQuestions = test.Questions
+						.Where(q => !string.IsNullOrWhiteSpace(q.UserAnswer)) // Chỉ lấy câu đã trả lời
+						.ToList();
+
+					// Tạo payload gửi lên server
 					var payload = new
 					{
 						question = test.Questions.Select(q => new
 						{
-							id = int.Parse(q.Id), // Ensure ID is numeric
-							success_count = q.IsCorrectAnswer ? 1 : 0,
-							total = 1 // Assuming 1 sub-question per question (adjust if necessary)
+							id = int.Parse(q.Id), // ID câu hỏi
+							success_count = q.Type == QuestionType.GapFilling
+								? q.UserAnswer == q.CorrectAnswer ? 1 : 0
+								: q.IsCorrectAnswer ? 1 : 0,
+							total = 1 // Luôn mặc định là 1 cho từng câu hỏi
 						}),
+
 						answer = new
 						{
 							detail = new Dictionary<string, object>
@@ -168,10 +198,14 @@ namespace login_full.Services
 							{
 								answer = new
 								{
-									title = q.Options?.Where(opt => opt == q.UserAnswer).ToList()
+									title = q.Type == QuestionType.GapFilling
+										? new List<string> { q.UserAnswer } 
+                                        : q.Options?.Where(opt => opt == q.UserAnswer).ToList()
 								},
 								type = MapQuestionTypeForApi(q.Type),
-								correct = q.IsCorrectAnswer,
+								correct = q.Type == QuestionType.GapFilling
+									? q.UserAnswer == q.CorrectAnswer
+									: q.IsCorrectAnswer,
 								question = index + 1,
 								id_question = int.Parse(q.Id)
 							}).ToList()
@@ -183,8 +217,13 @@ namespace login_full.Services
 							completed_duration = test.Progress.RemainingTime,
 							summary = new
 							{
-								correct = test.Questions.Count(q => q.IsCorrectAnswer),
-								total = test.Questions.Count,
+								correct = answeredQuestions.Count(q =>
+									q.Type == QuestionType.GapFilling
+										? q.UserAnswer == q.CorrectAnswer
+										: q.IsCorrectAnswer),
+
+								total = test.Questions.Count, // Tính tổng số câu hỏi BAO GỒM cả câu bỏ qua
+
 								left_time = TimeSpan.FromSeconds(test.Progress.RemainingTime).ToString(@"hh\:mm\:ss"),
 								mocktest_time = test.TimeLimit,
 								type = "practice"
@@ -192,20 +231,25 @@ namespace login_full.Services
 						}
 					};
 
-					string jsonPayload = JsonConvert.SerializeObject(payload);
+					// Log payload để kiểm tra nội dung trước khi gửi
+					string jsonPayload = JsonConvert.SerializeObject(payload, Formatting.Indented);
 					System.Diagnostics.Debug.WriteLine($"Submitting payload: {jsonPayload}");
 
+					// Tạo HTTP request
 					string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}/answer";
 					var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
 					using (HttpClient client = new HttpClient())
 					{
+						// Thêm Token vào Header
 						string accessToken = GlobalState.Instance.AccessToken;
 						client.DefaultRequestHeaders.Authorization =
 							new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
+						// Gửi request
 						HttpResponseMessage response = await client.PostAsync(apiUrl, requestContent);
 
+						// Kiểm tra phản hồi từ server
 						if (response.IsSuccessStatusCode)
 						{
 							string responseContent = await response.Content.ReadAsStringAsync();
@@ -229,6 +273,8 @@ namespace login_full.Services
 				return "";
 			}
 		}
+
+
 
 		public async Task<List<TestHistory>> GetTestHistoryAsync()
 		{

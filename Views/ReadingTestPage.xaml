@@ -148,23 +148,25 @@
                            IsOpen="False" 
                            DefaultLabelPosition="Right"
                            Margin="0,0,0,20">
-                        <AppBarButton Icon="ZoomIn" Label="Zoom In"/>
-                        <AppBarButton Icon="ZoomOut" Label="Zoom Out"/>
+                        <AppBarButton Icon="ZoomIn" 
+                                      Label="Zoom In"
+                                      Command="{x:Bind ViewModel.ZoomInCommand}"/>
+                        <AppBarButton Icon="ZoomOut" 
+                                      Label="Zoom Out"
+                                      Command="{x:Bind ViewModel.ZoomOutCommand}"/>
                         <AppBarSeparator/>
-                        <AppBarButton x:Name="HighlightButton"  Icon="Highlight" Label="Highlight" />
+                        <AppBarButton x:Name="HighlightButton"  
+                                      Icon="Highlight" 
+                                      Label="Highlight"
+                                      Command="{x:Bind ViewModel.HighlightCommand}"/>
                         <AppBarToggleButton x:Name="VocabMode" 
-                                        Icon="Font" 
-                                        Label="Vocab Mode"
-                                        IsChecked="{x:Bind ViewModel.IsVocabMode, Mode=TwoWay}">
-                            <AppBarToggleButton.Resources>
-                                <ResourceDictionary>
-                                    <SolidColorBrush x:Key="ToggleButtonCheckedBackground" Color="#FF0078D4"/>
-                                    <SolidColorBrush x:Key="ToggleButtonCheckedForeground" Color="White"/>
-                                </ResourceDictionary>
-                            </AppBarToggleButton.Resources>
-                        </AppBarToggleButton>
+                                            Icon="Font" 
+                                            Label="Vocab Mode"
+                                            IsChecked="{x:Bind ViewModel.IsVocabMode, Mode=TwoWay}"/>
                         <AppBarSeparator/>
-                        <AppBarButton Icon="Save" Label="Save Progress"/>
+                        <AppBarButton Icon="Save" 
+                                      Label="Save Progress"
+                                      Command="{x:Bind ViewModel.SaveProgressCommand}"/>
                     </CommandBar>
 
                     <!-- Existing content -->

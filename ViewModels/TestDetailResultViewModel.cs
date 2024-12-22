@@ -110,16 +110,19 @@ namespace login_full.ViewModels
 
 		public async Task LoadDataAsync(string testId, string answerId)
 		{
-			
+			// Debug log để kiểm tra Test ID và Answer ID
 			System.Diagnostics.Debug.WriteLine($"Getting quiz Test ID: {testId}, Answer ID: {answerId}");
+
+			// Lấy chi tiết bài test
 			TestDetail = await _testService.GetTestDetailAsync(testId);
 
 			System.Diagnostics.Debug.WriteLine($"Getting answer from : {testId}, Answer ID: {answerId}");
-			
+
+			// Lấy chi tiết câu trả lời
 			var answerResult = await _testService.GetAnswerDetailAsync(answerId);
 
 			// Nếu không có dữ liệu trả về, dừng lại
-			if (answerResult == null ||!answerResult.Detail.ContainsKey("0"))
+			if (answerResult == null || !answerResult.Detail.ContainsKey("0"))
 			{
 				System.Diagnostics.Debug.WriteLine("Không có dữ liệu trả lời.");
 				return;
@@ -131,24 +134,44 @@ namespace login_full.ViewModels
 			foreach (var question in TestDetail.Questions)
 			{
 				var answer = answers.FirstOrDefault(a => a.IdQuestion == int.Parse(question.Id));
+
 				if (answer != null && answer.Answer?.Title != null)
 				{
-					
+					// Gán câu trả lời của người dùng
 					question.UserAnswer = answer.Answer.Title.FirstOrDefault();
-					question.InitializeOptionModels();
 
-					foreach (var option in question.OptionModels)
+					// Nếu là câu hỏi điền từ (GapFilling)
+					if (question.Type == QuestionType.GapFilling)
 					{
-						option.IsSelected = option.Text == question.UserAnswer;
-						option.IsCorrect = option.Text == question.CorrectAnswer;
-						option.IsWrong = option.IsSelected && option.Text != question.CorrectAnswer;
+						// Debug kiểm tra câu hỏi điền từ
+						System.Diagnostics.Debug.WriteLine($"GapFilling Question: {question.QuestionText}");
+						System.Diagnostics.Debug.WriteLine($"UserAnswer: {question.UserAnswer}, CorrectAnswer: {question.CorrectAnswer}");
 
-						// Debug log để kiểm tra
-						System.Diagnostics.Debug.WriteLine($"Option: {option.Text}, Selected: {option.IsSelected}, Correct: {option.IsCorrect}");
+						// Sử dụng IsCorrectAnswer để kiểm tra đúng/sai
+						bool isCorrect = question.IsCorrectAnswer;
+
+						// Log kết quả đúng/sai
+						System.Diagnostics.Debug.WriteLine($"IsCorrect: {isCorrect}");
+					}
+					else
+					{
+						// Xử lý các loại câu hỏi khác (MultipleChoice, TrueFalseNotGiven, etc.)
+						question.InitializeOptionModels();
+
+						foreach (var option in question.OptionModels)
+						{
+							option.IsSelected = option.Text == question.UserAnswer;
+							option.IsCorrect = option.Text == question.CorrectAnswer;
+							option.IsWrong = option.IsSelected && option.Text != question.CorrectAnswer;
+
+							// Debug log để kiểm tra thông tin câu hỏi trắc nghiệm
+							System.Diagnostics.Debug.WriteLine($"Option: {option.Text}, Selected: {option.IsSelected}, Correct: {option.IsCorrect}");
+						}
 					}
 				}
 			}
 
+			// Tính toán điểm số nếu có dữ liệu tổng hợp
 			if (answerResult.Summary != null)
 			{
 				int correctAnswers = answerResult.Summary.Correct;
@@ -158,6 +181,7 @@ namespace login_full.ViewModels
 				Score = Math.Round((double)correctAnswers / totalQuestions * 10, 1);
 			}
 
+			// Cập nhật UI
 			OnPropertyChanged(nameof(TestDetail));
 			OnPropertyChanged(nameof(Score));
 		}

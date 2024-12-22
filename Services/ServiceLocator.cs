@@ -17,6 +17,8 @@ namespace login_full.Services
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IReadingTestService, ReadingTestService>();
             services.AddSingleton<LocalStorageService>();
+            services.AddSingleton<IPdfExportService, PdfExportService>();
+            services.AddSingleton<MockDictionaryService>();
 
             // Register ViewModels
             services.AddTransient<HistoryViewModel>();
@@ -26,6 +28,10 @@ namespace login_full.Services
 
         public static T GetService<T>() where T : class
         {
+            if (_serviceProvider == null)
+            {
+                throw new InvalidOperationException("ServiceProvider is not initialized");
+            }
             return _serviceProvider.GetService<T>();
         }
     }
