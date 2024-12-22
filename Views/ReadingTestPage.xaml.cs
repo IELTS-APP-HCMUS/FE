@@ -29,25 +29,48 @@ namespace login_full.Views
         public ReadingTestPage()
         {
             this.InitializeComponent();
-            var readingTestService = ServiceLocator.GetService<IReadingTestService>();
-            var navigationService = App.NavigationService;
-            _dictionaryService = new MockDictionaryService();
 
+            try
+            {
+                var readingTestService = ServiceLocator.GetService<IReadingTestService>();
+                var navigationService = App.NavigationService;
+                var pdfExportService = ServiceLocator.GetService<IPdfExportService>();
+                _dictionaryService = ServiceLocator.GetService<MockDictionaryService>();
 
-            // Sử dụng NavigationService từ App
-            ViewModel = new(
-                readingTestService,
-                navigationService
-            );
-            //  Loaded += ReadingTestPage_Loaded;
-            ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
-          
+                if (readingTestService == null || navigationService == null || pdfExportService == null)
+                {
+                    throw new InvalidOperationException("Required services are not initialized");
+                }
+
+                // Sử dụng NavigationService từ App
+                ViewModel = new ReadingTestViewModel(
+                    readingTestService,
+                    navigationService,
+                    pdfExportService
+                );
+
+                ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi hoặc hiển thị thông báo
+                ShowErrorDialog("Initialization Error", ex.Message);
+            }
         }
 
-        //private async void ReadingTestPage_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    await ViewModel.LoadTestAsync("test1");
-        //}
+        private async void ShowErrorDialog(string title, string message)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.XamlRoot
+            };
+
+            await errorDialog.ShowAsync();
+        }
+
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

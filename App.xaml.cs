@@ -26,7 +26,11 @@ namespace login_full
 		public App()
         {
             this.InitializeComponent();
-			ConfigureServices();
+            
+            // Thêm cấu hình QuestPDF license
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            
+            ConfigureServices();
 		}
 
         private void ConfigureServices()
@@ -36,11 +40,16 @@ namespace login_full
             // Register services
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IReadingTestService, ReadingTestService>();
+            services.AddSingleton<IPdfExportService, PdfExportService>();
+            services.AddSingleton<MockDictionaryService>();
             
             // Register ViewModels
             services.AddTransient<HistoryViewModel>();
             
             _serviceProvider = services.BuildServiceProvider();
+            
+            // Initialize ServiceLocator
+            //ServiceLocator.Initialize(_serviceProvider);
         }
 
         public T GetService<T>() where T : class

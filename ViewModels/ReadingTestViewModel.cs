@@ -21,12 +21,7 @@ namespace login_full.ViewModels
     public class ReadingTestViewModel : INotifyPropertyChanged
     {
 
-        //public HighlightViewModel HighlightVM { get; }
-        //public ObservableCollection<HighlightModel> Highlights { get; } = new();
 
-        //public IRelayCommand ToggleHighlightCommand { get; }
-        //public IRelayCommand HighlightSelectedTextCommand { get; }
-        //public IRelayCommand RemoveHighlightCommand { get; }
 
 
         private readonly IReadingTestService _testService;
@@ -107,10 +102,13 @@ namespace login_full.ViewModels
             }
         }
 
-        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService/*, IHighlightService highlightService*/)
+        private readonly IPdfExportService _pdfExportService;
+
+        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService)
         {
-            _testService = testService;
-            _navigationService = navigationService;
+            _testService = testService ?? throw new ArgumentNullException(nameof(testService));
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -149,7 +147,89 @@ namespace login_full.ViewModels
         }
 
         private void AddNote() { /* Implementation */ }
-        private void SaveProgress() { /* Implementation */ }
+        private async void SaveProgress()
+        {
+            if (_pdfExportService == null)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Lỗi",
+                    Content = "Dịch vụ xuất PDF chưa được khởi tạo",
+                    CloseButtonText = "OK",
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+                return;
+            }
+
+            var mainWindow = App.MainWindow;
+            if (mainWindow == null) return;
+
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("PDF files", new List<string>() { ".pdf" });
+            picker.SuggestedFileName = $"Reading_Test_{TestDetail.Id}";
+
+            // Initialize the picker with the window handle
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(mainWindow));
+
+            var file = await picker.PickSaveFileAsync();
+            if (file != null)
+            {
+                ContentDialog loadingDialog = null;
+                try
+                {
+                    loadingDialog = new ContentDialog
+                    {
+                        Title = "Đang xuất PDF",
+                        Content = "Vui lòng đợi trong giây lát...",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    // Hiển thị dialog loading
+                    var loadingTask = loadingDialog.ShowAsync();
+
+                    // Xuất PDF
+                    await _pdfExportService.ExportReadingTestToPdfAsync(TestDetail, file.Path);
+
+                    // Đóng dialog loading
+                    loadingDialog.Hide();
+
+                    // Đợi dialog loading đóng hoàn toàn
+                    await Task.Delay(100);
+
+                    // Hiển thị dialog thành công
+                    var successDialog = new ContentDialog
+                    {
+                        Title = "Thành công",
+                        Content = "Bài làm đã được lưu thành công!",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await successDialog.ShowAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Đảm bảo dialog loading đã đóng
+                    if (loadingDialog != null)
+                    {
+                        loadingDialog.Hide();
+                        await Task.Delay(100);
+                    }
+
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = "Lỗi",
+                        Content = $"Không thể lưu file: {ex.Message}",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
 
 
 
