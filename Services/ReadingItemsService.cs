@@ -16,37 +16,15 @@ namespace login_full.Services
 		private readonly HttpClient _httpClient;
 		public readonly ObservableCollection<ReadingItemModels> _items ;
 		private bool _isInitialized;
+		private readonly string _baseUrl;
 
 		// Public property to expose _items
 		public ReadingItemsService()
 		{
 			_httpClient = new HttpClient();
-			_items = new ObservableCollection<ReadingItemModels>
-		{
-			new ReadingItemModels
-			{
-				TestId = "test1",
-				Title = "Gap Filling - Easy",
-				Description = "Practice your gap-filling skills with easy passages",
-				Duration = "10 mins",
-				Difficulty = "Easy",
-				Category = "Gap Filling",
-				ImagePath = "/Assets/reading_win.png",
-				IsSubmitted = true
-			},
-			new ReadingItemModels
-			{
-				TestId ="test2",
-				Title = "Matching Headings - Intermediate",
-				Description = "Match the correct headings to the passages",
-				Duration = "15 mins",
-				Difficulty = "Intermediate",
-				Category = "Matching",
-				ImagePath = "/Assets/reading_win.png",
-				IsSubmitted = false
-			},
-        };
-
+			_items = new ObservableCollection<ReadingItemModels> { };
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
 		}
 
 		public async Task InitializeAsync()
@@ -62,10 +40,9 @@ namespace login_full.Services
 		{
 			try
 			{
-				// Attempt to load items from the API
+				
 				await FetchItemsFromAPIAsync(1,25);
 
-				// If no items were fetched, load mock data
 				if (!_items.Any())
 				{
 					System.Diagnostics.Debug.WriteLine("No items fetched from API, loading mock data.");
@@ -112,7 +89,7 @@ namespace login_full.Services
 					if (tagQuestionType.HasValue) queryParams.Add("tag_question_type", tagQuestionType.ToString());
 
 					string queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
-					string url = $"http://localhost:8080/v1/quizzes?{queryString}";
+					string url = $"{_baseUrl}/v1/quizzes?{queryString}";
 				
 					HttpResponseMessage response = await client.GetAsync(url);
 

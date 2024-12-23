@@ -18,16 +18,16 @@ namespace login_full.Services
 		private readonly List<TestHistory> _testHistory;
 		private readonly LocalStorageService _localStorageService;
 		private readonly HttpClient _httpClient;
+		private readonly string _baseUrl;
 
 		public ReadingTestService(LocalStorageService localStorageService)
 		{
 			_localStorageService = localStorageService;
 			_testHistory = _localStorageService.GetTestHistory();
-			//_mockTests = new Dictionary<string, ReadingTestDetail>
-			//{
-
-
-			//};
+			
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl(); 
+			
 			_mockTests = new Dictionary<string, ReadingTestDetail>();
 			_httpClient = new HttpClient();
 		}
@@ -48,7 +48,7 @@ namespace login_full.Services
 					new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
 				// Gọi API để lấy chi tiết bài kiểm tra
-				string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}";
+				string apiUrl = $"{_baseUrl}/v1/quizzes/{testId}";
 				HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
 				if (response.IsSuccessStatusCode)
@@ -239,7 +239,7 @@ namespace login_full.Services
 					System.Diagnostics.Debug.WriteLine($"Submitting payload: {jsonPayload}");
 
 					// Tạo HTTP request
-					string apiUrl = $"http://localhost:8080/v1/quizzes/{testId}/answer";
+					string apiUrl = $"{_baseUrl}/v1/quizzes/{testId}/answer";
 					var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
 					using (HttpClient client = new HttpClient())
@@ -289,7 +289,7 @@ namespace login_full.Services
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 			try
 			{
-				HttpResponseMessage response = await client.GetAsync($"http://localhost:8080/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=20");
+				HttpResponseMessage response = await client.GetAsync($"{_baseUrl}/v1/answers/statistics?skill_id=1&type=1&page=1&page_size=20");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -302,7 +302,7 @@ namespace login_full.Services
 					foreach (var i in items)
 					{
 						int quizID = int.Parse(i["quiz_id"].ToString());
-						HttpResponseMessage i_response = await client.GetAsync($"http://localhost:8080/v1/quizzes/" + quizID);
+						HttpResponseMessage i_response = await client.GetAsync($"{_baseUrl}/v1/quizzes/" + quizID);
 						if (i_response.IsSuccessStatusCode)
 						{
 							string i_stringResponse = await i_response.Content.ReadAsStringAsync();
@@ -366,7 +366,7 @@ namespace login_full.Services
 
 		public async Task<AnswerResultModel> GetAnswerDetailAsync(string answerId)
 		{
-			string apiUrl = $"http://localhost:8080/v1/answers/{answerId}";
+			string apiUrl = $"{_baseUrl}/v1/answers/{answerId}";
 
 			using (HttpClient client = new HttpClient())
 			{
@@ -402,4 +402,3 @@ namespace login_full.Services
 	}
 }
 
-// await Task.Delay(500); // Giả lập delay
