@@ -5,16 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using login_full.Services;
+using login_full.Models;
 
 namespace login_full.Helpers
 {
     public class ScheduleManager
     {
-        private ListView ScheduleListView;
+        private readonly ListView ScheduleListView;
+        private ScheduleService ScheduleService;
 
         public ScheduleManager(ListView scheduleListView)
         {
             ScheduleListView = scheduleListView;
+            ScheduleService = new ScheduleService();
         }
 
         public void UpdateSchedule(DateTime date)
@@ -26,6 +30,11 @@ namespace login_full.Helpers
             };
 
             ScheduleListView.ItemsSource = scheduleItems;
+        }
+        public async Task UpdateSchedulesAsync()
+        {
+            var schedules = await ScheduleService.GetSchedulesAsync();
+            ScheduleListView.ItemsSource = schedules;
         }
 
         public async void AddNewEvent(XamlRoot xamlRoot)
@@ -59,6 +68,8 @@ namespace login_full.Helpers
                 {
                     ScheduleItem newItem = new ScheduleItem { Time = time, Activity = activity };
 
+                    bool isSuccess = await ScheduleService.AddScheduleAsync(newItem);
+
                     var currentItems = ScheduleListView.ItemsSource as List<ScheduleItem> ?? new List<ScheduleItem>();
                     currentItems.Add(newItem);
 
@@ -67,11 +78,5 @@ namespace login_full.Helpers
                 }
             }
         }
-    }
-
-    public class ScheduleItem
-    {
-        public string Time { get; set; }
-        public string Activity { get; set; }
     }
 }
