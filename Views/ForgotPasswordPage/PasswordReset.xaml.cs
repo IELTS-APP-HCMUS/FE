@@ -190,5 +190,10 @@ namespace login_full.Views.ForgotPasswordPage
 			await successDialog.ShowAsync();
 		}
 
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage)); 
+		}
+
 	}
 }

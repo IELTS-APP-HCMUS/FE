@@ -280,5 +280,11 @@ namespace login_full.Views.ForgotPasswordPage
 		{
 			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
 		}
+
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage)); // Replace 'LoginPage' with the actual name of your login page class.
+		}
+
 	}
 }

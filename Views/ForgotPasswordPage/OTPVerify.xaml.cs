@@ -142,5 +142,11 @@ namespace login_full.Views.ForgotPasswordPage
 		{
 			await App.NavigationService.NavigateToAsync(typeof(PasswordReset), email);
 		}
+
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage));
+		}
+
 	}
 }
