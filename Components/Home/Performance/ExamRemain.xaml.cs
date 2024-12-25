@@ -26,9 +26,12 @@ namespace login_full.Components.Home.Performance
 {
 	public sealed partial class ExamRemain : UserControl
 	{
+		private readonly string _baseUrl;
 		public ExamRemain()
 		{
 			this.InitializeComponent();
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
 		}
 
 		private async void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
@@ -50,13 +53,14 @@ namespace login_full.Components.Home.Performance
 				{
 					using (HttpClient client = new HttpClient())
 					{
+						string url = $"{_baseUrl}/api/users/target";
 						// Lấy access token từ GlobalState
 						string accessToken = GlobalState.Instance.AccessToken;
 						// Thêm access token vào header Authorization
 						client.DefaultRequestHeaders.Authorization =
 							new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 						// Gửi yêu cầu GET đến API
-						HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+						HttpResponseMessage response = await client.PatchAsync(url, content);
 
 						// Kiểm tra phản hồi từ API
 						if (response.IsSuccessStatusCode)

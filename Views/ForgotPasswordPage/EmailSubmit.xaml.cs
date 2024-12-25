@@ -27,7 +27,7 @@ namespace login_full.Views.ForgotPasswordPage
 	public sealed partial class EmailSubmit : Page
 	{
 		private readonly LoginApiService _loginApiService;
-
+		private readonly string _baseUrl;
 		/// <summary>
 		/// Khởi tạo lớp EmailSubmit và thiết lập LoginApiService.
 		/// </summary>
@@ -35,6 +35,8 @@ namespace login_full.Views.ForgotPasswordPage
 		{
 			this.InitializeComponent();
 			_loginApiService = new LoginApiService();
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
 		}
 
 		/// <summary>
@@ -44,6 +46,7 @@ namespace login_full.Views.ForgotPasswordPage
 		/// <returns>Chuỗi JSON phản hồi từ API hoặc thông báo lỗi.</returns>
 		private async Task<string> SendOtpToEmail(string email)
 		{
+			string url = $"{_baseUrl}/api/auth/request-reset-password";
 			string json = JsonConvert.SerializeObject(new { email });
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -51,7 +54,7 @@ namespace login_full.Views.ForgotPasswordPage
 			{
 				HttpClient client = new HttpClient();
 			
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/request-reset-password", content);
+				HttpResponseMessage response = await client.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{

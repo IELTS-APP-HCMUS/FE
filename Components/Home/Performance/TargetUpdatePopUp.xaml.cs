@@ -25,9 +25,12 @@ namespace login_full.Components.Home.Performance
 	public sealed partial class TargetUpdatePopUp : UserControl
 	{
 		public Popup IeltsScorePopupControl => IeltsScorePopup;
+		private readonly string _baseUrl;
 		public TargetUpdatePopUp()
 		{
 			this.InitializeComponent();
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
 		}
 		// Sự kiện để thông báo HomePage
 		public event EventHandler RequestLoadUserTarget;
@@ -53,13 +56,14 @@ namespace login_full.Components.Home.Performance
 			{
 				using (HttpClient client = new HttpClient())
 				{
+					string url = $"{_baseUrl}/api/users/target";
 					// Lấy access token từ GlobalState  
 					string accessToken = GlobalState.Instance.AccessToken;
 					// Thêm access token vào header Authorization  
 					client.DefaultRequestHeaders.Authorization =
 						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 					// Gửi yêu cầu GET đến API  
-					HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+					HttpResponseMessage response = await client.PatchAsync(url, content);
 
 					// Kiểm tra phản hồi từ API  
 					if (response.IsSuccessStatusCode)

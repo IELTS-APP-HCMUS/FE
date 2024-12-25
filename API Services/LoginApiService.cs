@@ -10,9 +10,17 @@ namespace login_full.API_Services
 	public class LoginApiService
 	{
 		private static readonly HttpClient client = new HttpClient();
+		private readonly string _baseUrl;
 
+		public LoginApiService()
+		{
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
+		}
+		
 		public async Task<string> LoginAsync(string email, string password)
 		{
+			string url = $"{_baseUrl}/api/users/login";
 			var loginData = new
 			{
 				email = email,
@@ -24,7 +32,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content); 
+				HttpResponseMessage response = await client.PostAsync(url, content); 
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -43,6 +51,8 @@ namespace login_full.API_Services
 		}
 		public async Task<string> LoginWithOAuthAsync(string idToken)
 		{
+			string url = $"{_baseUrl}/api/users/login";
+
 			var oAuthData = new
 			{
 				id_token = idToken
@@ -55,7 +65,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content);
+				HttpResponseMessage response = await client.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -74,6 +84,7 @@ namespace login_full.API_Services
 		}
 		public async Task<string> SignupAsync(string email, string password, string firstName, string lastName, string role)
 		{
+			var url = $"{_baseUrl}/api/users/signup";
 			var signupData = new
 			{
 				email = email,
@@ -88,7 +99,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/signup", content);
+				HttpResponseMessage response = await client.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{
