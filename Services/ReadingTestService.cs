@@ -226,7 +226,6 @@ namespace login_full.Services
 										: q.IsCorrectAnswer)),
 
 								total = test.Questions.Count, // Tổng số câu hỏi bao gồm cả bỏ qua
-
 								left_time = TimeSpan.FromSeconds(test.Progress.RemainingTime).ToString(@"hh\:mm\:ss"),
 								mocktest_time = test.TimeLimit,
 								type = "practice"

@@ -35,7 +35,11 @@ namespace login_full.ViewModels
 
         private readonly INavigationService _navigationService;
 
+        private readonly string _baseUrl;
+
         private Dictionary<string, int> _summary;
+
+
 
         // Điều hướng
         public IRelayCommand BackCommand { get; }
@@ -80,7 +84,10 @@ namespace login_full.ViewModels
             _navigationService = navigationService;
             _chartService = chartService;
             _testDetail = testDetail;
-		
+
+			var configService = new ConfigService();
+			_baseUrl = configService.GetBaseUrl();
+
 			BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
@@ -118,9 +125,9 @@ namespace login_full.ViewModels
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"https://ielts-app-api-4.onrender.com/v1/answers/{answerID}");
+				HttpResponseMessage response = await client.GetAsync($"{_baseUrl}/v1/answers/{answerID}");
 
-                if (response.IsSuccessStatusCode)
+				if (response.IsSuccessStatusCode)
                 {
                     string stringResponse = await response.Content.ReadAsStringAsync();
                     JObject jsonResponse = JObject.Parse(stringResponse);
