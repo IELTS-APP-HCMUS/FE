@@ -21,12 +21,7 @@ namespace login_full.ViewModels
     public class ReadingTestViewModel : INotifyPropertyChanged
     {
 
-        //public HighlightViewModel HighlightVM { get; }
-        //public ObservableCollection<HighlightModel> Highlights { get; } = new();
 
-        //public IRelayCommand ToggleHighlightCommand { get; }
-        //public IRelayCommand HighlightSelectedTextCommand { get; }
-        //public IRelayCommand RemoveHighlightCommand { get; }
 
 
         private readonly IReadingTestService _testService;
@@ -39,7 +34,7 @@ namespace login_full.ViewModels
         public IRelayCommand SubmitCommand { get; }
         public IAsyncRelayCommand ExitCommand { get; }
 
-        
+
 
         public IRelayCommand ZoomInCommand { get; }
         public IRelayCommand ZoomOutCommand { get; }
@@ -91,26 +86,37 @@ namespace login_full.ViewModels
             get => _isHighlightMode;
             set
             {
-                _isHighlightMode = value;
-                OnPropertyChanged();
+                if (_isHighlightMode != value)
+                {
+                    _isHighlightMode = value;
+                    OnPropertyChanged();
+                    // Thông báo cho UI biết trạng thái highlight đã thay đổi
+                    System.Diagnostics.Debug.WriteLine($"IsHighlightMode changed to: {value}"); // For debugging
+                    OnHighlightModeChanged?.Invoke(this, _isHighlightMode);
+                  
+                }
             }
         }
 
-        private List<HighlightInfo> _highlights;
-        public List<HighlightInfo> Highlights
+        // Thêm event để thông báo khi highlight mode thay đổi
+        public event EventHandler<bool> OnHighlightModeChanged;
+
+        // Thêm method để kiểm tra xem có thể highlight không
+        public bool CanHighlight()
         {
-            get => _highlights;
-            set
-            {
-                _highlights = value;
-                OnPropertyChanged();
-            }
+            return IsHighlightMode && !string.IsNullOrEmpty(TestDetail?.Content);
         }
 
-        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService/*, IHighlightService highlightService*/)
+        private readonly IPdfExportService _pdfExportService;
+        private readonly TextHighlightService _highlightService;
+
+
+        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService)
         {
-            _testService = testService;
-            _navigationService = navigationService;
+            _testService = testService ?? throw new ArgumentNullException(nameof(testService));
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
+            _highlightService = ServiceLocator.GetService<TextHighlightService>();
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -121,12 +127,12 @@ namespace login_full.ViewModels
             _timer.Tick += Timer_Tick;
 
 
-       
+
             //HighlightVM = new HighlightViewModel(highlightService);
 
             ZoomInCommand = new RelayCommand(ZoomIn);
             ZoomOutCommand = new RelayCommand(ZoomOut);
-            HighlightCommand = new RelayCommand(ToggleHighlight);
+            HighlightCommand = new RelayCommand(ToggleHighlightMode);
             AddNoteCommand = new RelayCommand(AddNote);
             SaveProgressCommand = new RelayCommand(SaveProgress);
             ExitCommand = new AsyncRelayCommand(ShowExitDialog);
@@ -137,19 +143,103 @@ namespace login_full.ViewModels
                 OnContentProcessingRequested?.Invoke(this, EventArgs.Empty);
             });
 
-            _highlights = new List<HighlightInfo>();
+            IsHighlightMode = false;
+
         }
 
         private void ZoomIn() { /* Implementation */ }
         private void ZoomOut() { /* Implementation */ }
-        private void ToggleHighlight()
+
+        private void ToggleHighlightMode()
         {
             IsHighlightMode = !IsHighlightMode;
-            OnHighlightModeChanged?.Invoke(this, IsHighlightMode);
+            System.Diagnostics.Debug.WriteLine($"Highlight mode: {IsHighlightMode}");
         }
 
         private void AddNote() { /* Implementation */ }
-        private void SaveProgress() { /* Implementation */ }
+        private async void SaveProgress()
+        {
+            if (_pdfExportService == null)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Lỗi",
+                    Content = "Dịch vụ xuất PDF chưa được khởi tạo",
+                    CloseButtonText = "OK",
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+                return;
+            }
+
+            var mainWindow = App.MainWindow;
+            if (mainWindow == null) return;
+
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("PDF files", new List<string>() { ".pdf" });
+            picker.SuggestedFileName = $"Reading_Test_{TestDetail.Id}";
+
+            // Initialize the picker with the window handle
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(mainWindow));
+
+            var file = await picker.PickSaveFileAsync();
+            if (file != null)
+            {
+                ContentDialog loadingDialog = null;
+                try
+                {
+                    loadingDialog = new ContentDialog
+                    {
+                        Title = "Đang xuất PDF",
+                        Content = "Vui lòng đợi trong giây lát...",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    // Hiển thị dialog loading
+                    var loadingTask = loadingDialog.ShowAsync();
+
+                    // Xuất PDF
+                    await _pdfExportService.ExportReadingTestToPdfAsync(TestDetail, file.Path);
+
+                    // Đóng dialog loading
+                    loadingDialog.Hide();
+
+                    // Đợi dialog loading đóng hoàn toàn
+                    await Task.Delay(100);
+
+                    // Hiển thị dialog thành công
+                    var successDialog = new ContentDialog
+                    {
+                        Title = "Thành công",
+                        Content = "Bài làm đã được lưu thành công!",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await successDialog.ShowAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Đảm bảo dialog loading đã đóng
+                    if (loadingDialog != null)
+                    {
+                        loadingDialog.Hide();
+                        await Task.Delay(100);
+                    }
+
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = "Lỗi",
+                        Content = $"Không thể lưu file: {ex.Message}",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
 
 
 
@@ -176,11 +266,11 @@ namespace login_full.ViewModels
             else
             {
                 _timer.Stop();
-                _= SubmitTest();
+                _ = SubmitTest();
             }
         }
 
-       
+
 
         private async Task SubmitTest()
         {
@@ -259,48 +349,12 @@ namespace login_full.ViewModels
 
         public event EventHandler OnContentProcessingRequested;
 
-        // Event to notify view that content needs to be reprocessed
-        //public event EventHandler OnContentProcessingRequested;
+     
 
-        public void AddHighlight(string text, int startIndex, int length)
-        {
-            if (IsHighlightMode)
-            {
-                var highlight = new HighlightInfo
-                {
-                    Text = text,
-                    StartIndex = startIndex,
-                    Length = length,
-                    Color = Windows.UI.Color.FromArgb(255, 255, 255, 0) // Yellow highlight
-                };
 
-                Highlights.Add(highlight);
-                OnPropertyChanged(nameof(Highlights));
-                OnHighlightAdded?.Invoke(this, highlight);
-            }
-        }
 
-        public void RemoveHighlight(HighlightInfo highlight)
-        {
-            if (Highlights.Remove(highlight))
-            {
-                OnPropertyChanged(nameof(Highlights));
-                OnHighlightRemoved?.Invoke(this, highlight);
-            }
-        }
-
-        // Events for highlight changes
-        public event EventHandler<bool> OnHighlightModeChanged;
-        public event EventHandler<HighlightInfo> OnHighlightAdded;
-        public event EventHandler<HighlightInfo> OnHighlightRemoved;
     }
 
 
-    public class HighlightInfo
-    {
-        public string Text { get; set; }
-        public int StartIndex { get; set; }
-        public int Length { get; set; }
-        public Windows.UI.Color Color { get; set; }
-    }
+
 }

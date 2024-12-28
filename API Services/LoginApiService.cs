@@ -19,11 +19,10 @@ namespace login_full.API_Services
 				password = password
 			};
 
-			string json = JsonConvert.SerializeObject(loginData);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var content = ClientCaller.GetContent(loginData);
 
-			try
-			{
+            try
+            {
 				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content); 
 
 				if (response.IsSuccessStatusCode)
@@ -43,17 +42,20 @@ namespace login_full.API_Services
 		}
 		public async Task<string> LoginWithOAuthAsync(string idToken)
 		{
+			//string url = $"{_baseUrl}/api/users/login";
+
 			var oAuthData = new
 			{
 				id_token = idToken
 			};
 
-			string json = JsonConvert.SerializeObject(oAuthData);
+			//string json = JsonConvert.SerializeObject(oAuthData);
 			
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
-			System.Diagnostics.Debug.WriteLine(json);
+			//var content = new StringContent(json, Encoding.UTF8, "application/json");
+			//System.Diagnostics.Debug.WriteLine(json);
+			var content = ClientCaller.GetContent(oAuthData);
 
-			try
+            try
 			{
 				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 
@@ -83,10 +85,9 @@ namespace login_full.API_Services
 				role = role
 			};
 
-			string json = JsonConvert.SerializeObject(signupData);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var content = ClientCaller.GetContent(signupData);
 
-			try
+            try
 			{
 				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using login_full.API_Services;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -21,13 +22,15 @@ namespace login_full.Views.ForgotPasswordPage
 	public sealed partial class PasswordReset : Page
 	{
 		private string Email { get; set; }
-		/// <summary>
-		/// Trang đặt lại mật khẩu, hỗ trợ người dùng nhập mật khẩu mới và xác nhận.
-		/// </summary>
-		public PasswordReset()
+		private readonly ClientCaller _clientCaller;
+        /// <summary>
+        /// Trang đặt lại mật khẩu, hỗ trợ người dùng nhập mật khẩu mới và xác nhận.
+        /// </summary>
+        public PasswordReset()
 		{
 			this.InitializeComponent();
-		}
+            _clientCaller = new ClientCaller();
+        }
 		/// <summary>
 		/// Được gọi khi điều hướng đến trang này, nhận email từ tham số điều hướng.
 		/// </summary>
@@ -75,15 +78,13 @@ namespace login_full.Views.ForgotPasswordPage
 		/// <returns>Kết quả phản hồi từ API dưới dạng chuỗi JSON hoặc thông báo lỗi.</returns>
 		private async Task<string> ResetPasswordAsync(string email, string newPassword)
 		{
+			string url = $"/api/auth/reset-password";
 			string json = JsonConvert.SerializeObject(new { email, new_password = newPassword });
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			try
-			{
-				HttpClient client = new HttpClient();
-				
-
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/reset-password", content);
+			{			
+				HttpResponseMessage response = await _clientCaller.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -184,6 +185,11 @@ namespace login_full.Views.ForgotPasswordPage
 			};
 
 			await successDialog.ShowAsync();
+		}
+
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage)); 
 		}
 
 	}

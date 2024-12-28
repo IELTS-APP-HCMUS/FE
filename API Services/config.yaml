@@ -5,4 +5,5 @@
   user: hotel_db_d3xy_user
   password: GCn9lfxAHYFpJnBa6SCOYxqzLpVY5rYH
 
-base_url: http://localhost:8080
+server:
+  host: http://localhost:8080    

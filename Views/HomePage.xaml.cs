@@ -7,6 +7,7 @@ using login_full.Models;
 using login_full.Context;
 using System.ComponentModel;
 using login_full.API_Services;
+using System.Diagnostics;
 
 
 
@@ -18,17 +19,17 @@ namespace login_full
 	public sealed partial class HomePage : Page
     {
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-		private ClientCaller _clientCaller = new();
+		private readonly ClientCaller _clientCaller = new();
         public UserProfile Profile { get; } = new UserProfile();
 		public UserTarget Target { get; } = new UserTarget();
-		/// <summary>
-		/// Khởi tạo lớp `HomePage`, thiết lập giao diện người dùng và đăng ký các sự kiện cần thiết.
-		/// </summary>
-		public HomePage()
+        /// <summary>
+        /// Khởi tạo lớp `HomePage`, thiết lập giao diện người dùng và đăng ký các sự kiện cần thiết.
+        /// </summary>
+        public HomePage()
         {
             this.InitializeComponent();
 			this.DataContext = this;
-			LoadUserProfile();
+            LoadUserProfile();
 			LoadUserTarget();
 			PerformanceComponent.TargetComponentControl.TargetUpdatePopUpCompControl.RequestLoadUserTarget += TargetComponent_RequestLoadUserTarget;
 		}
@@ -47,6 +48,7 @@ namespace login_full
 		/// </summary>
 		private async void LoadUserProfile()
 		{
+			System.Diagnostics.Debug.WriteLine("Load User Profile");
 			try
 			{
 				//using (HttpClient client = new HttpClient())
@@ -59,7 +61,8 @@ namespace login_full
 				if (response.IsSuccessStatusCode)
 				{
 						
-					string stringResponse = await response.Content.ReadAsStringAsync();
+						string stringResponse = await response.Content.ReadAsStringAsync();
+						System.Diagnostics.Debug.WriteLine("Profile", response);
 
 					var jsonResponse = JObject.Parse(stringResponse);
 

@@ -36,7 +36,23 @@ namespace login_full.Models
 		public string Explanation { get; set; }
 
 		public bool IsAnswered => !string.IsNullOrEmpty(UserAnswer);
-		public bool IsCorrectAnswer => UserAnswer == CorrectAnswer;
+		public bool IsCorrectAnswer
+		{
+			get
+			{
+				if (Type == QuestionType.GapFilling)
+				{
+					return IsCorrectFillInTheBlank(UserAnswer, CorrectAnswer);
+				}
+				return UserAnswer == CorrectAnswer;
+			}
+		}
+
+		private bool IsCorrectFillInTheBlank(string userAnswer, string correctAnswer)
+		{
+			return string.Equals(userAnswer?.Trim(), correctAnswer?.Trim(), StringComparison.OrdinalIgnoreCase);
+		}
+
 
 		public bool IsExplanationVisible
 		{
@@ -203,6 +219,9 @@ namespace login_full.Models
 
 		[JsonProperty("explain")]
 		public string Explain { get; set; }
+
+		[JsonProperty("gap_fill_in_blank")]
+		public string GapFillInBlankCorrectAnswer { get; set; }
 	}
 
 	public class SelectionOption

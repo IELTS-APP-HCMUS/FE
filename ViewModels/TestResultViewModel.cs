@@ -1,29 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using login_full.Context;
 using login_full.Models;
 using login_full.Services;
 using login_full.Views;
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using login_full.API_Services;
 
 namespace login_full.ViewModels
 {
@@ -36,6 +25,8 @@ namespace login_full.ViewModels
         private readonly INavigationService _navigationService;
 
         private Dictionary<string, int> _summary;
+
+        private readonly ClientCaller _clientCaller;
 
         // Điều hướng
         public IRelayCommand BackCommand { get; }
@@ -80,8 +71,10 @@ namespace login_full.ViewModels
             _navigationService = navigationService;
             _chartService = chartService;
             _testDetail = testDetail;
-		
-			BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
+
+            _clientCaller = new ClientCaller();
+
+            BackCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(Views.reading_Item_UI)));
             RetryCommand = new RelayCommand(async () => await RetryTest());
             HomeCommand = new RelayCommand(async () => await _navigationService.NavigateToAsync(typeof(HomePage)));
 			ViewDetailCommand = new RelayCommand(async () =>
@@ -110,17 +103,11 @@ namespace login_full.ViewModels
 		}
 		public async Task LoadSummaryAsync(string answerID)
 		{
-			HttpClient client = new HttpClient();
-			string accessToken = GlobalState.Instance.AccessToken;
-
-			client.DefaultRequestHeaders.Authorization =
-				new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"http://localhost:8080/v1/answers/{answerID}");
+				HttpResponseMessage response = await _clientCaller.GetAsync($"/v1/answers/{answerID}");
 
-                if (response.IsSuccessStatusCode)
+				if (response.IsSuccessStatusCode)
                 {
                     string stringResponse = await response.Content.ReadAsStringAsync();
                     JObject jsonResponse = JObject.Parse(stringResponse);
