@@ -19,6 +19,7 @@ using Microsoft.UI;
 using login_full.Views;
 using login_full.Views.ForgotPasswordPage;
 using System.Text.RegularExpressions;
+using YamlDotNet.Core.Tokens;
 
 namespace login_full
 {
@@ -157,7 +158,9 @@ namespace login_full
 				{
 					App.IsLoggedInWithGoogle = true;
 					GlobalState.Instance.AccessToken = jsonResponse["data"].ToString();
-					await ShowSuccessDialogAsync("Login successful with Google!");
+                    System.Diagnostics.Debug.WriteLine(jsonResponse["data"].ToString());
+
+                    await ShowSuccessDialogAsync("Login successful with Google!");
 					_ = NavigateToHomePage();
 				}
 				else

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace login_full.Models
 {
@@ -50,14 +51,14 @@ namespace login_full.Models
                 OnPropertyChanged(nameof(StatusColor));
             }
         }
-
+        [JsonIgnore]
         public SolidColorBrush StatusColor
         {
             get => Status == "Đã học" ?
                 new SolidColorBrush(Colors.Green) :
                 new SolidColorBrush(Colors.Red);
         }
-
+        [JsonPropertyName("type")]
         public string WordType
         {
             get => _wordType;

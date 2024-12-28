@@ -12,12 +12,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
+using login_full.Services;
 
 namespace login_full.ViewModels
 {
     public partial class VocabularyViewModel : ObservableObject
     {
         private ObservableCollection<VocabularyItem> _vocabularyItems;
+        private readonly VocabularyService _vocabularyService;
         private int _currentPage = 1;
         private int _pageSize = 5;
         private int _totalItems = 0;
@@ -74,6 +76,7 @@ namespace login_full.ViewModels
 
         public VocabularyViewModel()
         {
+            _vocabularyService = new VocabularyService();
             VocabularyItems = new ObservableCollection<VocabularyItem>();
             _filteredData = new List<VocabularyItem>();
             NextPageCommand = new RelayCommand(NextPage, () => CanGoNext);
@@ -86,7 +89,7 @@ namespace login_full.ViewModels
             InitializeData();
         }
 
-        private void InitializeData()
+        private async void InitializeData()
         {
             _sampleData = new List<VocabularyItem>
             {
@@ -181,6 +184,7 @@ namespace login_full.ViewModels
                     Note = "Cảm xúc"
                 }
             };
+            _sampleData = await _vocabularyService.GetVocabularyAsync();
 
             for (int i = 0; i < _sampleData.Count; i++)
             {
@@ -188,7 +192,8 @@ namespace login_full.ViewModels
             }
 
             _filteredData = _sampleData;
-            _totalItems = _sampleData.Count();
+            _totalItems = _sampleData.Count;
+
             LoadPagedData();
         }
 
@@ -259,10 +264,11 @@ namespace login_full.ViewModels
         }
 
         // xóa dựa vào VocabularyItem
-        private void DeleteItem(VocabularyItem item)
+        private async void DeleteItem(VocabularyItem item)
         {
             if (item != null)
             {
+                await _vocabularyService.DeleteVocabularyAsync(item.Word);
                 VocabularyItems.Remove(item);
                 _sampleData.Remove(item);
                 _totalItems--;
@@ -283,7 +289,7 @@ namespace login_full.ViewModels
         }
 
         // thay đổi trạng thái đã học -> dang học và ngược lại
-        private void ToggleStatus(VocabularyItem item)
+        private async void ToggleStatus(VocabularyItem item)
         {
             if (item != null)
             {
@@ -293,6 +299,7 @@ namespace login_full.ViewModels
                     originalItem.Status = originalItem.Status == "Đã học" ? "Đang học" : "Đã học";
                     //LoadPagedData();
                 }
+                await _vocabularyService.UpdateVocabularyAsync(originalItem);
             }
         }
 
@@ -374,6 +381,9 @@ namespace login_full.ViewModels
                         Note = noteTextBox?.Text ?? string.Empty,
                         Status = "Đang học"
                     };
+
+                    // Thêm vào danh sách từ vựng
+                    await _vocabularyService.AddVocabularyAsync(newItem);
 
                     _sampleData.Insert(0, newItem);
                     _totalItems++;

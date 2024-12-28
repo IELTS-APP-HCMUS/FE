@@ -3,15 +3,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace login_full.API_Services
 {
 	public class LoginApiService
 	{
-		private static readonly HttpClient client = new HttpClient();
+		//private static readonly HttpClient client = new HttpClient();
+		private ClientCaller _clientCaller = new();
 
-		public async Task<string> LoginAsync(string email, string password)
+        public async Task<string> LoginAsync(string email, string password)
 		{
 			var loginData = new
 			{
@@ -24,7 +24,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content); 
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content); 
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -55,7 +55,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -88,7 +88,7 @@ namespace login_full.API_Services
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/signup", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 
 				if (response.IsSuccessStatusCode)
 				{

@@ -13,12 +13,12 @@ namespace login_full.Helpers
     public class ScheduleManager
     {
         private readonly ListView ScheduleListView;
-        private ScheduleService ScheduleService;
+        private readonly ScheduleService _scheduleService;
 
         public ScheduleManager(ListView scheduleListView)
         {
             ScheduleListView = scheduleListView;
-            ScheduleService = new ScheduleService();
+            _scheduleService = new ScheduleService();
         }
 
         public void UpdateSchedule(DateTime date)
@@ -33,7 +33,7 @@ namespace login_full.Helpers
         }
         public async Task UpdateSchedulesAsync()
         {
-            var schedules = await ScheduleService.GetSchedulesAsync();
+            var schedules = await _scheduleService.GetSchedulesAsync();
             ScheduleListView.ItemsSource = schedules;
         }
 
@@ -68,7 +68,7 @@ namespace login_full.Helpers
                 {
                     ScheduleItem newItem = new ScheduleItem { Time = time, Activity = activity };
 
-                    bool isSuccess = await ScheduleService.AddScheduleAsync(newItem);
+                    bool isSuccess = await _scheduleService.AddScheduleAsync(newItem);
 
                     var currentItems = ScheduleListView.ItemsSource as List<ScheduleItem> ?? new List<ScheduleItem>();
                     currentItems.Add(newItem);

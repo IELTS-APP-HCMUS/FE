@@ -19,10 +19,6 @@ using login_full.Helpers;
 
 namespace login_full.Components.Home
 {
-    public class Item
-    {
-        public string date_created { get; set; }
-    }
     public sealed partial class Calendar : UserControl
     {
         private readonly CalendarManager calendarManager = null;
@@ -30,62 +26,75 @@ namespace login_full.Components.Home
         {
             this.InitializeComponent();
             // Giả lập dữ liệu trả về từ API
-            List<Item> items = new List<Item>
-            {
-                new Item { date_created = "2024-12-01T09:51:28.986821Z" },
+            //List<Item> items = new List<Item>
+            //{
+            //    new Item { date_created = "2024-12-01T09:51:28.986821Z" },
 
-                new Item { date_created = "2024-12-02T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-02T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-02T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-02T09:50:04.712262Z" },
 
-                new Item { date_created = "2024-12-03T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-03T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-03T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-03T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-03T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-03T09:50:26.518248Z" },
 
-                new Item { date_created = "2024-12-04T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-04T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-04T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-04T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-04T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-04T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-04T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-04T09:50:26.518248Z" },
 
-                new Item { date_created = "2024-12-05T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-05T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-05T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-05T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-05T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-05T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-05T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-05T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-05T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-05T09:50:04.712262Z" },
 
-                new Item { date_created = "2024-12-06T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-06T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-06T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-06T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-06T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-06T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-06T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-06T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-06T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-06T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-06T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-06T09:49:57.712262Z" },
 
-                new Item { date_created = "2024-12-07T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-07T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-07T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-07T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-07T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-07T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-07T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-07T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-07T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-07T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-07T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-07T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-07T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-07T09:50:26.518248Z" },
 
-                new Item { date_created = "2024-12-08T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-08T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-08T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-08T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-08T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-08T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-08T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-08T09:51:28.986821Z" },
-                new Item { date_created = "2024-12-08T09:50:26.518248Z" },
-                new Item { date_created = "2024-12-08T09:50:04.712262Z" },
-                new Item { date_created = "2024-12-08T09:49:57.712262Z" },
-                new Item { date_created = "2024-12-08T09:51:28.986821Z" },
-            };
+            //    new Item { date_created = "2024-12-08T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-08T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-08T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-08T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:51:28.986821Z" },
+            //    new Item { date_created = "2024-12-08T09:50:26.518248Z" },
+            //    new Item { date_created = "2024-12-08T09:50:04.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:49:57.712262Z" },
+            //    new Item { date_created = "2024-12-08T09:51:28.986821Z" },
+            //};
             calendarManager = new CalendarManager(CalendarGrid, MonthYearDisplay);
+            //List<SubmitTestTimeItem> items = await calendarManager.GetSubmitTimeHistoryAsync();
+            //calendarManager.ProcessDateCreatedCount(items);
+
+            //// Tạo lịch với dữ liệu được tô màu
+            //calendarManager.GenerateCalendarDays(DateTime.Now);
+            ////calendarManager.GenerateCalendarDays(DateTime.Now);
+            InitializeAsync();
+        }
+        private async void InitializeAsync()
+        {
+            // Lấy dữ liệu bất đồng bộ
+            List<SubmitTestTimeItem> items = await calendarManager.GetSubmitTimeHistoryAsync();
+
+            // Xử lý dữ liệu
             calendarManager.ProcessDateCreatedCount(items);
 
-            // Tạo lịch với dữ liệu được tô màu
+            // Tạo lịch
             calendarManager.GenerateCalendarDays(DateTime.Now);
-            //calendarManager.GenerateCalendarDays(DateTime.Now);
         }
         private void PreviousMonth_Click(object sender, RoutedEventArgs e)
         {

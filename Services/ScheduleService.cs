@@ -14,11 +14,11 @@ namespace login_full.Services
 {
     public class ScheduleService
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private readonly HttpClient HttpClient = new HttpClient();
         /// <summary>
         /// Gửi một lịch trình mới đến API bằng phương thức POST.
         /// </summary>
-        public static async Task<bool> AddScheduleAsync(ScheduleItem newSchedule)
+        public async Task<bool> AddScheduleAsync(ScheduleItem newSchedule)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace login_full.Services
         /// Gọi API để lấy danh sách lịch trình.
         /// </summary>
         /// <returns>Danh sách các đối tượng ScheduleItem.</returns>
-        public static async Task<List<ScheduleItem>> GetSchedulesAsync()
+        public async Task<List<ScheduleItem>> GetSchedulesAsync()
         {
             try
             {

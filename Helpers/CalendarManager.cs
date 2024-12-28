@@ -6,9 +6,18 @@ using Microsoft.UI.Xaml;
 using login_full.Components.Home;
 using System.Collections.Generic;
 using Windows.UI;
+using login_full.API_Services;
+using System.Threading.Tasks;
+using login_full.Context;
+using login_full.Models;
+using Newtonsoft.Json.Linq;
 
 namespace login_full.Helpers
 {
+    public class SubmitTestTimeItem
+    {
+        public string DateCreated { get; set; }
+    }
     public class CalendarManager
     {
         private readonly Grid CalendarGrid;
@@ -16,6 +25,7 @@ namespace login_full.Helpers
         private DateTime currentDate;
         private Button selectedDateButton;
         private Dictionary<string, int> dateCount;
+        private readonly ClientCaller clientCaller = new();
 
         public CalendarManager(Grid calendarGrid, TextBlock monthYearDisplay)
         {
@@ -39,7 +49,35 @@ namespace login_full.Helpers
             // Add the style to the application resources
             Application.Current.Resources["CalendarDayButtonStyle"] = calendarDayButtonStyle;
         }
+        public async Task<List<SubmitTestTimeItem>> GetSubmitTimeHistoryAsync()
+        {
+            try
+            {
+                var response = await clientCaller.GetAsync($"v1/answers/statistics?skill_id=1&type=1");
 
+                if (response.IsSuccessStatusCode)
+                {
+                    string stringResponse = await response.Content.ReadAsStringAsync();
+                    JObject jsonResponse = JObject.Parse(stringResponse);
+
+                    JObject dataResponse = (JObject)jsonResponse["data"];
+                    JArray items = (JArray)dataResponse["items"];
+                    var histories = new List<SubmitTestTimeItem>();
+                    foreach (var i in items)
+                    {
+                        string date_created = i["date_created"].ToString();
+                        histories.Add(new SubmitTestTimeItem { DateCreated = date_created });
+                    }
+                    return histories;
+                }
+                return [];
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetTestHistoryAsync: {ex.Message}");
+                return [];
+            }
+        }
         public void GenerateCalendarDays(DateTime date)
         {
             CalendarGrid.Children.Clear();
@@ -119,13 +157,13 @@ namespace login_full.Helpers
             else
                 return new SolidColorBrush(Color.FromArgb(255, 0, 100, 0)); // Đậm
         }
-        public void ProcessDateCreatedCount(List<Item> items)
+        public void ProcessDateCreatedCount(List<SubmitTestTimeItem> items)
         {
             var tempdateCount = new Dictionary<string, int>();
 
             foreach (var item in items)
             {
-                var date = DateTime.Parse(item.date_created).ToString("yyyy-MM-dd");
+                var date = DateTime.Parse(item.DateCreated).ToString("yyyy-MM-dd");
                 if (tempdateCount.ContainsKey(date))
                 {
                     tempdateCount[date]++;
