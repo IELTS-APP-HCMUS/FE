@@ -65,6 +65,7 @@ namespace login_full.Services
                     data.ForEach(x =>
                         vocabs.Add(new VocabularyItem
                         {
+                            WordKey = x["key"]?.ToString(),
                             Word = x["value"]?.ToString(),
                             WordType = x["word_class"]?.ToString(),
                             Meaning = x["meaning"]?.ToString(),
@@ -92,7 +93,7 @@ namespace login_full.Services
         {
             try
             {
-                string patch_apiUrl = $"{apiUrl}?value={vocab.Word}"; // Thay thế bằng API thực tế
+                string patch_apiUrl = $"{apiUrl}?key={vocab.WordKey}"; // Thay thế bằng API thực tế
 
                 var content = ClientCaller.GetContent(vocab);
 
@@ -118,7 +119,7 @@ namespace login_full.Services
         {
             try
             {
-                string delete_apiUrl = $"{apiUrl}?value={word}"; // Thay thế bằng API thực tế
+                string delete_apiUrl = $"{apiUrl}?key={word}"; // Thay thế bằng API thực tế
 
                 HttpResponseMessage response = await clientCaller.DeleteAsync(delete_apiUrl);
 

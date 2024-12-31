@@ -1,21 +1,16 @@
-﻿using login_full.Models;
-using login_full.Services;
+﻿using login_full.Services;
 using login_full.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.UI.Text;
-using Microsoft.UI.Text;
 using Microsoft.UI;
-using System.Text.RegularExpressions;
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System.Globalization;
-
+using login_full.Models;
+using static com.sun.net.httpserver.Authenticator;
 
 
 namespace login_full.Views
@@ -26,8 +21,8 @@ namespace login_full.Views
         
         public ReadingTestViewModel ViewModel { get; }
         private readonly DictionaryService _dictionaryService;
-
         private TextHighlightService _highlightService;
+        private readonly VocabularyService _vocabService;
         private string _selectedText;
         private int _selectedStartIndex;
         private int _selectedLength;
@@ -43,7 +38,7 @@ namespace login_full.Views
                 var navigationService = App.NavigationService;
                 var pdfExportService = ServiceLocator.GetService<IPdfExportService>();
                 _dictionaryService = ServiceLocator.GetService<DictionaryService>();
-
+                _vocabService = new VocabularyService();
                 _highlightService = ServiceLocator.GetService<TextHighlightService>();
 
                 if (readingTestService == null || navigationService == null || pdfExportService == null)
@@ -147,7 +142,7 @@ namespace login_full.Views
             }
         }
 
-		private async void ProcessVocabMode()
+		private void ProcessVocabMode()
 		{
 			string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
 
@@ -291,19 +286,46 @@ namespace login_full.Views
 					return;
 				}
 
-				// Display the word details using the predefined dialog template
-				ContentDialog wordDialog = new ContentDialog
-				{
-					Title = "Dictionary",
-					Content = entry, 
-					ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"], 
-					Style = (Style)Resources["DictionaryDialogStyle"], 
-					XamlRoot = this.XamlRoot,
+                // Display the word details using the predefined dialog template
+                ContentDialog wordDialog = new ContentDialog
+                {
+                    Title = "Dictionary",
+                    Content = entry,
+                    ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"],
+                    Style = (Style)Resources["DictionaryDialogStyle"],
+                    XamlRoot = this.XamlRoot,
+                    PrimaryButtonText = "Add to vocab bank",
                     CloseButtonText = "Close",
-				};
+                };
 
-				await wordDialog.ShowAsync();
-			}
+                var result = await wordDialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    bool success = await _vocabService.AddVocabularyAsync(new VocabularyItem
+                    {
+                        Word = entry.Word,
+                        WordType = entry.WordClass,
+                        IPA = entry.Pronunciation,
+                        Meaning = entry.Meaning,
+                        Example = string.Join("\n", entry.Examples),
+                        Status = "Đang học",
+                        Note = entry.Explanation
+                    });
+                    // Show success or error dialog
+                    ContentDialog successDialog = new ContentDialog
+                    {
+                        Title = success ? "Thành công" : "Lỗi",
+                        Content = success
+                                  ? "Từ vựng đã được thêm vào sổ từ vựng."
+                                  : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
+                        CloseButtonText = "OK",
+                        XamlRoot = App.MainWindow.Content.XamlRoot
+                    };
+
+                    await successDialog.ShowAsync();
+                }
+            }
 		}
 
 		private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)

@@ -14,7 +14,9 @@ namespace login_full.Models
     public class VocabularyItem : INotifyPropertyChanged
     {
         private int _index;
+        private string _wordKey;
         private string _word;
+        private string _ipa;
         private string _status;
         private string _wordType;
         private string _meaning;
@@ -30,7 +32,16 @@ namespace login_full.Models
                 OnPropertyChanged();
             }
         }
-
+        [JsonPropertyName("key")]
+        public string WordKey
+        {
+            get => _wordKey;
+            set
+            {
+                _wordKey = value;
+                OnPropertyChanged();
+            }
+        }
         public string Word
         {
             get => _word;
@@ -40,7 +51,15 @@ namespace login_full.Models
                 OnPropertyChanged();
             }
         }
-
+        public string IPA
+        {
+            get => _ipa;
+            set
+            {
+                _ipa = value;
+                OnPropertyChanged();
+            }
+        }
         public string Status
         {
             get => _status;

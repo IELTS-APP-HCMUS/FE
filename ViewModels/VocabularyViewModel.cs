@@ -91,99 +91,99 @@ namespace login_full.ViewModels
 
         private async void InitializeData()
         {
-            _sampleData = new List<VocabularyItem>
-            {
-                new VocabularyItem
-                {
-                    Word = "abandon",
-                    Status = "Đã học",
-                    WordType = "verb",
-                    Meaning = "từ bỏ, bỏ rơi",
-                    Example = "He abandoned his car and continued on foot.",
-                    Note = "Thường dùng trong văn viết"
-                },
-                new VocabularyItem
-                {
-                    Word = "ability",
-                    Status = "Đang học",
-                    WordType = "noun",
-                    Meaning = "khả năng, năng lực",
-                    Example = "She has the ability to speak six languages.",
-                    Note = "Từ thông dụng"
-                },
-                new VocabularyItem
-                {
-                    Word = "abroad",
-                    Status = "Đã học",
-                    WordType = "adverb",
-                    Meaning = "ở nước ngoài",
-                    Example = "He's currently studying abroad.",
-                    Note = "Dùng trong du học"
-                },
-                new VocabularyItem
-                {
-                    Word = "accomplish",
-                    Status = "Đang học",
-                    WordType = "verb",
-                    Meaning = "hoàn thành, đạt được",
-                    Example = "She accomplished all her goals for the year.",
-                    Note = "Từ formal"
-                },
-                new VocabularyItem
-                {
-                    Word = "accurate",
-                    Status = "Đã học",
-                    WordType = "adjective",
-                    Meaning = "chính xác",
-                    Example = "The weather forecast was very accurate.",
-                    Note = "Dùng trong khoa học"
-                },
-                new VocabularyItem
-                {
-                    Word = "achieve",
-                    Status = "Đang học",
-                    WordType = "verb",
-                    Meaning = "đạt được, giành được",
-                    Example = "He achieved his dream of becoming a doctor.",
-                    Note = "Từ động lực"
-                },
-                new VocabularyItem
-                {
-                    Word = "adapt",
-                    Status = "Đã học",
-                    WordType = "verb",
-                    Meaning = "thích nghi, điều chỉnh",
-                    Example = "Animals must adapt to survive.",
-                    Note = "Sinh học"
-                },
-                new VocabularyItem
-                {
-                    Word = "adequate",
-                    Status = "Đang học",
-                    WordType = "adjective",
-                    Meaning = "đầy đủ, thích đáng",
-                    Example = "The room provides adequate space for our needs.",
-                    Note = "Formal writing"
-                },
-                new VocabularyItem
-                {
-                    Word = "adjust",
-                    Status = "Đã học",
-                    WordType = "verb",
-                    Meaning = "điều chỉnh",
-                    Example = "You need to adjust the temperature.",
-                    Note = "Kỹ thuật"
-                },
-                new VocabularyItem
-                {
-                    Word = "admire",
-                    Status = "Đang học",
-                    WordType = "verb",
-                    Meaning = "ngưỡng mộ, khâm phục",
-                    Example = "I admire her courage and determination.",
-                    Note = "Cảm xúc"
-                }
-            };
+            //_sampleData = new List<VocabularyItem>
+            //{
+            //    new VocabularyItem
+            //    {
+            //        Word = "abandon",
+            //        Status = "Đã học",
+            //        WordType = "verb",
+            //        Meaning = "từ bỏ, bỏ rơi",
+            //        Example = "He abandoned his car and continued on foot.",
+            //        Note = "Thường dùng trong văn viết"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "ability",
+            //        Status = "Đang học",
+            //        WordType = "noun",
+            //        Meaning = "khả năng, năng lực",
+            //        Example = "She has the ability to speak six languages.",
+            //        Note = "Từ thông dụng"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "abroad",
+            //        Status = "Đã học",
+            //        WordType = "adverb",
+            //        Meaning = "ở nước ngoài",
+            //        Example = "He's currently studying abroad.",
+            //        Note = "Dùng trong du học"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "accomplish",
+            //        Status = "Đang học",
+            //        WordType = "verb",
+            //        Meaning = "hoàn thành, đạt được",
+            //        Example = "She accomplished all her goals for the year.",
+            //        Note = "Từ formal"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "accurate",
+            //        Status = "Đã học",
+            //        WordType = "adjective",
+            //        Meaning = "chính xác",
+            //        Example = "The weather forecast was very accurate.",
+            //        Note = "Dùng trong khoa học"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "achieve",
+            //        Status = "Đang học",
+            //        WordType = "verb",
+            //        Meaning = "đạt được, giành được",
+            //        Example = "He achieved his dream of becoming a doctor.",
+            //        Note = "Từ động lực"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "adapt",
+            //        Status = "Đã học",
+            //        WordType = "verb",
+            //        Meaning = "thích nghi, điều chỉnh",
+            //        Example = "Animals must adapt to survive.",
+            //        Note = "Sinh học"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "adequate",
+            //        Status = "Đang học",
+            //        WordType = "adjective",
+            //        Meaning = "đầy đủ, thích đáng",
+            //        Example = "The room provides adequate space for our needs.",
+            //        Note = "Formal writing"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "adjust",
+            //        Status = "Đã học",
+            //        WordType = "verb",
+            //        Meaning = "điều chỉnh",
+            //        Example = "You need to adjust the temperature.",
+            //        Note = "Kỹ thuật"
+            //    },
+            //    new VocabularyItem
+            //    {
+            //        Word = "admire",
+            //        Status = "Đang học",
+            //        WordType = "verb",
+            //        Meaning = "ngưỡng mộ, khâm phục",
+            //        Example = "I admire her courage and determination.",
+            //        Note = "Cảm xúc"
+            //    }
+            //};
             _sampleData = await _vocabularyService.GetVocabularyAsync();
 
             for (int i = 0; i < _sampleData.Count; i++)
