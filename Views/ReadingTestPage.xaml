@@ -76,23 +76,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
-                <!-- Thêm Button Thêm vào Sổ Từ Vựng -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
-                    <!-- Add Vocabulary Button -->
-                    <Button 
-                         Content="Thêm vào Sổ Từ Vựng"
-                         Command="{Binding DataContext.AddToVocabularyCommand, ElementName=PageRoot}"
-                         CommandParameter="{Binding}"
-                         MinWidth="100"
-                         Padding="8,2"/>
-
-                    <!-- Close Button -->
-                    <Button 
-                        Content="Close"
-                        MinWidth="100"
-                        Padding="8,2"
-                        Command="{Binding DataContext.CloseDialogCommand, ElementName=PageRoot}"/>
-                </StackPanel>
+                
             </StackPanel>
         </DataTemplate>
         <!-- Style cho ContentDialog -->

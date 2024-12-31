@@ -157,13 +157,6 @@ namespace login_full.ViewModels
 				System.Diagnostics.Debug.WriteLine($"AddToVocabularyCommand executed! Word: {vocabItem.Word}");
 				await AddToVocabulary(vocabItem);
 			});
-
-			CloseDialogCommand = new RelayCommand<ContentDialog>((dialog) =>
-			{
-				System.Diagnostics.Debug.WriteLine("CloseDialogCommand executed!");
-				dialog?.Hide(); 
-			});
-
 		}
 
         private void ZoomIn() { /* Implementation */ }

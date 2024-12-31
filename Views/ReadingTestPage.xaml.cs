@@ -270,7 +270,7 @@ namespace login_full.Views
 							Title = "Word Lookup Error",
 							Content = $"Failed to fetch word details: {ex.Message}",
 							XamlRoot = this.XamlRoot,
-							DataContext = ViewModel
+							CloseButtonText = "Close",
 						};
 						await errorDialog.ShowAsync();
 						return;
@@ -285,7 +285,7 @@ namespace login_full.Views
 						Title = "Word Lookup Error",
 						Content = "No details available for this word.",
 						XamlRoot = this.XamlRoot,
-						DataContext = ViewModel
+						CloseButtonText = "Close",
 					};
 					await dialog.ShowAsync();
 					return;
@@ -299,7 +299,7 @@ namespace login_full.Views
 					ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"], 
 					Style = (Style)Resources["DictionaryDialogStyle"], 
 					XamlRoot = this.XamlRoot,
-					DataContext = ViewModel
+                    CloseButtonText = "Close",
 				};
 
 				await wordDialog.ShowAsync();
