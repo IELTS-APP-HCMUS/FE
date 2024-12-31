@@ -13,6 +13,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using login_full.Views;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
+using java.awt;
 
 
 
@@ -42,7 +44,10 @@ namespace login_full.ViewModels
         public IRelayCommand AddNoteCommand { get; }
         public IRelayCommand SaveProgressCommand { get; }
 
-        public string FormattedTimeRemaining
+		public IRelayCommand<VocabularyItem> AddToVocabularyCommand { get; }
+		public IRelayCommand<ContentDialog> CloseDialogCommand { get; }
+
+		public string FormattedTimeRemaining
         {
             get
             {
@@ -109,14 +114,15 @@ namespace login_full.ViewModels
 
         private readonly IPdfExportService _pdfExportService;
         private readonly TextHighlightService _highlightService;
+		private readonly DictionaryService _dictionaryService;
 
-
-        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService)
+		public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService)
         {
             _testService = testService ?? throw new ArgumentNullException(nameof(testService));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
-            _highlightService = ServiceLocator.GetService<TextHighlightService>();
+			_dictionaryService = dictionaryService ?? throw new ArgumentNullException(nameof(dictionaryService));
+			_highlightService = ServiceLocator.GetService<TextHighlightService>();
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -145,7 +151,20 @@ namespace login_full.ViewModels
 
             IsHighlightMode = false;
 
-        }
+
+			AddToVocabularyCommand = new RelayCommand<VocabularyItem>(async (vocabItem) =>
+			{
+				System.Diagnostics.Debug.WriteLine($"AddToVocabularyCommand executed! Word: {vocabItem.Word}");
+				await AddToVocabulary(vocabItem);
+			});
+
+			CloseDialogCommand = new RelayCommand<ContentDialog>((dialog) =>
+			{
+				System.Diagnostics.Debug.WriteLine("CloseDialogCommand executed!");
+				dialog?.Hide(); 
+			});
+
+		}
 
         private void ZoomIn() { /* Implementation */ }
         private void ZoomOut() { /* Implementation */ }
@@ -349,12 +368,78 @@ namespace login_full.ViewModels
 
         public event EventHandler OnContentProcessingRequested;
 
-     
+		public async Task<DictionaryEntry> FetchWordDetailsAsync(string word)
+		{
+			try
+			{
+				// Ensure content and test details exist
+				if (TestDetail == null || string.IsNullOrEmpty(TestDetail.Content))
+				{
+					throw new Exception("No content available for fetching word details.");
+				}
 
+				// Generate word indices using DictionaryService
+				int quizId = int.Parse(TestDetail.Id);
+				var vocabId = _dictionaryService.GetVocabId(word, TestDetail.Content, quizId);
 
+				if (vocabId == null)
+				{
+					throw new Exception($"Word '{word}' not found in the content.");
+				}
 
-    }
+				// Extract indices
+				var parts = vocabId.Split('_');
+				int sentenceIndex = int.Parse(parts[1]);
+				int wordIndex = int.Parse(parts[2]);
 
+				// Fetch details from API
+				var wordDetails = await _dictionaryService.FetchWordFromApiAsync(quizId, sentenceIndex, wordIndex, word);
 
+				if (wordDetails == null)
+				{
+					throw new Exception($"No data found for '{word}'");
+				}
 
+				return wordDetails;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Error fetching word details: {ex.Message}");
+				throw;
+			}
+		}
+
+		private async Task AddToVocabulary(VocabularyItem vocabItem)
+		{
+			if (vocabItem == null) return; // Early exit if vocabItem is null
+
+			// Prepare the vocabulary item
+			var newVocab = new VocabularyItem
+			{
+				Word = vocabItem.Word,
+				WordType = vocabItem.WordType,
+				Meaning = vocabItem.Meaning,
+				Example = string.Join("\n", vocabItem.Example),
+				Note = vocabItem.Meaning,
+				Status = "Đang học"
+			};
+
+			// Try to add the vocabulary asynchronously
+			bool success = await _dictionaryService.AddVocabularyAsync(newVocab);
+
+			// Show success or error dialog
+			var dialog = new ContentDialog
+			{
+				Title = success ? "Thành công" : "Lỗi",
+				Content = success
+						  ? "Từ vựng đã được thêm vào sổ từ vựng."
+						  : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
+				CloseButtonText = "OK",
+				XamlRoot = App.MainWindow.Content.XamlRoot
+			};
+			
+			await dialog.ShowAsync();
+		}
+		
+	}
 }

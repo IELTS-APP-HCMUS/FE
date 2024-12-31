@@ -30,7 +30,12 @@ namespace login_full.API_Services
 
         public async Task<HttpResponseMessage> GetAsync(string endpoint)
         {
-            return await _httpClient.GetAsync(endpoint);
+         
+			var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+
+			// Log Request Details
+			LogRequest(request);
+			return await _httpClient.GetAsync(endpoint);
         }
 
         public async Task<HttpResponseMessage> PostAsync(string endpoint, HttpContent content)
@@ -53,5 +58,45 @@ namespace login_full.API_Services
             string json = JsonSerializer.Serialize(item);
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
-    }
+
+		private void LogRequest(HttpRequestMessage request)
+		{
+			// Start building the cURL command
+			var curlCommand = new StringBuilder("curl -X ");
+
+			// Add HTTP method
+			curlCommand.Append($"{request.Method} ");
+
+			// Ensure the full URL is used (BaseAddress + Relative URI)
+			var fullUrl = new Uri(_httpClient.BaseAddress, request.RequestUri);
+			curlCommand.Append($"\"{fullUrl}\" ");
+
+			// Add headers
+			foreach (var header in request.Headers)
+			{
+				curlCommand.Append($"-H \"{header.Key}: {string.Join(", ", header.Value)}\" ");
+			}
+
+			// Add Authorization header if present
+			if (_httpClient.DefaultRequestHeaders.Authorization != null)
+			{
+				curlCommand.Append($"-H \"Authorization: Bearer {_httpClient.DefaultRequestHeaders.Authorization.Parameter}\" ");
+			}
+
+			// Add content (body) if available
+			if (request.Content != null)
+			{
+				string body = request.Content.ReadAsStringAsync().Result; // Use async in production
+				curlCommand.Append($"-d '{body}' ");
+			}
+
+			// Set content type to JSON
+			curlCommand.Append("-H \"Content-Type: application/json\" ");
+
+			// Log the generated cURL command
+			System.Diagnostics.Debug.WriteLine("cURL Command:");
+			System.Diagnostics.Debug.WriteLine(curlCommand.ToString());
+		}
+
+	}
 }

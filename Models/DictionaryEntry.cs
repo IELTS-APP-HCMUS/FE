@@ -1,12 +1,35 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 public class DictionaryEntry
 {
     public string Word { get; set; }
     public string Pronunciation { get; set; }
-    public string PartOfSpeech { get; set; } // Loại từ
+    public string WordClass { get; set; } 
     public string Meaning { get; set; }
-    public List<string> RelatedWords { get; set; } // Từ/cấu trúc liên quan
+	public string Explanation { get; set; } 
+    public List<string> RelatedWords { get; set; } 
     public string VietnameseMeaning { get; set; }
     public List<string> Examples { get; set; }
-} 
+}
+
+
+
+public class ApiData
+{
+	[JsonProperty("word_display")]
+	public string WordDisplay { get; set; }
+	[JsonProperty("word_class")]
+	public string WordClass { get; set; }
+	[JsonProperty("meaning")]
+	public string Meaning { get; set; }
+	[JsonProperty("ipa")]
+	public string Ipa { get; set; }
+
+	[JsonProperty("explanation")]
+	public string Explanation { get; set; }
+	[JsonProperty("collocation")]
+	public string Collocation { get; set; }
+	[JsonProperty("example")]
+	public List<string> Example { get; set; }
+}

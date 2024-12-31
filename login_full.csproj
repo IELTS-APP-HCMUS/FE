@@ -76,6 +76,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+	  <PackageReference Include="Microsoft.ML.Tokenizers" Version="1.0.0" />
 	  <PackageReference Include="QuestPDF" Version="2023.12.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
@@ -83,7 +84,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.ML" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML" Version="4.0.0" />
     <PackageReference Include="Microsoft.ML.LightGbm" Version="3.0.1" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
@@ -91,6 +92,8 @@
     <PackageReference Include="Plotly.NET" Version="3.0.1" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
     <PackageReference Include="QuestPDF" Version="2025.1.0-alpha0" />
+    <PackageReference Include="SharpToken" Version="2.0.3" />
+    <PackageReference Include="Stanford.NLP.CoreNLP" Version="4.5.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.220929.1" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />

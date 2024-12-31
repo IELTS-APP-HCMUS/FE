@@ -14,7 +14,7 @@ public class MockDictionaryService
                 {
                     Word = "continent",
                     Pronunciation = "/ˈkɒntɪnənt/",
-                    PartOfSpeech = "noun",
+                    WordClass = "noun",
                     Meaning = "Any of the world's main continuous expanses of land",
                     RelatedWords = new List<string>
                     {
@@ -35,7 +35,7 @@ public class MockDictionaryService
                 {
                     Word = "drift",
                     Pronunciation = "/drɪft/",
-                    PartOfSpeech = "verb, noun",
+                    WordClass = "verb, noun",
                     Meaning = "To be carried slowly by a current of air or water",
                     RelatedWords = new List<string>
                     {

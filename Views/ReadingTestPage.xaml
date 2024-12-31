@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:login_full.Views"
+    x:Name="PageRoot"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:local1="using:login_full.Converters"
@@ -25,7 +26,7 @@
                 </StackPanel>
 
                 <!-- Loại từ -->
-                <TextBlock Text="{Binding PartOfSpeech}"
+                <TextBlock Text="{Binding WordClass}"
                          FontStyle="Italic"
                          Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
 
@@ -39,9 +40,9 @@
 
                 <!-- Nghĩa tiếng Việt -->
                 <StackPanel Margin="0,10,0,0">
-                    <TextBlock Text="Nghĩa:"
+                    <TextBlock Text="Giải thích:"
                              FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding VietnameseMeaning}"
+                    <TextBlock Text="{Binding Explanation}"
                              TextWrapping="Wrap"/>
                 </StackPanel>
 
@@ -74,6 +75,23 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                </StackPanel>
+                <!-- Thêm Button Thêm vào Sổ Từ Vựng -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+                    <!-- Add Vocabulary Button -->
+                    <Button 
+                         Content="Thêm vào Sổ Từ Vựng"
+                         Command="{Binding DataContext.AddToVocabularyCommand, ElementName=PageRoot}"
+                         CommandParameter="{Binding}"
+                         MinWidth="100"
+                         Padding="8,2"/>
+
+                    <!-- Close Button -->
+                    <Button 
+                        Content="Close"
+                        MinWidth="100"
+                        Padding="8,2"
+                        Command="{Binding DataContext.CloseDialogCommand, ElementName=PageRoot}"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>

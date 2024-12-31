@@ -18,7 +18,7 @@ namespace login_full.Services
             services.AddSingleton<IReadingTestService, ReadingTestService>();
             services.AddSingleton<LocalStorageService>();
             services.AddSingleton<IPdfExportService, PdfExportService>();
-            services.AddSingleton<MockDictionaryService>();
+            services.AddSingleton<DictionaryService>();
             services.AddSingleton<TextHighlightService>();
 
             // Register ViewModels

@@ -17,6 +17,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Globalization;
 
 
+
 namespace login_full.Views
 {
     public sealed partial class ReadingTestPage : Page
@@ -24,7 +25,7 @@ namespace login_full.Views
 
         
         public ReadingTestViewModel ViewModel { get; }
-        private readonly MockDictionaryService _dictionaryService;
+        private readonly DictionaryService _dictionaryService;
 
         private TextHighlightService _highlightService;
         private string _selectedText;
@@ -35,13 +36,13 @@ namespace login_full.Views
         public ReadingTestPage()
         {
             this.InitializeComponent();
-
-            try
+			
+			try
             {
                 var readingTestService = ServiceLocator.GetService<IReadingTestService>();
                 var navigationService = App.NavigationService;
                 var pdfExportService = ServiceLocator.GetService<IPdfExportService>();
-                _dictionaryService = ServiceLocator.GetService<MockDictionaryService>();
+                _dictionaryService = ServiceLocator.GetService<DictionaryService>();
 
                 _highlightService = ServiceLocator.GetService<TextHighlightService>();
 
@@ -54,17 +55,21 @@ namespace login_full.Views
                 ViewModel = new ReadingTestViewModel(
                     readingTestService,
                     navigationService,
-                    pdfExportService
+                    pdfExportService,
+                    _dictionaryService
                 );
 
-                ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
+				
+				ViewModel.OnContentProcessingRequested += ViewModel_OnContentProcessingRequested;
                 ViewModel.OnHighlightModeChanged += ViewModel_OnHighlightModeChanged;
 
                 // Khởi tạo timer cho popup
                 _popupTimer = new DispatcherTimer();
                 _popupTimer.Interval = TimeSpan.FromMilliseconds(350); // Đợi 500ms
                 _popupTimer.Tick += PopupTimer_Tick;
-            }
+
+				this.DataContext = ViewModel;
+			}
             catch (Exception ex)
             {
                 // Log lỗi hoặc hiển thị thông báo
@@ -142,55 +147,54 @@ namespace login_full.Views
             }
         }
 
-        private void ProcessVocabMode()
-        {
-            // Code xử lý vocab mode (code cũ của ProcessContent)
-            string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
+		private async void ProcessVocabMode()
+		{
+			string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
 
-            for (int p = 0; p < paragraphs.Length; p++)
-            {
-                string paragraph = paragraphs[p].Trim();
-                if (string.IsNullOrEmpty(paragraph)) continue;
+			for (int p = 0; p < paragraphs.Length; p++)
+			{
+				string paragraph = paragraphs[p].Trim();
+				if (string.IsNullOrEmpty(paragraph)) continue;
 
-                string[] words = paragraph.Split(' ');
+				string[] words = paragraph.Split(' ');
 
-                for (int i = 0; i < words.Length; i++)
-                {
-                    string word = words[i];
+				for (int i = 0; i < words.Length; i++)
+				{
+					string word = words[i];
 
-                    if (word.EndsWith(".") || word.EndsWith(",") ||
-                        word.EndsWith("!") || word.EndsWith("?") ||
-                        word.EndsWith(";") || word.EndsWith(":"))
-                    {
-                        string punctuation = word[^1].ToString();
-                        string mainWord = word[..^1];
+					if (word.EndsWith(".") || word.EndsWith(",") ||
+						word.EndsWith("!") || word.EndsWith("?") ||
+						word.EndsWith(";") || word.EndsWith(":"))
+					{
+						string punctuation = word[^1].ToString();
+						string mainWord = word[..^1];
 
-                        if (!string.IsNullOrEmpty(mainWord))
-                        {
-                            AddWordButton(mainWord);
-                        }
-                        ContentParagraph.Inlines.Add(new Run { Text = punctuation });
-                    }
-                    else
-                    {
-                        AddWordButton(word);
-                    }
+						if (!string.IsNullOrEmpty(mainWord))
+						{
+							AddWordButton(mainWord);
+						}
+						ContentParagraph.Inlines.Add(new Run { Text = punctuation });
+					}
+					else
+					{
+						AddWordButton(word);
+					}
 
-                    if (i < words.Length - 1)
-                    {
-                        ContentParagraph.Inlines.Add(new Run { Text = " " });
-                    }
-                }
+					if (i < words.Length - 1)
+					{
+						ContentParagraph.Inlines.Add(new Run { Text = " " });
+					}
+				}
 
-                if (p < paragraphs.Length - 1)
-                {
-                    ContentParagraph.Inlines.Add(new LineBreak());
-                    ContentParagraph.Inlines.Add(new LineBreak());
-                }
-            }
-        }
+				if (p < paragraphs.Length - 1)
+				{
+					ContentParagraph.Inlines.Add(new LineBreak());
+					ContentParagraph.Inlines.Add(new LineBreak());
+				}
+			}
+		}
 
-        private void AddWordButton(string word)
+		private void AddWordButton(string word)
         {
             var button = new Button
             {
@@ -216,33 +220,93 @@ namespace login_full.Views
 
             ContentParagraph.Inlines.Add(container);
         }
-        private async void WordButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.Content is TextBlock textBlock)
-            {
-                string word = textBlock.Text;
-                var entry = _dictionaryService.GetWord(word);
 
-                if (entry == null)
-                {
-                    return;
-                }
+		private async void WordButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is Button button && button.Content is TextBlock textBlock)
+			{
+				string word = textBlock.Text; // Get the clicked word
+				System.Diagnostics.Debug.WriteLine($"Clicked word: {word}");
 
-                ContentDialog dialog = new ContentDialog
-                {
-                    Title = "Dictionary",
-                    Content = entry,
-                    ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"],
-                    Style = (Style)Resources["DictionaryDialogStyle"],
-                    CloseButtonText = "Close",
-                    XamlRoot = this.XamlRoot
-                };
+				var entry = _dictionaryService.GetWord(word);
 
-                await dialog.ShowAsync();
-            }
-        }
+				if (entry == null)
+				{
+					try
+					{
+						int quizId = int.Parse(ViewModel.TestDetail.Id);
 
-        private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+						
+						var vocabId = _dictionaryService.GetVocabId(word, ViewModel.TestDetail.Content, quizId);
+						System.Diagnostics.Debug.WriteLine($"Vocab ID: {vocabId}");
+
+						if (vocabId != null)
+						{
+							
+							var parts = vocabId.Split('_');
+							int sentenceIndex = int.Parse(parts[1]); 
+							int wordIndex = int.Parse(parts[2]);     
+
+							entry = await _dictionaryService.FetchWordFromApiAsync(
+								quizId,
+								sentenceIndex,
+								wordIndex,
+								word
+							);
+
+							// Cache the result for future use
+							if (entry != null && !_dictionaryService.GetWord(word)?.Equals(entry) == true)
+							{
+								_dictionaryService.GetWord(word); 
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
+
+						ContentDialog errorDialog = new ContentDialog
+						{
+							Title = "Word Lookup Error",
+							Content = $"Failed to fetch word details: {ex.Message}",
+							XamlRoot = this.XamlRoot,
+							DataContext = ViewModel
+						};
+						await errorDialog.ShowAsync();
+						return;
+					}
+				}
+
+				// If entry is still null, show error
+				if (entry == null)
+				{
+					ContentDialog dialog = new ContentDialog
+					{
+						Title = "Word Lookup Error",
+						Content = "No details available for this word.",
+						XamlRoot = this.XamlRoot,
+						DataContext = ViewModel
+					};
+					await dialog.ShowAsync();
+					return;
+				}
+
+				// Display the word details using the predefined dialog template
+				ContentDialog wordDialog = new ContentDialog
+				{
+					Title = "Dictionary",
+					Content = entry, 
+					ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"], 
+					Style = (Style)Resources["DictionaryDialogStyle"], 
+					XamlRoot = this.XamlRoot,
+					DataContext = ViewModel
+				};
+
+				await wordDialog.ShowAsync();
+			}
+		}
+
+		private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
             var richTextBlock = sender as RichTextBlock;
             if (richTextBlock != null && ViewModel.IsHighlightMode)
@@ -386,5 +450,8 @@ namespace login_full.Views
                 HighlightPopup.IsOpen = true;
             }
         }
-    }
+
+	
+
+	}
 }

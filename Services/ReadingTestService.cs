@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using login_full.API_Services;
 
 
+
 namespace login_full.Services
 {
 	public class ReadingTestService : IReadingTestService
@@ -19,14 +20,16 @@ namespace login_full.Services
 		private readonly List<TestHistory> _testHistory;
 		private readonly LocalStorageService _localStorageService;
 		private readonly ClientCaller _clientCaller;
+		private readonly DictionaryService _dictionaryService;
 
-		public ReadingTestService(LocalStorageService localStorageService)
+		public ReadingTestService(LocalStorageService localStorageService, DictionaryService dictionaryService)
 		{
 			_localStorageService = localStorageService;
 			_testHistory = _localStorageService.GetTestHistory();
 			_mockTests = new Dictionary<string, ReadingTestDetail>();
 			_clientCaller = new ClientCaller();
-        }
+			_dictionaryService = dictionaryService;
+		}
 
 		public async Task<ReadingTestDetail> GetTestDetailAsync(string testId)
 		{
@@ -39,7 +42,6 @@ namespace login_full.Services
 			try
 			{
 				// Gọi API để lấy chi tiết bài kiểm tra
-				//string apiUrl = $"{_baseUrl}/v1/quizzes/{testId}";
 				HttpResponseMessage response = await _clientCaller.GetAsync($"/v1/quizzes/{testId}");
 
 				if (response.IsSuccessStatusCode)
@@ -119,15 +121,6 @@ namespace login_full.Services
 			}
 		}
 
-
-		//public async Task<ReadingTestDetail> GetTestDetailAsync(string testId)
-		//{
-		//	// Giả lập delay của network
-		//	await Task.Delay(500);
-		//	return _mockTests.GetValueOrDefault(testId) ??
-		//		throw new Exception("Test not found");
-		//}
-		// tuog tu
 		public async Task SaveAnswerAsync(string testId, string questionId, string answer)
 		{
 			await Task.Delay(100); // Giả lập delay
@@ -152,8 +145,6 @@ namespace login_full.Services
 			return false;
 		}
 
-
-		// đã update vs testID bên cs
 		public async Task<string> SubmitTestAsync(string testId)
 		{
 			try
@@ -367,6 +358,7 @@ namespace login_full.Services
 			}
 			throw new Exception($"Failed to fetch answer details: {response.ReasonPhrase}");
 		}
+
 
 	}
 }
