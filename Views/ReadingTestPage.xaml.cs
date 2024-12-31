@@ -315,7 +315,7 @@ namespace login_full.Views
                             Meaning = entry.Meaning,
                             Example = string.Join("\n", entry.Examples),
                             Status = "Đang học",
-                            Note = entry.Explanation
+                            //Note = entry.Explanation
                         });
                         // Show success or error dialog
                         ContentDialog successDialog = new()
