@@ -268,7 +268,7 @@ namespace login_full.ViewModels
         {
             if (item != null)
             {
-                await _vocabularyService.DeleteVocabularyAsync(item.Word);
+                await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
                 VocabularyItems.Remove(item);
                 _sampleData.Remove(item);
                 _totalItems--;
