@@ -89,6 +89,29 @@ namespace login_full.Services
                 return [];
             }
         }
+        public async Task<bool> GetVocabularyByKeyAsync(string key)
+        {
+            try
+            {
+                string get_apiUrl = $"{apiUrl}?key={key}";
+                HttpResponseMessage response = await clientCaller.GetAsync(get_apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to fetch schedules. Status Code: {response.StatusCode}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching schedules: {ex.Message}");
+                return false;
+            }
+        }
         public async Task<bool> UpdateVocabularyAsync(VocabularyItem vocab)
         {
             try

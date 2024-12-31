@@ -224,25 +224,27 @@ namespace login_full.Views
 				System.Diagnostics.Debug.WriteLine($"Clicked word: {word}");
 
 				var entry = _dictionaryService.GetWord(word);
-
-				if (entry == null)
+                string vocabId = "";
+                bool isAdded = false;
+                if (entry == null)
 				{
 					try
 					{
 						int quizId = int.Parse(ViewModel.TestDetail.Id);
 
 						
-						var vocabId = _dictionaryService.GetVocabId(word, ViewModel.TestDetail.Content, quizId);
-						System.Diagnostics.Debug.WriteLine($"Vocab ID: {vocabId}");
+						vocabId = _dictionaryService.GetVocabId(word, ViewModel.TestDetail.Content, quizId);
+                        isAdded = await _vocabService.GetVocabularyByKeyAsync(vocabId);
+                        System.Diagnostics.Debug.WriteLine($"Vocab ID: {vocabId}");
 
 						if (vocabId != null)
 						{
 							
 							var parts = vocabId.Split('_');
 							int sentenceIndex = int.Parse(parts[1]); 
-							int wordIndex = int.Parse(parts[2]);     
+							int wordIndex = int.Parse(parts[2]);
 
-							entry = await _dictionaryService.FetchWordFromApiAsync(
+                            entry = await _dictionaryService.FetchWordFromApiAsync(
 								quizId,
 								sentenceIndex,
 								wordIndex,
@@ -294,7 +296,7 @@ namespace login_full.Views
                     ContentTemplate = (DataTemplate)Resources["DictionaryDialogTemplate"],
                     Style = (Style)Resources["DictionaryDialogStyle"],
                     XamlRoot = this.XamlRoot,
-                    PrimaryButtonText = "Add to vocab bank",
+                    PrimaryButtonText = isAdded ? "Remove from vocab bank" : "Add to vocab bank",
                     CloseButtonText = "Close",
                 };
 
@@ -302,28 +304,47 @@ namespace login_full.Views
 
                 if (result == ContentDialogResult.Primary)
                 {
-                    bool success = await _vocabService.AddVocabularyAsync(new VocabularyItem
+                    if (!isAdded)
                     {
-                        Word = entry.Word,
-                        WordType = entry.WordClass,
-                        IPA = entry.Pronunciation,
-                        Meaning = entry.Meaning,
-                        Example = string.Join("\n", entry.Examples),
-                        Status = "Đang học",
-                        Note = entry.Explanation
-                    });
-                    // Show success or error dialog
-                    ContentDialog successDialog = new ContentDialog
+                        bool success = await _vocabService.AddVocabularyAsync(new VocabularyItem
+                        {
+                            WordKey = vocabId,
+                            Word = entry.Word,
+                            WordType = entry.WordClass,
+                            IPA = entry.Pronunciation,
+                            Meaning = entry.Meaning,
+                            Example = string.Join("\n", entry.Examples),
+                            Status = "Đang học",
+                            Note = entry.Explanation
+                        });
+                        // Show success or error dialog
+                        ContentDialog successDialog = new()
+                        {
+                            Title = success ? "Thành công" : "Lỗi",
+                            Content = success
+                                      ? "Từ vựng đã được thêm vào sổ từ vựng."
+                                      : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
+                            CloseButtonText = "OK",
+                            XamlRoot = App.MainWindow.Content.XamlRoot
+                        };
+                        await successDialog.ShowAsync();
+                    }
+                    else
                     {
-                        Title = success ? "Thành công" : "Lỗi",
-                        Content = success
-                                  ? "Từ vựng đã được thêm vào sổ từ vựng."
-                                  : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
-                        CloseButtonText = "OK",
-                        XamlRoot = App.MainWindow.Content.XamlRoot
-                    };
+                        bool success = await _vocabService.DeleteVocabularyAsync(vocabId);
+                        // Show success or error dialog
+                        ContentDialog successDialog = new()
+                        {
+                            Title = success ? "Thành công" : "Lỗi",
+                            Content = success
+                                      ? "Từ vựng đã được xoá khỏi sổ từ vựng."
+                                      : "Không thể xoá từ khỏi sổ từ vựng. Vui lòng thử lại.",
+                            CloseButtonText = "OK",
+                            XamlRoot = App.MainWindow.Content.XamlRoot
+                        };
+                        await successDialog.ShowAsync();
+                    }
 
-                    await successDialog.ShowAsync();
                 }
             }
 		}
