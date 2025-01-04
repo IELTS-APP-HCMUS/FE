@@ -42,7 +42,7 @@ namespace login_full.ViewModels
         private bool _isLoading;
 
         public ObservableCollection<ReadingItemModels> _items { get; private set; }
-
+		private ObservableCollection<ReadingItemModels> _allItems;
 		public ObservableCollection<ReadingItemModels> Items
 		{
 			get => _items;
@@ -113,9 +113,24 @@ namespace login_full.ViewModels
             set => SetProperty(ref _isLoading, value);
         }
 
+		private int? _selectedPassageTag;
+		private int? _selectedQuestionTypeTag;
 
-        // Commands
-        public IAsyncRelayCommand LoadItemsCommand { get; }
+		public int? SelectedPassageTag
+		{
+			get => _selectedPassageTag;
+			set => SetProperty(ref _selectedPassageTag, value);
+		}
+
+		public int? SelectedQuestionTypeTag
+		{
+			get => _selectedQuestionTypeTag;
+			set => SetProperty(ref _selectedQuestionTypeTag, value);
+		}
+
+
+		// Commands
+		public IAsyncRelayCommand LoadItemsCommand { get; }
         public IAsyncRelayCommand<AutoSuggestBox> SearchCommand { get; }
         public IRelayCommand<AutoSuggestBox> ClearSearchCommand { get; }
         public IRelayCommand ToggleFilterCommand { get; }
@@ -127,6 +142,8 @@ namespace login_full.ViewModels
         public IRelayCommand NextPageCommand { get; }
         public IRelayCommand PreviousPageCommand { get; }
         public IRelayCommand<int> GoToPageCommand { get; }
+
+		public IAsyncRelayCommand ApplyFilterCommand { get; }
 
 
 		public ISearchService SearchService
@@ -183,9 +200,10 @@ namespace login_full.ViewModels
             NextPageCommand = new RelayCommand(NextPage);
             PreviousPageCommand = new RelayCommand(PreviousPage);
             GoToPageCommand = new RelayCommand<int>(GoToPage);
+			ApplyFilterCommand = new AsyncRelayCommand<string>(ApplyFilterAsync);
 
-            // Initialize collections
-            Items = new ObservableCollection<ReadingItemModels>();
+			// Initialize collections
+			Items = new ObservableCollection<ReadingItemModels>();
             PageNumbers = new ObservableCollection<int>();
             UpdatePageNumbers();
 
@@ -206,12 +224,72 @@ namespace login_full.ViewModels
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
-        public async Task LoadItemsAsync()
+		private async Task ApplyFilterAsync(string parameter)
+		{
+			try
+			{
+				IsLoading = true;
+
+				// Phân tích tham số
+				var param = parameter.Split('_');
+				var filterType = param[0];  // Ví dụ: "Passage"
+				var filterValue = string.Join("_", param.Skip(1)); // Ví dụ: "passage_1"
+
+				System.Diagnostics.Debug.WriteLine($"FilterType: {filterType}, FilterValue: {filterValue}");
+
+				// Dùng cache gốc (_allItems) để lọc
+				List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
+
+				if (filterType.Equals("Passage", StringComparison.OrdinalIgnoreCase))
+				{
+					filteredItems = _allItems.Where(item =>
+						item.Tags != null &&
+						item.Tags.Any(tag =>
+							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+						)
+					).ToList();
+				}
+				else if (filterType.Equals("QuestionType", StringComparison.OrdinalIgnoreCase))
+				{
+					filteredItems = _allItems.Where(item =>
+						item.Tags != null &&
+						item.Tags.Any(tag =>
+							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+						)
+					).ToList();
+				}
+
+				// Áp dụng kết quả lọc
+				ApplyLocalFilter(filterType, filterValue, filteredItems);
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Filter Error: {ex.Message}");
+			}
+			finally
+			{
+				IsLoading = false;
+			}
+		}
+
+
+		private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
+		{
+			Items = new ObservableCollection<ReadingItemModels>(filteredItems);
+
+			InitializePagination();
+
+			System.Diagnostics.Debug.WriteLine($"Filter applied locally: {filterType} - {filterValue} | Total: {filteredItems.Count} items.");
+		}
+
+
+		public async Task LoadItemsAsync()
         {
 			try
 			{
                 var items = await _readingItemsService.GetReadingItemsAsync();
                 Items = new ObservableCollection<ReadingItemModels>(items);
+				_allItems = new ObservableCollection<ReadingItemModels>(items);
 				InitializePagination();
 			}
             finally

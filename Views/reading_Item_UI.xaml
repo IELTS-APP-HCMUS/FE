@@ -142,18 +142,53 @@
             Margin="10,0">
                         <TextBlock Text="Passage (Độ khó)" FontSize="15" FontWeight="SemiBold"/>
                         <StackPanel Spacing="15" Margin="0,20,0,0">
-                            <Button Content="Easy" Background="#9DCCFF" Height="33" Width="200" CornerRadius="2"/>
-                            <Button Content="Medium" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Hard" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Very Hard" Background="#9DCCFF" Height="33" Width="200"/>
+                            <Button Content="Passage 1"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200" 
+                                    CornerRadius="2"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_1"/>
+                            <Button Content="Passage 2"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_2"/>
+                            <Button Content="Passage 3"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_3"/>
                         </StackPanel>
 
                         <TextBlock Text="Loại câu hỏi" FontSize="15" FontWeight="SemiBold" Margin="0,40,0,20"/>
                         <StackPanel Spacing="15">
-                            <Button Content="Gap Filling" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Matching headings" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="True - False Not Given" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Yes - No - Not Given" Background="#9DCCFF" Height="33" Width="200"/>
+                            <Button Content="Gap Filling" 
+                                    Background="#9DCCFF" 
+                                    Height="33" Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="QuestionType_FILL_BLANK"/>
+                            <Button Content="Matching headings" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="QuestionType_MATCHING_HEADING"
+                                    />
+                            <Button Content="True - False Not Given" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}" 
+                                    CommandParameter="QuestionType_TRUE_FALSE"/>
+                            <Button Content="Yes - No - Not Given" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}" 
+                                    CommandParameter="QuestionType_YES_NO"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
