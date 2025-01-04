@@ -17,9 +17,9 @@
 		<!-- Left column -->
 		<StackPanel Grid.Column="0">
 
-			<TextBlock Text="Learn the best" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
-			<TextBlock Text="ways for staying" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
-			<TextBlock Text="productive" FontSize="48" FontWeight="Bold" TextWrapping="Wrap">
+			<TextBlock Text="Practice now" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
+			<TextBlock Text="to get to your" FontSize="48" FontWeight="Bold" TextWrapping="Wrap"/>
+			<TextBlock Text="dream score" FontSize="48" FontWeight="Bold" TextWrapping="Wrap">
 				<TextBlock.Foreground>
 					<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
 						<GradientStop Color="#333333" Offset="0.0"/>
@@ -27,28 +27,9 @@
 					</LinearGradientBrush>
 				</TextBlock.Foreground>
 			</TextBlock>
-			<TextBlock Text="Working at home is definitely a convenient option and makes sense in these unprecedented times." 
+            <TextBlock Text="With over 500 IELTS Reading passages, we are sure to help you conquer the IELTS Reading Test" 
        FontSize="18" Foreground="#585858" TextWrapping="Wrap" Margin="0,20,0,30"/>
-			<StackPanel Orientation="Horizontal">
-				<Button Content="Get Tips" Width="160" Height="62" Background="#4856DF" Foreground="White" 
-        FontWeight="Bold" FontSize="18" CornerRadius="12"/>
-				<Button Content="Learn More" Margin="20,0,0,0" Width="180" Height="70" Background="Transparent" 
-        Foreground="#333333" FontSize="18" BorderThickness="0">
-					<Button.ContentTemplate>
-						<DataTemplate>
-							<StackPanel Orientation="Horizontal">
-								<Ellipse Width="52" Height="52" Stroke="#FFBE21" StrokeThickness="5">
-									<Ellipse.Fill>
-										<SolidColorBrush Color="White"/>
-									</Ellipse.Fill>
-								</Ellipse>
-								<TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="10,0,0,0"/>
-							</StackPanel>
-						</DataTemplate>
-					</Button.ContentTemplate>
-				</Button>
-			</StackPanel>
-		</StackPanel>
+        </StackPanel>
 
 		<!-- Right column -->
 		<Image Grid.Column="1" Source="/Assets/graduation_icon1.png" Stretch="Uniform" Height="512"/>
