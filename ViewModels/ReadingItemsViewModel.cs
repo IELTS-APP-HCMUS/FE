@@ -230,10 +230,9 @@ namespace login_full.ViewModels
 			{
 				IsLoading = true;
 
-				// Phân tích tham số
 				var param = parameter.Split('_');
-				var filterType = param[0];  // Ví dụ: "Passage"
-				var filterValue = string.Join("_", param.Skip(1)); // Ví dụ: "passage_1"
+				var filterType = param[0];  
+				var filterValue = string.Join("_", param.Skip(1)); 
 
 				System.Diagnostics.Debug.WriteLine($"FilterType: {filterType}, FilterValue: {filterValue}");
 
@@ -259,7 +258,6 @@ namespace login_full.ViewModels
 					).ToList();
 				}
 
-				// Áp dụng kết quả lọc
 				ApplyLocalFilter(filterType, filterValue, filteredItems);
 			}
 			catch (Exception ex)

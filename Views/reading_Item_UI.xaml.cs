@@ -64,13 +64,7 @@ namespace login_full.Views
 			// Explicitly update DataContext
 			this.DataContext = ViewModel;
 
-			// DEBUG - Process and set images for each item
-			foreach (var item in ViewModel.Items)
-			{
-				System.Diagnostics.Debug.WriteLine($"[DEBUG] Setting image from URL: {item.ImagePath}");
-				item.SetImageBitmap();
-				System.Diagnostics.Debug.WriteLine($"[SUCCESS] ImageBitmap set successfully for {item.Title}");
-			}
+			
 		}
 
 		/// <summary>

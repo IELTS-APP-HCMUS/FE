@@ -25,8 +25,8 @@ namespace login_full.Models
 		[JsonProperty("time")]
 		public string Duration { get; set; }
 
-		public string Difficulty { get; set; } // Extracted from Tags
-		public string Category { get; set; }   // Extracted from Tags
+		public string Difficulty { get; set; } 
+		public string Category { get; set; }  
 
 		[JsonProperty("thumbnail")]
 		public string ImagePath { get; set; }
@@ -37,85 +37,6 @@ namespace login_full.Models
 		[JsonProperty("tags")]
 		public List<Tag> Tags { get; set; }
 
-		// New property for Image Binding
-		private BitmapImage _imageBitmap;
-		public BitmapImage ImageBitmap
-		{
-			get => _imageBitmap;
-			set
-			{
-				_imageBitmap = value;
-				OnPropertyChanged();
-			}
-		}
-
-		// Method to load image dynamically from URL
-		public async void SetImageBitmap()
-		{
-			System.Diagnostics.Debug.WriteLine($"Setting ImageBitmap: {ImagePath}");
-			try
-			{
-				if (!string.IsNullOrEmpty(ImagePath))
-				{
-					// Check URL and load the image from HTTP source
-					var uri = new Uri(ImagePath);
-
-					using (var httpClient = new HttpClient())
-					{
-						// Ensure cache-busting (optional, useful for debugging)
-						httpClient.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue
-						{
-							NoCache = true
-						};
-
-						// Download the image
-						var response = await httpClient.GetAsync(uri);
-						if (response.IsSuccessStatusCode)
-						{
-							var inputStream = await response.Content.ReadAsStreamAsync();
-
-							// FIX: Convert Stream to IRandomAccessStream
-							using (var randomAccessStream = new InMemoryRandomAccessStream())
-							{
-								// Write the stream to RandomAccessStream
-								using (var outputStream = randomAccessStream.GetOutputStreamAt(0))
-								{
-									await inputStream.CopyToAsync(outputStream.AsStreamForWrite());
-									await outputStream.FlushAsync();
-								}
-
-								// Create BitmapImage and set source
-								var bitmap = new BitmapImage();
-								await bitmap.SetSourceAsync(randomAccessStream);
-								ImageBitmap = bitmap;
-
-								System.Diagnostics.Debug.WriteLine($"[SUCCESS] Loaded image from URL: {ImagePath}");
-							}
-						}
-						else
-						{
-							System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image. HTTP Status: {response.StatusCode}");
-
-							// Fallback to default image
-							ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
-						}
-					}
-				}
-				else
-				{
-					// Fallback for empty image path
-					ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
-					System.Diagnostics.Debug.WriteLine("[WARNING] ImagePath was empty. Loaded default image.");
-				}
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image: {ex.Message}");
-
-				// Set default image on error
-				ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
-			}
-		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

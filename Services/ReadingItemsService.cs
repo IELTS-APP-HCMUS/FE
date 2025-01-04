@@ -106,8 +106,7 @@ namespace login_full.Services
 										: "/Assets/reading_win.png",
 							IsSubmitted = item.IsSubmitted,
 						};
-						mappedItem.SetImageBitmap();
-
+						
 						_items.Add(mappedItem);
 						System.Diagnostics.Debug.WriteLine($"Image URL: {mappedItem.ImagePath}");
 						System.Diagnostics.Debug.WriteLine($"Mapped item: Id={mappedItem.TestId}, Title={mappedItem.Title}, Description={mappedItem.Description}, Duration={mappedItem.Duration}, Difficulty={mappedItem.Difficulty}, Category={mappedItem.Category}, IsSubmitted={mappedItem.IsSubmitted}, ImagePath= {mappedItem.ImagePath}");

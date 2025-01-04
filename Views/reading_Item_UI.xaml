@@ -245,7 +245,7 @@
 
                         <AutoSuggestBox x:Name="SearchBox"
                                         Style="{StaticResource CustomAutoSuggestBoxStyle}"
-                                        PlaceholderText="Search your favourite course"
+                                        PlaceholderText="Search your favourite passage"
                                         QueryIcon="Find"
                                         Width="400"
                                         TextChanged="SearchBox_TextChanged"
@@ -306,7 +306,7 @@
                                             Width="270"
                                             Height="300">
                                             <StackPanel>
-                                                <Image Source="{Binding ImageBitmap}"
+                                                <Image Source="{Binding ImagePath}"
                                                    Height="auto" 
                                                    MaxHeight="140"
                                                    Stretch="Uniform"
