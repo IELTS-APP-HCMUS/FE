@@ -7,8 +7,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.IO;
 using System.Threading.Tasks;
-using System.Threading;
-
+using Windows.Storage.Streams;
 namespace login_full.Models
 {
 	// Reading Item Model
@@ -50,9 +49,7 @@ namespace login_full.Models
 			}
 		}
 
-		
-		private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
-
+		// Method to load image dynamically from URL
 		public async void SetImageBitmap()
 		{
 			System.Diagnostics.Debug.WriteLine($"Setting ImageBitmap: {ImagePath}");
@@ -60,38 +57,53 @@ namespace login_full.Models
 			{
 				if (!string.IsNullOrEmpty(ImagePath))
 				{
-					await Semaphore.WaitAsync(); 
+					// Check URL and load the image from HTTP source
+					var uri = new Uri(ImagePath);
 
 					using (var httpClient = new HttpClient())
 					{
-						httpClient.Timeout = TimeSpan.FromSeconds(10); 
+						// Ensure cache-busting (optional, useful for debugging)
+						httpClient.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue
+						{
+							NoCache = true
+						};
 
-						var response = await httpClient.GetAsync(new Uri(ImagePath));
-
+						// Download the image
+						var response = await httpClient.GetAsync(uri);
 						if (response.IsSuccessStatusCode)
 						{
-							var stream = await response.Content.ReadAsStreamAsync();
-							var bitmap = new BitmapImage();
-							await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
-							ImageBitmap = bitmap;
+							var inputStream = await response.Content.ReadAsStreamAsync();
 
-							System.Diagnostics.Debug.WriteLine($"[SUCCESS] Loaded image from URL: {ImagePath}");
-						}
-						else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-						{
-							System.Diagnostics.Debug.WriteLine($"[ERROR] Too Many Requests. Retrying after delay.");
-							await Task.Delay(2000); 
-							SetImageBitmap();      
+							// FIX: Convert Stream to IRandomAccessStream
+							using (var randomAccessStream = new InMemoryRandomAccessStream())
+							{
+								// Write the stream to RandomAccessStream
+								using (var outputStream = randomAccessStream.GetOutputStreamAt(0))
+								{
+									await inputStream.CopyToAsync(outputStream.AsStreamForWrite());
+									await outputStream.FlushAsync();
+								}
+
+								// Create BitmapImage and set source
+								var bitmap = new BitmapImage();
+								await bitmap.SetSourceAsync(randomAccessStream);
+								ImageBitmap = bitmap;
+
+								System.Diagnostics.Debug.WriteLine($"[SUCCESS] Loaded image from URL: {ImagePath}");
+							}
 						}
 						else
 						{
-							ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
 							System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image. HTTP Status: {response.StatusCode}");
+
+							// Fallback to default image
+							ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
 						}
 					}
 				}
 				else
 				{
+					// Fallback for empty image path
 					ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
 					System.Diagnostics.Debug.WriteLine("[WARNING] ImagePath was empty. Loaded default image.");
 				}
@@ -99,10 +111,9 @@ namespace login_full.Models
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image: {ex.Message}");
-			}
-			finally
-			{
-				Semaphore.Release(); // Giải phóng lượt tải sau khi hoàn thành.
+
+				// Set default image on error
+				ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
 			}
 		}
 
