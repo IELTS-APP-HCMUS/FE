@@ -141,9 +141,26 @@ namespace login_full.ViewModels
 		}
 		private async Task RetryTest()
         {
-            await _navigationService.NavigateToAsync(typeof(ReadingTestPage), _testDetail.Id);
+			await ClearCachedAnswers();
+			await _navigationService.NavigateToAsync(typeof(ReadingTestPage), _testDetail.Id);
         }
-        private string GetQuestionTypeDisplayName(QuestionType type)
+
+		private async Task ClearCachedAnswers()
+		{
+			try
+			{
+				// Example of clearing answers stored in the cache or local storage
+				var cacheService = new CacheService(); // Replace with your actual cache service
+				await cacheService.ClearTestAnswersAsync(_testDetail.Id);
+
+				System.Diagnostics.Debug.WriteLine($"Cleared cached answers for test ID: {_testDetail.Id}");
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Error clearing cached answers: {ex.Message}");
+			}
+		}
+		private string GetQuestionTypeDisplayName(QuestionType type)
         {
             return type switch
             {
