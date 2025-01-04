@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace login_full.Models
 {
@@ -32,6 +37,74 @@ namespace login_full.Models
 
 		[JsonProperty("tags")]
 		public List<Tag> Tags { get; set; }
+
+		// New property for Image Binding
+		private BitmapImage _imageBitmap;
+		public BitmapImage ImageBitmap
+		{
+			get => _imageBitmap;
+			set
+			{
+				_imageBitmap = value;
+				OnPropertyChanged();
+			}
+		}
+
+		
+		private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+
+		public async void SetImageBitmap()
+		{
+			System.Diagnostics.Debug.WriteLine($"Setting ImageBitmap: {ImagePath}");
+			try
+			{
+				if (!string.IsNullOrEmpty(ImagePath))
+				{
+					await Semaphore.WaitAsync(); 
+
+					using (var httpClient = new HttpClient())
+					{
+						httpClient.Timeout = TimeSpan.FromSeconds(10); 
+
+						var response = await httpClient.GetAsync(new Uri(ImagePath));
+
+						if (response.IsSuccessStatusCode)
+						{
+							var stream = await response.Content.ReadAsStreamAsync();
+							var bitmap = new BitmapImage();
+							await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
+							ImageBitmap = bitmap;
+
+							System.Diagnostics.Debug.WriteLine($"[SUCCESS] Loaded image from URL: {ImagePath}");
+						}
+						else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+						{
+							System.Diagnostics.Debug.WriteLine($"[ERROR] Too Many Requests. Retrying after delay.");
+							await Task.Delay(2000); 
+							SetImageBitmap();      
+						}
+						else
+						{
+							ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
+							System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image. HTTP Status: {response.StatusCode}");
+						}
+					}
+				}
+				else
+				{
+					ImageBitmap = new BitmapImage(new Uri("ms-appx:///Assets/reading_win.png"));
+					System.Diagnostics.Debug.WriteLine("[WARNING] ImagePath was empty. Loaded default image.");
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load image: {ex.Message}");
+			}
+			finally
+			{
+				Semaphore.Release(); // Giải phóng lượt tải sau khi hoàn thành.
+			}
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

@@ -42,10 +42,16 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <uap:ApplicationContentUriRules>
+        <uap:Rule Type="include" Match="https://imagekit.io/public/share/phwqup7zh/cd14919363c058b34da2d6a35f8dfaeb80f915ceb357021a459b103a80300760b2984ff33f70b52e1aaf7c797e1642881aa46f3a0092a3350400adda23c1d79a08b0ae1977b48652bfd23387c411d451" WindowsRuntimeAccess="all"/>
+      </uap:ApplicationContentUriRules>
     </Application>
   </Applications>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient"/>
+    <Capability Name="internetClientServer"/>
+    <Capability Name="privateNetworkClientServer"/>
   </Capabilities>
 </Package>

@@ -6,6 +6,9 @@ using login_full.Services;
 using login_full.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+
 
 namespace login_full.Views
 {
@@ -41,27 +44,35 @@ namespace login_full.Views
 
 		private async void InitializeAsync()
 		{
-
 			var readingItemsService = new ReadingItemsService();
 			var paginationService = new PaginationService();
 
-			// Await fetching items to ensure it completes
+			// Fetch items asynchronously and wait until they are loaded
 			var readingItems = await readingItemsService.GetReadingItemsAsync();
 
 			if (readingItems == null || !readingItems.Any())
 			{
-				System.Diagnostics.Debug.WriteLine("No reading items found. Ensure the service returns data.");
+				System.Diagnostics.Debug.WriteLine("[WARNING] No reading items found. Ensure the service returns data.");
 			}
 
-			// Update ViewModel services with fetched data
+			// Update ViewModel with loaded data
 			ViewModel.SearchService = new SearchService(readingItems.ToList(), paginationService);
-			
 
-			// Optionally refresh the ViewModel's data
+			// Load items into ViewModel
 			ViewModel.LoadItemsCommand.Execute(null);
 
+			// Explicitly update DataContext
 			this.DataContext = ViewModel;
+
+			// DEBUG - Process and set images for each item
+			foreach (var item in ViewModel.Items)
+			{
+				System.Diagnostics.Debug.WriteLine($"[DEBUG] Setting image from URL: {item.ImagePath}");
+				item.SetImageBitmap();
+				System.Diagnostics.Debug.WriteLine($"[SUCCESS] ImageBitmap set successfully for {item.Title}");
+			}
 		}
+
 		/// <summary>
 		/// Khởi tạo lớp "OnNavigatedTo" để xử lý sự kiện khi điều hướng đến trang này.
 		/// </summary>

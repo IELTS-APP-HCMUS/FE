@@ -306,7 +306,7 @@
                                             Width="270"
                                             Height="300">
                                             <StackPanel>
-                                                <Image Source="/Assets/reading_win.png" 
+                                                <Image Source="{Binding ImageBitmap}"
                                                    Height="auto" 
                                                    MaxHeight="140"
                                                    Stretch="Uniform"

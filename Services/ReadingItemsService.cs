@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using login_full.Context;
 using login_full.API_Services;
 
+
 namespace login_full.Services
 {
 	public class ReadingItemsService : IReadingItemsService
@@ -100,12 +101,20 @@ namespace login_full.Services
 							Tags = item.Tags,
 							Difficulty = ExtractDifficultyFromTags(item.Tags),
 							Category = ExtractCategoryFromTags(item.Tags),
-							ImagePath = "/Assets/reading_win.png",
+							ImagePath = !string.IsNullOrEmpty(item.Thumbnail)
+										? item.Thumbnail 
+										: "/Assets/reading_win.png",
 							IsSubmitted = item.IsSubmitted,
 						};
+						
 
 						_items.Add(mappedItem);
-						System.Diagnostics.Debug.WriteLine($"Mapped item: Id={mappedItem.TestId}, Title={mappedItem.Title}, Description={mappedItem.Description}, Duration={mappedItem.Duration}, Difficulty={mappedItem.Difficulty}, Category={mappedItem.Category}, IsSubmitted={mappedItem.IsSubmitted}");
+						if (_items.Count == 1)
+						{
+							_items[0].SetImageBitmap();
+						}
+						System.Diagnostics.Debug.WriteLine($"Image URL: {mappedItem.ImagePath}");
+						System.Diagnostics.Debug.WriteLine($"Mapped item: Id={mappedItem.TestId}, Title={mappedItem.Title}, Description={mappedItem.Description}, Duration={mappedItem.Duration}, Difficulty={mappedItem.Difficulty}, Category={mappedItem.Category}, IsSubmitted={mappedItem.IsSubmitted}, ImagePath= {mappedItem.ImagePath}");
 					}
 
 					System.Diagnostics.Debug.WriteLine($"Successfully fetched {apiResponse.Data.Items.Count} items from API.");
@@ -119,6 +128,9 @@ namespace login_full.Services
 			{
 				System.Diagnostics.Debug.WriteLine($"Exception in FetchItemsFromAPIAsync: {ex.Message}");
 			}
+
+			
+
 		}
 
 
