@@ -33,9 +33,9 @@
                 Orientation="Horizontal" 
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center" Margin="10,0,0,0">
-			<HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="White" Margin="0,0,20,0" Click="Home_Click"/>
+			<HyperlinkButton Content="Home" FontSize="18" Foreground="White" Margin="0,0,20,0" Click="Home_Click"/>
             <HyperlinkButton Content="Reading" FontSize="18" Foreground="White" Margin="0,0,20,0" Click ="Reading_Click"/>
-            <HyperlinkButton Content="Sổ từ vựng" FontSize="18" Foreground="White" Margin="0,0,20,0" Click ="Vocal_Click"/>
+            <HyperlinkButton Content="Vocab Bank" FontSize="18" Foreground="White" Margin="0,0,20,0" Click ="Vocal_Click"/>
             <HyperlinkButton Content="About Us" FontSize="18" Foreground="White" Click="AboutUs_Click"/>
       
         </StackPanel>

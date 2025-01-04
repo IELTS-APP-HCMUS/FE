@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
 	<StackPanel>
-		<TextBlock Text="Your daily plan" FontWeight="SemiBold" Margin="0,0,0,10"/>
+		<TextBlock Text="Kế hoạch trong ngày của bạn" FontWeight="SemiBold" Margin="0,0,0,10"/>
 		<ListView x:Name="ScheduleListView" SelectionMode="Single">
 			<ListView.ItemTemplate>
 				<DataTemplate>

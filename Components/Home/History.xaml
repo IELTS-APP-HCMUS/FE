@@ -16,7 +16,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Your productivity" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
+        <TextBlock Text="Lịch sử làm bài" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
         <Border Grid.Row="1" Background="#DFEEF9" CornerRadius="28" Padding="15">
             <Grid>
