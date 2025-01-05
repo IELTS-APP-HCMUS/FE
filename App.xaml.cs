@@ -29,8 +29,9 @@ namespace login_full
             
             // Thêm cấu hình QuestPDF license
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-            
-            ConfigureServices();
+			Windows.Web.Http.Filters.HttpBaseProtocolFilter filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+			filter.IgnorableServerCertificateErrors.Add(Windows.Security.Cryptography.Certificates.ChainValidationResult.Untrusted);
+			ConfigureServices();
 		}
 
         private void ConfigureServices()

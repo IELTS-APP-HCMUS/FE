@@ -60,20 +60,22 @@
                     <ColumnDefinition Width="0.4*"/>  <!-- STT -->
                     <ColumnDefinition Width="1*"/> <!-- Từ vựng -->
                     <ColumnDefinition Width="1*"/> <!-- Trạng thái -->
-                    <ColumnDefinition Width="1*"/> <!-- Loại từ -->
-                    <ColumnDefinition Width="1.7*"/> <!-- Nghĩa của từ -->
-                    <ColumnDefinition Width="3.5*"/> <!-- Ví dụ -->
-                    <ColumnDefinition Width="2*"/> <!-- Ghi chú -->
+                    <ColumnDefinition Width="0.7*"/> <!-- Loại từ -->
+                    <ColumnDefinition Width="1*"/> <!-- Nghĩa của từ -->
+                    <ColumnDefinition Width="4.3*"/> <!-- Ví dụ -->
+                    <ColumnDefinition Width="2.2*"/> <!-- Ghi chú -->
+                    <ColumnDefinition Width="0.2*"/>
+                   
                     <ColumnDefinition Width="0.2*"/>  <!-- Action -->
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="#" Grid.Column="0" Foreground="White" />
-                <TextBlock Text="Từ vựng" Grid.Column="1" Foreground="White"/>
-                <TextBlock Text="Trạng thái" Grid.Column="2" Foreground="White"/>
-                <TextBlock Text="Loại từ" Grid.Column="3" Foreground="White"/>
-                <TextBlock Text="Nghĩa của từ" Grid.Column="4" Foreground="White"/>
-                <TextBlock Text="Ví dụ" Grid.Column="5" Foreground="White"/>
-                <TextBlock Text="Ghi chú" Grid.Column="6" Foreground="White"/>
+                <TextBlock Text="#" Grid.Column="0" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Từ vựng" Grid.Column="1" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Trạng thái" Grid.Column="2" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Loại từ" Grid.Column="3" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Nghĩa của từ" Grid.Column="4" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Ví dụ" Grid.Column="5" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Ghi chú" Grid.Column="6" Foreground="White" HorizontalAlignment="Center"/>
                 <TextBlock Text="" Grid.Column="7" Foreground="White"/>
             </Grid>
 
@@ -107,38 +109,66 @@
                                     <!-- Từ vựng -->
                                     <ColumnDefinition Width="1*"/>
                                     <!-- Trạng thái -->
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="0.7*"/>
                                     <!-- Loại từ -->
-                                    <ColumnDefinition Width="1.7*"/>
+                                    <ColumnDefinition Width="1*"/>
                                     <!-- Nghĩa của từ -->
-                                    <ColumnDefinition Width="3.5*"/>
+                                    <ColumnDefinition Width="4.3*"/>
                                     <!-- Ví dụ -->
-                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2.2*"/>
                                     <!-- Ghi chú -->
+                                     
                                     <ColumnDefinition Width="0.4*"/>
                                     <!-- Action -->
                                 </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{Binding Index}" Grid.Column="0"  />
-                            <TextBlock Text="{Binding Word}" Grid.Column="1"/>
+                            <TextBlock Text="{Binding Index}" Grid.Column="0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Word}" Grid.Column="1"
+                                       TextWrapping="Wrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
                             <Button 
                                 Grid.Column="2"
                                 Command="{Binding DataContext.ToggleStatusCommand, ElementName=VocabularyListView}"
                                 CommandParameter="{Binding}"
                                 Background="Transparent"
                                 BorderThickness="0"
-                                Margin="0,0,0,16"
-                                Padding="-1">
+                                
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Padding="0">
                                 
                                 <TextBlock 
                                     Text="{Binding Status}" 
                                     Grid.Column="2"
                                     Foreground="{Binding StatusColor}"/>
                             </Button>
-                            <TextBlock Text="{Binding WordType}" Grid.Column="3"/>
-                            <TextBlock Text="{Binding Meaning}" Grid.Column="4"/>
-                            <TextBlock Text="{Binding Example}" Grid.Column="5"/>
-                            <TextBlock Text="{Binding Note}" Grid.Column="6"/>
+                            <TextBlock Text="{Binding WordType}" 
+                                       Grid.Column="3"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Meaning}" 
+                                       Grid.Column="4" 
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis" 
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Example}" 
+                                       Grid.Column="5"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Note}" Grid.Column="6" 
+                                       TextWrapping="Wrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>    
                             <Button 
                                 Grid.Column="7"
                                 Command="{Binding DataContext.DeleteItemCommand, ElementName=VocabularyListView}"

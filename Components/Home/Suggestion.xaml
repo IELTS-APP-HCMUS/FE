@@ -22,7 +22,7 @@
 
         <!-- Right Column -->
         <StackPanel Grid.Column="1">
-            <TextBlock Text="Đề xuất dành cho bạn:" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
+            <TextBlock Text="Suggestion for you:" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
             <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

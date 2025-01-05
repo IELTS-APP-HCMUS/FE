@@ -18,14 +18,11 @@ namespace login_full.Services
 	{
 		private readonly Dictionary<string, ReadingTestDetail> _mockTests;
 		private readonly List<TestHistory> _testHistory;
-		private readonly LocalStorageService _localStorageService;
 		private readonly ClientCaller _clientCaller;
 		private readonly DictionaryService _dictionaryService;
 
 		public ReadingTestService(LocalStorageService localStorageService, DictionaryService dictionaryService)
 		{
-			_localStorageService = localStorageService;
-			_testHistory = _localStorageService.GetTestHistory();
 			_mockTests = new Dictionary<string, ReadingTestDetail>();
 			_clientCaller = new ClientCaller();
 			_dictionaryService = dictionaryService;
