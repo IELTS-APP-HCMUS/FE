@@ -89,7 +89,7 @@ namespace login_full.API_Services
 
             try
 			{
-				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/signup", content);
 
 				if (response.IsSuccessStatusCode)
 				{
