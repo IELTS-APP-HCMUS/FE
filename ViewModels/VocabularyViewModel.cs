@@ -16,10 +16,30 @@ using login_full.Services;
 
 namespace login_full.ViewModels
 {
+
+    /// <summary>
+    // ViewModel quản lý danh sách từ vựng và các chức năng liên quan.
+    // Cung cấp các tính năng: thêm, xóa, sửa, tìm kiếm và phân trang từ vựng.
+    // </summary>
     public partial class VocabularyViewModel : ObservableObject
     {
+        /// <summary>
+        /// Danh sách từ vựng có thể quan sát thay đổi
+        /// </summary>
         private ObservableCollection<VocabularyItem> _vocabularyItems;
+        /// <summary>
+        /// Service xử lý các thao tác với từ vựng
+        /// </summary>
+        /// <remarks>
+        /// Xử lý:
+        /// - Thêm/xóa/sửa từ vựng
+        /// - Đồng bộ với cơ sở dữ liệu
+        /// - Quản lý trạng thái học tập
+        /// </remarks>
         private readonly VocabularyService _vocabularyService;
+        /// <summary>
+        /// Trang hiện tại trong phân trang
+        /// </summary>
         private int _currentPage = 1;
         private int _pageSize = 5;
         private int _totalItems = 0;
@@ -30,7 +50,14 @@ namespace login_full.ViewModels
         private string _searchText;
         private List<VocabularyItem> _filteredData;
 
-       // xử lý API here
+        // xử lý API here
+        /// <summary>
+        /// Danh sách từ vựng hiển thị trên UI
+        /// </summary>
+        /// <remarks>
+        /// Binding hai chiều với ListView
+        /// Tự động cập nhật UI khi có thay đổi
+        /// </remarks>
         public ObservableCollection<VocabularyItem> VocabularyItems
         {
             get => _vocabularyItems;
@@ -287,6 +314,15 @@ namespace login_full.ViewModels
         //        }
         //    }
         //}
+        /// <summary>
+        /// Xóa từ vựng
+        /// </summary>
+        /// <param name="item">Từ vựng cần xóa</param>
+        /// <remarks>
+        /// 1. Hiển thị dialog xác nhận
+        /// 2. Xóa từ database nếu người dùng đồng ý
+        /// 3. Cập nhật UI và danh sách local
+        /// </remarks>
         private async void DeleteItem(VocabularyItem item)
         {
             if (item != null)
@@ -443,7 +479,19 @@ namespace login_full.ViewModels
                 }
             }
         }
-
+        /// <summary>
+        /// Tìm kiếm từ vựng theo từ khóa
+        /// </summary>
+        /// <param name="searchText">Từ khóa tìm kiếm</param>
+        /// <remarks>
+        /// Tìm kiếm theo các tiêu chí:
+        /// - Từ vựng
+        /// - Loại từ
+        /// - Nghĩa
+        /// - Ví dụ
+        /// - Ghi chú
+        /// Không phân biệt chữ hoa/thường
+        /// </remarks>
         private void SearchVocabulary(string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))

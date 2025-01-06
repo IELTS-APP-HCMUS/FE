@@ -12,16 +12,34 @@ using System.Windows.Input;
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    // ViewModel quản lý lịch sử làm bài kiểm tra của người dùng.
+    // Cung cấp các chức năng xem, sắp xếp và phân trang lịch sử bài kiểm tra.
+    // </summary>
     public class HistoryViewModel : ObservableObject
     {
+        /// <summary>
+        /// Service xử lý các thao tác với bài kiểm tra đọc
+        /// </summary>
         private readonly IReadingTestService _readingTestService;
+        /// <summary>
+        /// Service điều hướng giữa các trang
+        /// </summary>
         private readonly INavigationService _navigationService;
+        /// <summary>
+        /// Danh sách toàn bộ lịch sử bài kiểm tra
+        /// </summary>
         private ObservableCollection<TestHistory> _testHistories;
+        /// <summary>
+        /// Danh sách lịch sử hiển thị trên trang hiện tại
+        /// </summary>
         private ObservableCollection<TestHistory> _displayedHistories;
         private int _itemsPerPage = 10;
         private int _currentPage = 1;
         private int _totalPages;
-
+        /// <summary>
+        /// Danh sách lịch sử bài kiểm tra có thể quan sát thay đổi
+        /// </summary>
         public ObservableCollection<TestHistory> TestHistories
         {
             get => _testHistories;
@@ -68,11 +86,27 @@ namespace login_full.ViewModels
 
         public List<int> AvailableItemsPerPage => new List<int> { 5, 10, 15 };
 
+        /// <summary>
+        /// Command sắp xếp theo tên bài kiểm tra
+        /// </summary>
         public IRelayCommand SortByNameCommand { get; }
+        /// <summary>
+        /// Command sắp xếp theo thời gian làm bài
+        /// </summary>
         public IRelayCommand SortByTimeCommand { get; }
+        /// <summary>
+        /// Command chuyển đến trang tiếp theo
+        /// </summary>
         public IRelayCommand NextPageCommand { get; }
+        /// <summary>
+        /// Command quay lại trang trước
+        /// </summary>
         public IRelayCommand PreviousPageCommand { get; }
-
+        /// <summary>
+        /// Khởi tạo HistoryViewModel với các service cần thiết
+        /// </summary>
+        /// <param name="readingTestService">Service xử lý bài kiểm tra</param>
+        /// <param name="navigationService">Service điều hướng</param>
         public HistoryViewModel(IReadingTestService readingTestService, INavigationService navigationService)
         {
             _readingTestService = readingTestService;
@@ -83,7 +117,9 @@ namespace login_full.ViewModels
             PreviousPageCommand = new RelayCommand(PreviousPage, CanGoToPreviousPage);
             LoadTestHistories();
         }
-
+        /// <summary>
+        /// Tải danh sách lịch sử bài kiểm tra
+        /// </summary>
         private async void LoadTestHistories()
         {
             await LoadTestHistoriesAsync();
@@ -134,13 +170,20 @@ namespace login_full.ViewModels
                 CurrentPage--;
             }
         }
-
+        /// <summary>
+        /// Làm lại bài kiểm tra
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
         public async void RetakeTest(string testId)
         {
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), testId);
         }
-
-		public async void ViewResult(string testId, string answerId)
+        /// <summary>
+        /// Xem kết quả chi tiết bài kiểm tra
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <param name="answerId">ID của bài làm</param>
+        public async void ViewResult(string testId, string answerId)
 		{
 			// Truyền cả testId và answerId vào trang Xem lại
 			await _navigationService.NavigateToAsync(typeof(TestDetailResultPage),

@@ -10,19 +10,50 @@ using System.Threading.Tasks;
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    // Model đại diện cho một thẻ gợi ý bài đọc
+    // </summary>
     public class Card
     {
+        /// <summary>
+        /// ID định danh của thẻ
+        /// </summary>
         public string CardId { get; set; }
+        /// <summary>
+        /// Tiêu đề của thẻ
+        /// </summary>
         public string Title { get; set; }
+        /// <summary>
+        /// Mô tả ngắn về nội dung
+        /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// Đường dẫn đến hình ảnh minh họa
+        /// </summary>
         public string ImageSource { get; set; }
+        /// <summary>
+        /// Số lượt xem của bài đọc
+        /// </summary>
         public int ViewCount { get; set; }
     }
+    /// <summary>
+    // ViewModel quản lý và hiển thị các gợi ý bài đọc cho người dùng.
+    // Cung cấp danh sách các bài đọc được đề xuất dựa trên lịch sử và sở thích người dùng.
+    // </summary>
     public class SuggestionViewModel : ObservableObject
     {
+        /// <summary>
+        /// Danh sách các thẻ gợi ý
+        /// </summary>
         public ObservableCollection<Card> Cards { get; set; }
+        /// <summary>
+        /// Service xử lý các thao tác với bài đọc
+        /// </summary>
         private ObservableCollection<ReadingItemModels> _items { get; set; }
         private readonly ReadingItemsService _readingItemsService;
+        /// <summary>
+        /// Danh sách các bài đọc được gợi ý
+        /// </summary>
         public ObservableCollection<ReadingItemModels> Items
         {
             get => _items;
@@ -72,6 +103,16 @@ namespace login_full.ViewModels
                 }
             };
         }
+
+        /// <summary>
+        /// Tải danh sách bài đọc gợi ý từ service
+        /// </summary>
+        /// <returns>Task hoàn thành việc tải dữ liệu</returns>
+        /// <remarks>
+        /// Lấy 4 bài đọc mới nhất
+        /// Xử lý lỗi và ghi log nếu có vấn đề
+        /// Tự động cập nhật UI sau khi tải xong
+        /// </remarks>
         public async Task LoadItemsAsync()
         {
             try

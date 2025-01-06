@@ -13,6 +13,10 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    /// ViewModelquản lý danh sách bài đọc và các chức năng lọc, tìm kiếm.
+    // Cung cấp giao diện để người dùng xem và chọn bài đọc để làm bài kiểm tra.
+    // </summary>
     public class ReadingItemsViewModel : ObservableObject
     {
         private readonly IReadingItemsService _readingItemsService;
@@ -131,6 +135,9 @@ namespace login_full.ViewModels
 
 		// Commands
 		public IAsyncRelayCommand LoadItemsCommand { get; }
+        /// <summary>
+        /// Command xử lý tìm kiếm
+        /// </summary>
         public IAsyncRelayCommand<AutoSuggestBox> SearchCommand { get; }
         public IRelayCommand<AutoSuggestBox> ClearSearchCommand { get; }
         public IRelayCommand ToggleFilterCommand { get; }
@@ -142,8 +149,10 @@ namespace login_full.ViewModels
         public IRelayCommand NextPageCommand { get; }
         public IRelayCommand PreviousPageCommand { get; }
         public IRelayCommand<int> GoToPageCommand { get; }
-
-		public IAsyncRelayCommand ApplyFilterCommand { get; }
+        /// <summary>
+        /// Command áp dụng bộ lọc
+        /// </summary>
+        public IAsyncRelayCommand ApplyFilterCommand { get; }
 
 
 		public ISearchService SearchService
@@ -174,7 +183,16 @@ namespace login_full.ViewModels
 
         public ObservableCollection<int> PageNumbers { get; private set; }
 
-		public ReadingItemsViewModel(
+
+        /// <summary>
+        /// Khởi tạo ReadingItemsViewModel với các service cần thiết
+        /// </summary>
+        /// <param name="readingItemsService">Service xử lý bài đọc</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="searchService">Service tìm kiếm</param>
+        /// <param name="paginationService">Service phân trang</param>
+        /// <param name="completedItemsService">Service quản lý bài đã hoàn thành</param>
+        public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
             INavigationService navigationService,
             ISearchService searchService,
@@ -213,7 +231,11 @@ namespace login_full.ViewModels
             // Khởi tạo trang đầu tiên là 1
             CurrentPage = 1;
         }
-
+        /// <summary>
+        /// Xử lý kết quả tìm kiếm từ SearchService
+        /// </summary>
+        /// <param name="sender">Đối tượng gửi sự kiện</param>
+        /// <param name="results">Danh sách kết quả tìm kiếm</param>
         private void OnSearchResultsUpdated(object sender, IEnumerable<ReadingItemModels> results)
         {
             var filteredResults = ShowingCompletedItems
@@ -223,8 +245,12 @@ namespace login_full.ViewModels
             _paginationService.UpdateItems(filteredResults);
             OnPropertyChanged(nameof(DisplayedItems));
         }
-
-		private async Task ApplyFilterAsync(string parameter)
+        /// <summary>
+        /// Áp dụng bộ lọc cho danh sách bài đọc
+        /// </summary>
+        /// <param name="parameter">Chuỗi chứa loại và giá trị lọc, định dạng: "FilterType_FilterValue"</param>
+        /// <returns>Task hoàn thành việc lọc</returns>
+        private async Task ApplyFilterAsync(string parameter)
 		{
 			try
 			{
@@ -295,7 +321,9 @@ namespace login_full.ViewModels
                 IsLoading = false;
             }
         }
-
+        /// <summary>
+        /// Khởi tạo lại phân trang sau khi có thay đổi về dữ liệu
+        /// </summary>
         private void InitializePagination()
         {
             var filteredItems = ShowingCompletedItems
@@ -349,7 +377,9 @@ namespace login_full.ViewModels
             CurrentPage = 1;
             InitializePagination();
         }
-
+        /// <summary>
+        /// Cập nhật layout khi thay đổi kích thước cửa sổ hoặc trạng thái filter
+        /// </summary>
         private void UpdateLayout()
         {
             double availableWidth = _windowWidth - SidebarWidth - 60;
@@ -427,7 +457,9 @@ namespace login_full.ViewModels
             _windowHeight = height;
             UpdateLayout();
         }
-
+        /// <summary>
+        /// Dọn dẹp tài nguyên khi ViewModel bị hủy
+        /// </summary>
         public void Cleanup()
         {
             // Unsubscribe from events

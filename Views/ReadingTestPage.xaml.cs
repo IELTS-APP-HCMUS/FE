@@ -15,20 +15,53 @@ using login_full.Helpers;
 
 namespace login_full.Views
 {
+    /// <summary>
+    // Trang hiển thị bài kiểm tra đọc với các chức năng từ điển và đánh dấu văn bản.
+    // Cho phép người dùng đọc nội dung, tra từ điển và đánh dấu văn bản quan trọng.
+    // </summary>
     public sealed partial class ReadingTestPage : Page
     {
 
-        
+        /// <summary>
+        /// ViewModel quản lý logic và dữ liệu cho trang Reading Test
+        /// </summary>
         public ReadingTestViewModel ViewModel { get; }
+        /// <summary>
+        /// Service xử lý các chức năng từ điển
+        /// </summary>
         private readonly DictionaryService _dictionaryService;
+        /// <summary>
+        /// Service xử lý việc đánh dấu văn bản
+        /// </summary>
         private TextHighlightService _highlightService;
+        /// <summary>
+        /// Service quản lý từ vựng
+        /// </summary>
         private readonly VocabularyService _vocabService;
+        /// <summary>
+        /// Văn bản được chọn hiện tại
+        /// </summary>
         private string _selectedText;
+        /// <summary>
+        /// Vị trí bắt đầu của văn bản được chọn
+        /// </summary>
         private int _selectedStartIndex;
+        /// <summary>
+        /// Độ dài của văn bản được chọn
+        /// </summary>
         private int _selectedLength;
+        /// <summary>
+        /// Timer điều khiển hiển thị popup
+        /// </summary>
         private DispatcherTimer _popupTimer;
+        /// <summary>
+        /// Quản lý hiển thị thông báo toast
+        /// </summary>
         private readonly ToastManager toastManager;
-
+        /// <summary>
+        /// Khởi tạo trang Reading Test với đầy đủ các service cần thiết
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Ném ra khi các service không được khởi tạo đúng</exception>
         public ReadingTestPage()
         {
             this.InitializeComponent();
@@ -73,7 +106,11 @@ namespace login_full.Views
                 ShowErrorDialog("Initialization Error", ex.Message);
             }
         }
-
+        /// <summary>
+        /// Hiển thị hộp thoại lỗi
+        /// </summary>
+        /// <param name="title">Tiêu đề lỗi</param>
+        /// <param name="message">Nội dung thông báo lỗi</param>
         private async void ShowErrorDialog(string title, string message)
         {
             ContentDialog errorDialog = new ContentDialog
@@ -86,7 +123,10 @@ namespace login_full.Views
 
             await errorDialog.ShowAsync();
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi điều hướng đến trang
+        /// </summary>
+        /// <param name="e">Tham số điều hướng chứa TestId</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -105,7 +145,9 @@ namespace login_full.Views
         }
 
 
-
+        /// <summary>
+        /// Xử lý nội dung văn bản dựa trên chế độ hiện tại (Normal/Vocab)
+        /// </summary>
         private void ProcessContent()
         {
             if (ViewModel.TestDetail?.Content == null) return;
@@ -122,7 +164,9 @@ namespace login_full.Views
                 ProcessNormalMode();
             }
         }
-
+        /// <summary>
+        /// Xử lý hiển thị văn bản ở chế độ thường
+        /// </summary>
         private void ProcessNormalMode()
         {
             // Hiển thị văn bản bình thường không có button
@@ -143,8 +187,10 @@ namespace login_full.Views
                 }
             }
         }
-
-		private void ProcessVocabMode()
+        /// <summary>
+        /// Xử lý hiển thị văn bản ở chế độ từ vựng, cho phép click vào từng từ
+        /// </summary>
+        private void ProcessVocabMode()
 		{
 			string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
 
@@ -217,8 +263,13 @@ namespace login_full.Views
 
             ContentParagraph.Inlines.Add(container);
         }
-
-		private async void WordButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện khi click vào một từ
+        /// Hiển thị thông tin từ điển và cho phép thêm/xóa từ vựng
+        /// </summary>
+        /// <param name="sender">Nút được click</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private async void WordButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is Button button && button.Content is TextBlock textBlock)
 			{
@@ -239,7 +290,6 @@ namespace login_full.Views
                         isAdded = await _vocabService.GetVocabularyByKeyAsync(vocabId);
                         System.Diagnostics.Debug.WriteLine($"Vocab ID: {vocabId}");
 
-						if (vocabId != null)
 						{
 							
 							var parts = vocabId.Split('_');
