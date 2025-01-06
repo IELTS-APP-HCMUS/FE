@@ -1,11 +1,21 @@
-using System;
+﻿using System;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using login_full.ViewModels;
 
 namespace login_full.Models
 {
-    public class TestHistory
+	/// <summary>
+	/// Model lưu trữ lịch sử làm bài test của người dùng
+	/// </summary>
+	/// <remarks>
+	/// Bao gồm:
+	/// - Thông tin cơ bản về bài test
+	/// - Thời gian làm bài
+	/// - Kết quả chi tiết (số câu đúng/sai/bỏ qua)
+	/// - Commands để làm lại hoặc xem kết quả
+	/// </remarks>
+	public class TestHistory
     {
         
         public string AnswerId { get; set; }

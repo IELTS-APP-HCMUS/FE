@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -23,7 +23,16 @@ using System.Threading.Tasks;
 
 namespace login_full.Components.Home
 {
-    public sealed partial class Suggestion : UserControl
+	/// <summary>
+	/// Component hiển thị các bài học đề xuất
+	/// </summary>
+	/// <remarks>
+	/// Hiển thị:
+	/// - Grid 4 cards bài học đề xuất
+	/// - Thông tin cơ bản về mỗi bài học
+	/// - Start Now button
+	/// </remarks>
+	public sealed partial class Suggestion : UserControl
     {
         private SuggestionViewModel ViewModel { get; }
         public Suggestion()

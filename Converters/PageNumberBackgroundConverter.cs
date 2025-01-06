@@ -4,9 +4,21 @@ using System;
 
 namespace login_full.Converters
 {
-    public class PageNumberBackgroundConverter : IValueConverter
+	/// <summary>
+	/// Converter chuyển đổi số trang thành màu nền
+	/// </summary>
+	/// <remarks>
+	/// Chuyển đổi:
+	/// - Nếu số trang hiện tại trùng với số trang được chọn, trả về màu "#275051"
+	/// - Ngược lại, trả về màu "Gray"
+	/// </remarks>
+	public class PageNumberBackgroundConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+		/// <summary>
+		/// Chuyển đổi số trang thành màu nền
+		/// </summary>
+		/// <returns>Màu nền tương ứng với trạng thái của số trang</returns>
+		public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is int currentPage && parameter is int pageNumber)
             {

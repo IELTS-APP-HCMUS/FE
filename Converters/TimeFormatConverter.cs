@@ -3,7 +3,13 @@ using Microsoft.UI.Xaml.Data;
 
 namespace login_full.Converters
 {
-    public class TimeFormatConverter : IValueConverter
+	/// <summary>
+	/// Converter ??nh d?ng th?i gian
+	/// </summary>
+	/// <remarks>
+	/// Chuy?n ??i DateTime sang chu?i ??nh d?ng "HH:mm:ss"
+	/// </remarks>
+	public class TimeFormatConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

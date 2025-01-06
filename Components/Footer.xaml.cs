@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -18,6 +18,16 @@ using Windows.Foundation.Collections;
 
 namespace login_full.Components
 {
+	/// <summary>
+	/// Component hiển thị footer của ứng dụng
+	/// </summary>
+	/// <remarks>
+	/// Hiển thị:
+	/// - Logo và slogan
+	/// - Social media links
+	/// - Thông tin liên hệ
+	/// - Copyright
+	/// </remarks>
 	public sealed partial class Footer : UserControl
 	{
 		public Footer()

@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -18,6 +18,15 @@ using Windows.Foundation.Collections;
 
 namespace login_full.Components.Home.Performance
 {
+	/// <summary>
+	/// Component chính quản lý hiển thị hiệu suất học tập
+	/// </summary>
+	/// <remarks>
+	/// Bao gồm:
+	/// - Target component (mục tiêu điểm số)
+	/// - ExamRemain component (thông tin ngày thi)
+	/// - Responsive layout cho các màn hình khác nhau
+	/// </remarks>
 	public sealed partial class Performance : UserControl
 	{
 		// public the Target component

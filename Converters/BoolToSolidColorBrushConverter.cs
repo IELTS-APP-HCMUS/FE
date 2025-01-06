@@ -8,12 +8,21 @@ using System.Threading.Tasks;
 
 namespace login_full.Converters
 {
-    public class BoolToSolidColorBrushConverter : IValueConverter
+	/// <summary>
+	/// Chuyển đổi từ boolean sang Visibility
+	/// </summary>
+	/// <param name="parameter">Nếu là "Inverse" sẽ đảo ngược kết quả</param>
+	/// <returns>Trạng thái Visibility</returns>
+	public class BoolToSolidColorBrushConverter : IValueConverter
     {
         public SolidColorBrush TrueBrush { get; set; }
         public SolidColorBrush FalseBrush { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, string language)
+		/// <summary>
+		/// Chuyển đổi từ boolean sang Visibility
+		/// </summary>
+		/// <param name="parameter">Nếu là "Inverse" sẽ đảo ngược kết quả</param>
+		/// <returns>Trạng thái Visibility</returns>
+		public object Convert(object value, Type targetType, object parameter, string language)
         {
             return (bool)value ? TrueBrush : FalseBrush;
         }

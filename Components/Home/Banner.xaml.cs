@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -18,6 +18,15 @@ using Windows.Foundation.Collections;
 
 namespace login_full.Components.Home
 {
+	/// <summary>
+	/// Component banner chính trên trang chủ
+	/// </summary>
+	/// <remarks>
+	/// Hiển thị:
+	/// - Slogan
+	/// - Call-to-action buttons
+	/// - Hero image
+	/// </remarks>
 	public sealed partial class Banner : UserControl
 	{
 		public Banner()

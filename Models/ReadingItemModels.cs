@@ -11,6 +11,16 @@ using Windows.Storage.Streams;
 namespace login_full.Models
 {
 	// Reading Item Model
+	/// <summary>
+	/// Model cho một bài reading test
+	/// </summary>
+	/// <remarks>
+	/// Chứa thông tin cơ bản về bài test:
+	/// - Tiêu đề, mô tả
+	/// - Thời gian làm bài
+	/// - Độ khó
+	/// - Trạng thái hoàn thành
+	/// </remarks>
 	public class ReadingItemModels : INotifyPropertyChanged
 	{
 		[JsonProperty("id")]
@@ -122,6 +132,10 @@ namespace login_full.Models
 	}
 
 	// Tag Model
+
+	/// <summary>
+	/// Model cho tag của bài test
+	/// </summary>
 	public class Tag : INotifyPropertyChanged
 	{
 		[JsonProperty("id")]

@@ -4,9 +4,19 @@ using Microsoft.UI.Xaml.Data;
 
 namespace login_full.Converters
 {
-    public class BoolToVisibilityConverter : IValueConverter
+	/// <summary>
+	/// Chuyển đổi từ boolean sang Visibility
+	/// </summary>
+	/// <param name="parameter">Nếu là "Inverse" sẽ đảo ngược kết quả</param>
+	/// <returns>Trạng thái Visibility</returns>
+	public class BoolToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+		/// <summary>
+		/// Chuyển đổi từ boolean sang Visibility
+		/// </summary>
+		/// <param name="parameter">Nếu là "Inverse" sẽ đảo ngược kết quả</param>
+		/// <returns>Trạng thái Visibility</returns>
+		public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is bool boolValue)
             {

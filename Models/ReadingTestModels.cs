@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace login_full.Models
 {
+	/// <summary>
+	/// Model chứa chi tiết đầy đủ của một bài reading test
+	/// </summary>
 	public class ReadingTestDetail
 	{
 		public string Id { get; set; }
@@ -16,7 +19,16 @@ namespace login_full.Models
 		public List<ReadingTestQuestion> Questions { get; set; }
 		public TestProgress Progress { get; set; }
 	}
-
+	/// <summary>
+	/// Model cho một câu hỏi trong bài test
+	/// </summary>
+	/// <remarks>
+	/// Hỗ trợ các loại câu hỏi:
+	/// - Multiple choice
+	/// - Gap filling
+	/// - True/False/Not Given
+	/// - Yes/No/Not Given
+	/// </remarks>
 	public class ReadingTestQuestion : INotifyPropertyChanged
 	{
 		private bool _isExplanationVisible;
@@ -124,6 +136,9 @@ namespace login_full.Models
 		public bool IsWrong { get; set; }
 	}
 
+	/// <summary>
+	/// Enum định nghĩa các loại câu hỏi
+	/// </summary>
 	public enum QuestionType
 	{
 		MultipleChoice,
@@ -132,6 +147,9 @@ namespace login_full.Models
 		YesNoNotGiven
 	}
 
+	/// <summary>
+	/// Model theo dõi tiến trình làm bài
+	/// </summary>
 	public class TestProgress
 	{
 		public int TotalQuestions { get; set; }

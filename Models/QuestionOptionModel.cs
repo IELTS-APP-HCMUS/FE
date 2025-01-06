@@ -1,5 +1,13 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+/// <summary>
+/// Model cho các lựa chọn trong câu hỏi multiple choice
+/// </summary>
+/// <remarks>
+/// Quản lý:
+/// - Nội dung lựa chọn
+/// - Trạng thái được chọn
+/// - Trạng thái đúng/sai
+/// </remarks>
 public class QuestionOptionModel : ObservableObject
 {
     private string _text;

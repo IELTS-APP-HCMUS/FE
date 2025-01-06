@@ -13,6 +13,15 @@ using login_full.API_Services;
 
 namespace login_full.Components.Home.Performance
 {
+	/// <summary>
+	/// Component hiển thị thông tin về ngày thi và thời gian còn lại
+	/// </summary>
+	/// <remarks>
+	/// Chức năng:
+	/// - Hiển thị ngày thi dự kiến
+	/// - Tính và hiển thị số ngày còn lại đến ngày thi
+	/// - Cho phép cập nhật ngày thi
+	/// </remarks>
 	public sealed partial class ExamRemain : UserControl
 	{
 		private readonly ClientCaller _clientCaller;
@@ -82,6 +91,11 @@ namespace login_full.Components.Home.Performance
 				RemainingDaysText.Text = "- ngày";
 			}
 		}
+
+		/// <summary>
+		/// Cập nhật hiển thị số ngày còn lại
+		/// </summary>
+		/// <param name="examDate">Ngày thi đã chọn</param>
 		private void UpdateRemainingDays(DateTime examDate)
 		{
 			int remainingDays = (examDate - DateTime.Today).Days;

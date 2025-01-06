@@ -2,7 +2,15 @@
 
 namespace login_full.Models
 {
-    public class UserProfile : INotifyPropertyChanged
+	/// <summary>
+	/// Model quản lý thông tin cá nhân của người dùng
+	/// </summary>
+	/// <remarks>
+	/// Lưu trữ thông tin cơ bản:
+	/// - Tên người dùng
+	/// - Email
+	/// </remarks>
+	public class UserProfile : INotifyPropertyChanged
 	{
 		private string _name;
 		private string _email;

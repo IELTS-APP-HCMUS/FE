@@ -22,6 +22,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace login_full.Components.Home
 {
+	/// <summary>
+	/// Component hiển thị hiệu suất học tập
+	/// </summary>
+	/// <remarks>
+	/// Bao gồm:
+	/// - Target scores cho từng kỹ năng
+	/// - Ngày thi dự kiến
+	/// - Overall score
+	/// </remarks>
 	public sealed partial class History : UserControl
 	{
 		public HistoryViewModel ViewModel { get; }

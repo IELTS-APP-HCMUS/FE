@@ -19,7 +19,16 @@ using login_full.Helpers;
 
 namespace login_full.Components.Home
 {
-    public sealed partial class Calendar : UserControl
+	/// <summary>
+	/// Component hiển thị lịch
+	/// </summary>
+	/// <remarks>
+	/// Chức năng:
+	/// - Hiển thị calendar grid
+	/// - Navigation giữa các tháng
+	/// - Đánh dấu ngày hiện tại
+	/// </remarks>
+	public sealed partial class Calendar : UserControl
     {
         private readonly CalendarManager calendarManager = null;
         public Calendar()

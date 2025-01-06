@@ -10,13 +10,24 @@ using System.Threading.Tasks;
 namespace login_full.Models
 {
 
-
-    public class CompletedItemsModel : INotifyPropertyChanged
+	/// <summary>
+	/// Model quản lý danh sách các bài test đã hoàn thành
+	/// </summary>
+	/// <remarks>
+	/// Cung cấp:
+	/// - Danh sách các bài test
+	/// - Trạng thái hiển thị (chỉ hiện bài đã hoàn thành hoặc tất cả)
+	/// </remarks>
+	public class CompletedItemsModel : INotifyPropertyChanged
     {
         private bool _showingCompletedOnly;
         private ObservableCollection<ReadingItemModels> _items;
 
-        public bool ShowingCompletedOnly
+		/// <summary>
+		/// Trạng thái hiển thị chỉ các bài đã hoàn thành
+		/// </summary>
+		///
+		public bool ShowingCompletedOnly
         {
             get => _showingCompletedOnly;
             set
@@ -25,8 +36,10 @@ namespace login_full.Models
                 OnPropertyChanged();
             }
         }
-
-        public ObservableCollection<ReadingItemModels> Items
+		/// <summary>
+		/// Danh sách các bài reading test
+		/// </summary>
+		public ObservableCollection<ReadingItemModels> Items
         {
             get => _items;
             set
