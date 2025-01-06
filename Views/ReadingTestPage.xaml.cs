@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System.Globalization;
 using login_full.Models;
-using static com.sun.net.httpserver.Authenticator;
+using login_full.Helpers;
 
 
 namespace login_full.Views
@@ -27,12 +27,14 @@ namespace login_full.Views
         private int _selectedStartIndex;
         private int _selectedLength;
         private DispatcherTimer _popupTimer;
+        private readonly ToastManager toastManager;
 
         public ReadingTestPage()
         {
             this.InitializeComponent();
-			
-			try
+            // Khởi tạo ToastManager
+            toastManager = new ToastManager(RootGrid);
+            try
             {
                 var readingTestService = ServiceLocator.GetService<IReadingTestService>();
                 var navigationService = App.NavigationService;
@@ -318,31 +320,37 @@ namespace login_full.Views
                             //Note = entry.Explanation
                         });
                         // Show success or error dialog
-                        ContentDialog successDialog = new()
-                        {
-                            Title = success ? "Thành công" : "Lỗi",
-                            Content = success
+                        //ContentDialog successDialog = new()
+                        //{
+                        //    Title = success ? "Thành công" : "Lỗi",
+                        //    Content = success
+                        //              ? "Từ vựng đã được thêm vào sổ từ vựng."
+                        //              : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
+                        //    CloseButtonText = "OK",
+                        //    XamlRoot = App.MainWindow.Content.XamlRoot
+                        //};
+                        //await successDialog.ShowAsync();
+                        toastManager.ShowToast(success
                                       ? "Từ vựng đã được thêm vào sổ từ vựng."
-                                      : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
-                            CloseButtonText = "OK",
-                            XamlRoot = App.MainWindow.Content.XamlRoot
-                        };
-                        await successDialog.ShowAsync();
+                                      : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.");
                     }
                     else
                     {
                         bool success = await _vocabService.DeleteVocabularyAsync(vocabId);
                         // Show success or error dialog
-                        ContentDialog successDialog = new()
-                        {
-                            Title = success ? "Thành công" : "Lỗi",
-                            Content = success
+                        //ContentDialog successDialog = new()
+                        //{
+                        //    Title = success ? "Thành công" : "Lỗi",
+                        //    Content = success
+                        //              ? "Từ vựng đã được xoá khỏi sổ từ vựng."
+                        //              : "Không thể xoá từ khỏi sổ từ vựng. Vui lòng thử lại.",
+                        //    CloseButtonText = "OK",
+                        //    XamlRoot = App.MainWindow.Content.XamlRoot
+                        //};
+                        //await successDialog.ShowAsync();
+                        toastManager.ShowToast(success
                                       ? "Từ vựng đã được xoá khỏi sổ từ vựng."
-                                      : "Không thể xoá từ khỏi sổ từ vựng. Vui lòng thử lại.",
-                            CloseButtonText = "OK",
-                            XamlRoot = App.MainWindow.Content.XamlRoot
-                        };
-                        await successDialog.ShowAsync();
+                                      : "Không thể xoá từ khỏi sổ từ vựng. Vui lòng thử lại.");
                     }
 
                 }

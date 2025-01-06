@@ -410,12 +410,20 @@ namespace login_full.ViewModels
             else
             {
                 searchText = searchText.ToLower();
+                //_filteredData = _sampleData.Where(item =>
+                //    item.Word?.ToLower().Contains(searchText) ||
+                //    item.WordType?.ToLower().Contains(searchText) ||
+                //    item.Meaning?.ToLower().Contains(searchText) ||
+                //    item.Example?.ToLower().Contains(searchText) ||
+                //    item.Note?.ToLower().Contains(searchText)
+                //).ToList();
+                var lowerSearchText = searchText.ToLower();
                 _filteredData = _sampleData.Where(item =>
-                    item.Word.ToLower().Contains(searchText) ||
-                    item.WordType.ToLower().Contains(searchText) ||
-                    item.Meaning.ToLower().Contains(searchText) ||
-                    item.Example.ToLower().Contains(searchText) ||
-                    item.Note.ToLower().Contains(searchText)
+                    (item.Word?.ToLower().Contains(lowerSearchText) ?? false) ||
+                    (item.WordType?.ToLower().Contains(lowerSearchText) ?? false) ||
+                    (item.Meaning?.ToLower().Contains(lowerSearchText) ?? false) ||
+                    (item.Example?.ToLower().Contains(lowerSearchText) ?? false) ||
+                    (item.Note?.ToLower().Contains(lowerSearchText) ?? false)
                 ).ToList();
             }
 
