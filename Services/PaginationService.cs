@@ -8,13 +8,25 @@ using System.Threading.Tasks;
 
 namespace login_full.Services
 {
+    /// <summary>
+    ///Service quản lý phân trang cho danh sách các mục đọc.
+    // Cung cấp các chức năng cập nhật và điều hướng giữa các trang.
+    // </summary>
     public class PaginationService : IPaginationService
     {
+        /// <summary>
+        /// Trạng thái phân trang hiện tại.
+        /// </summary>
         public PaginatedItemsModels State { get; }
+        /// <summary>
+        /// Danh sách tất cả các mục đọc.
+        /// </summary>
         private List<ReadingItemModels> _allItems;
         // Thêm property để lưu danh sách số trang hiển thị
         public List<int> VisiblePageNumbers { get; private set; } = new List<int>();
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="PaginationService"/>.
+        /// </summary>
         public PaginationService()
         {
             State = new PaginatedItemsModels(new List<ReadingItemModels>())
@@ -24,14 +36,21 @@ namespace login_full.Services
                 ItemsPerPage = 8
             };
         }
-
+        /// <summary>
+        /// Cập nhật danh sách các mục đọc.
+        /// </summary>
+        /// <param name="items">Danh sách các mục đọc</param>
         public void UpdateItems(IEnumerable<ReadingItemModels> items)
         {
             _allItems = items.ToList();
             UpdatePaginationState();
             UpdateCurrentPageItems();
         }
-
+        /// <summary>
+        /// Cập nhật danh sách các mục đọc bất đồng bộ.
+        /// </summary>
+        /// <param name="items">Danh sách các mục đọc</param>
+        /// <returns>Task hoàn thành việc cập nhật</returns>
         public async Task UpdateItemsAsync(IEnumerable<ReadingItemModels> items)
         {
             try
@@ -47,14 +66,19 @@ namespace login_full.Services
                 throw;
             }
         }
-
+        /// <summary>
+        /// Cập nhật số lượng mục đọc trên mỗi trang.
+        /// </summary>
+        /// <param name="isSidebarExpanded">Trạng thái mở rộng của sidebar</param>
         public void UpdateItemsPerPage(bool isSidebarExpanded)
         {
             State.ItemsPerPage = isSidebarExpanded ? 6 : 8;
             UpdatePaginationState();
             UpdateCurrentPageItems();
         }
-
+        /// <summary>
+        /// Cập nhật trạng thái phân trang.
+        /// </summary>
         private void UpdatePaginationState()
         {
             if (_allItems == null || !_allItems.Any())
@@ -70,7 +94,12 @@ namespace login_full.Services
             // Tính toán các số trang hiển thị
             VisiblePageNumbers = CalculateVisiblePages(State.CurrentPage, State.TotalPages);
         }
-
+        /// <summary>
+        /// Tính toán các số trang hiển thị.
+        /// </summary>
+        /// <param name="currentPage">Trang hiện tại</param>
+        /// <param name="totalPages">Tổng số trang</param>
+        /// <returns>Danh sách số trang hiển thị</returns>
         private List<int> CalculateVisiblePages(int currentPage, int totalPages)
         {
             var pages = new List<int>();
@@ -92,7 +121,9 @@ namespace login_full.Services
 
             return pages;
         }
-
+        /// <summary>
+        /// Cập nhật danh sách các mục đọc trên trang hiện tại.
+        /// </summary>
         private void UpdateCurrentPageItems()
         {
             try
@@ -119,7 +150,9 @@ namespace login_full.Services
                 System.Diagnostics.Debug.WriteLine($"Error in UpdateCurrentPageItems: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Chuyển đến trang tiếp theo.
+        /// </summary>
         public void NextPage()
         {
             if (State.CurrentPage < State.TotalPages)

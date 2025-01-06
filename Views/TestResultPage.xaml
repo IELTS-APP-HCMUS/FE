@@ -148,12 +148,21 @@
                     <Button Content="Làm lại" 
                             Command="{x:Bind ViewModel.RetryCommand}"
                             Style="{StaticResource AccentButtonStyle}"
+                            Background="#4EACD2"
+                            Foreground="White"
                             Margin="0,0,10,0"/>
-                    <Button Content="Về trang chủ"
-                           Command="{x:Bind ViewModel.HomeCommand}"/>
+                    
                     <Button Content="Xem chi tiết bài làm"
                             Command="{x:Bind ViewModel.ViewDetailCommand}"
                             Style="{StaticResource AccentButtonStyle}"
+                            Background="#4EACD2"
+                            Foreground="White"
+                            Margin="0,0,10,0"/>
+                    <Button Content="Về trang chủ"
+                           Command="{x:Bind ViewModel.HomeCommand}"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Background="#4EACD2"
+                            Foreground="White"
                             Margin="0,0,10,0"/>
                 </StackPanel>
             </Grid>

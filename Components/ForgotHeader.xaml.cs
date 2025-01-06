@@ -18,7 +18,17 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace login_full.Components
 {
-    public sealed partial class ForgotHeader : UserControl
+
+	/// <summary>
+	/// Component header cho trang quên m?t kh?u
+	/// </summary>
+	/// <remarks>
+	/// Hi?n th?:
+	/// - Nút quay l?i trang login
+	/// - Tiêu ??
+	/// - Mô t?
+	/// </remarks>
+	public sealed partial class ForgotHeader : UserControl
     {
         public ForgotHeader()
         {

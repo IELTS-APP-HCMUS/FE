@@ -15,11 +15,17 @@ using login_full.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using java.awt;
+using login_full.Helpers;
+using login_full.Helpers;
 
 
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    // ViewModel quản lý giao diện và logic cho trang làm bài kiểm tra đọc.
+    // Xử lý việc hiển thị câu hỏi, chấm điểm và nộp bài.
+    // </summary>
     public class ReadingTestViewModel : INotifyPropertyChanged
     {
 
@@ -115,14 +121,24 @@ namespace login_full.ViewModels
         private readonly IPdfExportService _pdfExportService;
         private readonly TextHighlightService _highlightService;
 		private readonly DictionaryService _dictionaryService;
+        private readonly LoaderManager _loaderManager;
 
-		public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService)
+        /// <summary>
+        /// Khởi tạo ReadingTestViewModel với các service cần thiết
+        /// </summary>
+        /// <param name="testService">Service xử lý bài kiểm tra</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="pdfExportService">Service xuất PDF</param>
+        /// <param name="dictionaryService">Service từ điển</param>
+        /// <exception cref="ArgumentNullException">Ném ra khi service không được khởi tạo</exception>
+        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService, LoaderManager loaderManager)
         {
             _testService = testService ?? throw new ArgumentNullException(nameof(testService));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
 			_dictionaryService = dictionaryService ?? throw new ArgumentNullException(nameof(dictionaryService));
 			_highlightService = ServiceLocator.GetService<TextHighlightService>();
+            _loaderManager = loaderManager;
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -254,7 +270,10 @@ namespace login_full.ViewModels
         }
 
 
-
+        /// <summary>
+        /// Tải bài kiểm tra theo ID
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
         public async Task LoadTestAsync(string testId)
         {
             TestDetail = await _testService.GetTestDetailAsync(testId);
@@ -283,7 +302,9 @@ namespace login_full.ViewModels
         }
 
 
-
+        /// <summary>
+        /// Nộp bài kiểm tra
+        /// </summary>
         private async Task SubmitTest()
         {
             _timer.Stop();
@@ -305,7 +326,10 @@ namespace login_full.ViewModels
 
             if (result == ContentDialogResult.Primary)
             {
+
+                _loaderManager.ShowLoader();
                 string answerID = await _testService.SubmitTestAsync(TestDetail.Id);
+                _loaderManager.HideLoader();
                 if (answerID != "")
                 {
                     TestDetail.Progress.IsCompleted = true;
@@ -360,8 +384,13 @@ namespace login_full.ViewModels
         }
 
         public event EventHandler OnContentProcessingRequested;
-
-		public async Task<DictionaryEntry> FetchWordDetailsAsync(string word)
+        /// <summary>
+        /// Lấy thông tin chi tiết của từ vựng
+        /// </summary>
+        /// <param name="word">Từ cần tra cứu</param>
+        /// <returns>Thông tin chi tiết của từ</returns>
+        /// <exception cref="Exception">Ném ra khi không tìm thấy từ hoặc có lỗi xảy ra</exception>
+        public async Task<DictionaryEntry> FetchWordDetailsAsync(string word)
 		{
 			try
 			{

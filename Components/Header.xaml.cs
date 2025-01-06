@@ -26,6 +26,15 @@ using login_full.Views;
 
 namespace login_full.Components
 {
+	/// <summary>
+	/// Component header chính của ứng dụng
+	/// </summary>
+	/// <remarks>
+	/// Chức năng:
+	/// - Navigation menu
+	/// - User profile
+	/// - Logout
+	/// </remarks>
 	public sealed partial class Header : UserControl
 	{
 		private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;

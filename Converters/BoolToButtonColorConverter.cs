@@ -8,9 +8,22 @@ using System.Threading.Tasks;
 
 namespace login_full.Converters
 {
-    public class BoolToButtonColorConverter : IValueConverter
+	/// <summary>
+	/// Converter chuyển đổi boolean thành màu nút
+	/// </summary>
+	/// <remarks>
+	/// Chuyển đổi:
+	/// - true -> LightBlue
+	/// - false -> Gray
+	/// </remarks>
+	public class BoolToButtonColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+		/// <summary>
+		/// Chuyển đổi từ boolean sang màu
+		/// </summary>
+		/// <param name="value">Giá trị boolean</param>
+		/// <returns>Màu tương ứng cho nút</returns>
+		public object Convert(object value, Type targetType, object parameter, string language)
         {
             return (bool)value ? Colors.LightBlue : Colors.White;
         }

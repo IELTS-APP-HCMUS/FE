@@ -12,10 +12,20 @@ using login_full.API_Services;
 
 namespace login_full.Services
 {
-	public class ReadingItemsService : IReadingItemsService
+    /// <summary>
+    // Service quản lý các mục đọc từ API.
+    // Cung cấp các chức năng tải, tìm kiếm, và phân loại các mục đọc.
+    // </summary>
+    public class ReadingItemsService : IReadingItemsService
 	{
-		public readonly ObservableCollection<ReadingItemModels> _items ;
-		private bool _isInitialized;
+        /// <summary>
+        /// Danh sách các mục đọc có thể quan sát thay đổi.
+        /// </summary>
+        public readonly ObservableCollection<ReadingItemModels> _items ;
+        /// <summary>
+        /// Trạng thái khởi tạo của service.
+        /// </summary>
+        private bool _isInitialized;
 		private readonly ClientCaller _clientCaller;
 
 		// Public property to expose _items
@@ -52,8 +62,17 @@ namespace login_full.Services
 		
 			}
 		}
-
-		private async Task FetchItemsFromAPIAsync(
+        /// <summary>
+        /// Lấy các mục đọc từ API với các tham số tùy chọn.
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageSize">Kích thước trang</param>
+        /// <param name="submittedStatus">Trạng thái đã nộp</param>
+        /// <param name="searchTerm">Từ khóa tìm kiếm</param>
+        /// <param name="type">Loại mục đọc</param>
+        /// <param name="tagPassage">Thẻ đoạn văn</param>
+        /// <param name="tagQuestionType">Thẻ loại câu hỏi</param>
+        private async Task FetchItemsFromAPIAsync(
 	int? pageNumber = null,
 	int? pageSize = null,
 	int? submittedStatus = null,
@@ -130,8 +149,11 @@ namespace login_full.Services
 
 
 
-
-		public async Task<ObservableCollection<ReadingItemModels>> GetReadingItemsAsync()
+        /// <summary>
+        /// Lấy danh sách các mục đọc.
+        /// </summary>
+        /// <returns>Danh sách các mục đọc</returns>
+        public async Task<ObservableCollection<ReadingItemModels>> GetReadingItemsAsync()
 		{
 			System.Diagnostics.Debug.WriteLine("Fetching items from the service...");
 			if (!_isInitialized)
@@ -142,8 +164,11 @@ namespace login_full.Services
 			System.Diagnostics.Debug.WriteLine($"Items in service: {_items?.Count ?? 0}");
 			return _items;
 		}
-
-		public async Task<ObservableCollection<ReadingItemModels>> GetCompletedItemsAsync()
+        /// <summary>
+        /// Lấy danh sách các mục đọc đã hoàn thành.
+        /// </summary>
+        /// <returns>Danh sách các mục đọc đã hoàn thành</returns>
+        public async Task<ObservableCollection<ReadingItemModels>> GetCompletedItemsAsync()
 		{
 			if (!_isInitialized)
 			{
@@ -155,8 +180,11 @@ namespace login_full.Services
 			);
 			return completedItems;
 		}
-
-		public async Task<ObservableCollection<ReadingItemModels>> GetUncompletedItemsAsync()
+        /// <summary>
+        /// Lấy danh sách các mục đọc chưa hoàn thành.
+        /// </summary>
+        /// <returns>Danh sách các mục đọc chưa hoàn thành</returns>
+        public async Task<ObservableCollection<ReadingItemModels>> GetUncompletedItemsAsync()
 		{
 			if (!_isInitialized)
 			{
@@ -168,7 +196,13 @@ namespace login_full.Services
 			);
 			return uncompletedItems;
 		}
-		public async Task<ObservableCollection<ReadingItemModels>> SearchItemsAsync(string searchTerm)
+
+        /// <summary>
+        /// Tìm kiếm các mục đọc theo từ khóa.
+        /// </summary>
+        /// <param name="searchTerm">Từ khóa tìm kiếm</param>
+        /// <returns>Danh sách các mục đọc phù hợp</returns>
+        public async Task<ObservableCollection<ReadingItemModels>> SearchItemsAsync(string searchTerm)
 		{
 			if (!_isInitialized)
 			{
@@ -182,8 +216,12 @@ namespace login_full.Services
 			);
 			return filteredItems;
 		}
-
-		private string ExtractDifficultyFromTags(IEnumerable<Tag> tags)
+        /// <summary>
+        /// Trích xuất độ khó từ các thẻ.
+        /// </summary>
+        /// <param name="tags">Danh sách thẻ</param>
+        /// <returns>Độ khó</returns>
+        private string ExtractDifficultyFromTags(IEnumerable<Tag> tags)
 		{
 			var passageTag = tags?.FirstOrDefault(tag =>
 				tag.TagPositions != null &&
@@ -191,8 +229,12 @@ namespace login_full.Services
 
 			return passageTag?.Title ?? "Unknown";
 		}
-
-		private string ExtractCategoryFromTags(IEnumerable<Tag> tags)
+        /// <summary>
+        /// Trích xuất thể loại từ các thẻ.
+        /// </summary>
+        /// <param name="tags">Danh sách thẻ</param>
+        /// <returns>Thể loại</returns>
+        private string ExtractCategoryFromTags(IEnumerable<Tag> tags)
 		{
 			var questionTypeTag = tags?.FirstOrDefault(tag =>
 				tag.TagPositions != null &&

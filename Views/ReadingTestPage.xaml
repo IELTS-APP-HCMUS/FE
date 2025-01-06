@@ -106,7 +106,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Row="0" Height="60" Background="#D9D9D9">
+        <Grid Grid.Row="0" Height="60" Background="#DFEEF9">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -250,9 +250,7 @@
                                                         Path=ItemsSource.IndexOf[DataContext]}" 
                                                  FontWeight="SemiBold" 
                                                  FontSize="16"/>
-                                        <TextBlock Text=":" 
-                                                 FontWeight="SemiBold" 
-                                                 FontSize="16"/>
+                                        
                                     </StackPanel>
                                     <TextBlock Text="{Binding QuestionText}"
                                          TextWrapping="Wrap"

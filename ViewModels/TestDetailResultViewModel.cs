@@ -11,18 +11,37 @@ using login_full.Views;
 
 namespace login_full.ViewModels
 {
-	public class TestDetailResultViewModel : ObservableObject
+    /// <summary>
+    // ViewModel quản lý và hiển thị chi tiết kết quả bài kiểm tra
+    // </summary>
+    public class TestDetailResultViewModel : ObservableObject
 	{
-		// Services
-		private readonly IReadingTestService _testService;
+        /// <summary>
+        /// Service xử lý các thao tác với bài kiểm tra
+        /// </summary>
+        // Services
+        private readonly IReadingTestService _testService;
 		private readonly INavigationService _navigationService;
 
-		// Fields
-		private ReadingTestDetail _testDetail;
+        // Fields
+        /// <summary>
+        /// Chi tiết bài kiểm tra
+        /// </summary>
+        private ReadingTestDetail _testDetail;
 		private double _score;
 
-		// Constructor
-		public TestDetailResultViewModel(
+        // Constructor
+        /// <summary>
+        /// Khởi tạo ViewModel với các service cần thiết
+        /// </summary>
+        /// <param name="testService">Service xử lý bài kiểm tra</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="testDetail">Chi tiết bài kiểm tra (tùy chọn)</param>
+        /// <remarks>
+        /// Khởi tạo các command
+        /// Tính điểm nếu có sẵn dữ liệu bài test
+        /// </remarks>
+        public TestDetailResultViewModel(
 			IReadingTestService testService,
 			INavigationService navigationService,
 			ReadingTestDetail testDetail = null)
@@ -90,15 +109,19 @@ namespace login_full.ViewModels
 			_navigationService.NavigateToAsync(typeof(HomePage));
 		}
 
-		// Tải dữ liệu test khi cần
-		public async Task LoadTestAsync(string testId)
+      
+        public async Task LoadTestAsync(string testId)
 		{
 			TestDetail = await _testService.GetTestDetailAsync(testId);
 			CalculateScore(); 
 		}
 
-		// Toggle hiển thị lời giải thích
-		private void ToggleExplanation(ReadingTestQuestion question)
+        // Toggle hiển thị lời giải thích
+        /// <summary>
+        /// Chuyển đổi trạng thái hiển thị giải thích cho câu hỏi.
+        /// </summary>
+        /// <param name="question">Câu hỏi cần chuyển đổi</param>
+        private void ToggleExplanation(ReadingTestQuestion question)
 		{
 			if (question != null)
 			{
@@ -107,8 +130,14 @@ namespace login_full.ViewModels
 				System.Diagnostics.Debug.WriteLine($"Explanation text: {question.Explanation}");
 			}
 		}
-
-		public async Task LoadDataAsync(string testId, string answerId)
+        // Tải dữ liệu test khi cần
+        /// <summary>
+        /// Tải dữ liệu chi tiết bài kiểm tra và câu trả lời
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <param name="answerId">ID của bài làm</param>
+        /// <returns>Task hoàn thành việc tải dữ liệu</returns>
+        public async Task LoadDataAsync(string testId, string answerId)
 		{
 			// Debug log để kiểm tra Test ID và Answer ID
 			System.Diagnostics.Debug.WriteLine($"Getting quiz Test ID: {testId}, Answer ID: {answerId}");
@@ -186,8 +215,14 @@ namespace login_full.ViewModels
 			OnPropertyChanged(nameof(Score));
 		}
 
-		// Map loại câu hỏi từ API
-		private QuestionType MapQuestionType(string questionType)
+        // Map loại câu hỏi từ API
+        /// <summary>
+        /// Chuyển đổi loại câu hỏi từ API sang enum nội bộ
+        /// </summary>
+        /// <param name="questionType">Loại câu hỏi từ API</param>
+        /// <returns>Enum QuestionType tương ứng</returns>
+        /// <exception cref="ArgumentException">Ném ra khi loại câu hỏi không hợp lệ</exception>
+        private QuestionType MapQuestionType(string questionType)
 		{
 			return questionType switch
 			{

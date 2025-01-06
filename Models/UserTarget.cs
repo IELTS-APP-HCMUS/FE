@@ -2,7 +2,16 @@
 
 namespace login_full.Models
 {
-    public class UserTarget : INotifyPropertyChanged
+	/// <summary>
+	/// Model quản lý mục tiêu học tập của người dùng
+	/// </summary>
+	/// <remarks>
+	/// Bao gồm:
+	/// - Mục tiêu thời gian học
+	/// - Ngày thi dự kiến
+	/// - Điểm mục tiêu cho từng kỹ năng
+	/// </remarks>
+	public class UserTarget : INotifyPropertyChanged
 	{
         private int _targetStudyDuration;
         private string _nextExamDate;

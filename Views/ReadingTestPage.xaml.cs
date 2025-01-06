@@ -11,29 +11,65 @@ using Microsoft.UI.Xaml.Media;
 using System.Globalization;
 using login_full.Models;
 using login_full.Helpers;
+using System.Threading.Tasks;
 
 
 namespace login_full.Views
 {
+    /// <summary>
+    // Trang hiển thị bài kiểm tra đọc với các chức năng từ điển và đánh dấu văn bản.
+    // Cho phép người dùng đọc nội dung, tra từ điển và đánh dấu văn bản quan trọng.
+    // </summary>
     public sealed partial class ReadingTestPage : Page
     {
 
-        
+        /// <summary>
+        /// ViewModel quản lý logic và dữ liệu cho trang Reading Test
+        /// </summary>
         public ReadingTestViewModel ViewModel { get; }
+        /// <summary>
+        /// Service xử lý các chức năng từ điển
+        /// </summary>
         private readonly DictionaryService _dictionaryService;
+        /// <summary>
+        /// Service xử lý việc đánh dấu văn bản
+        /// </summary>
         private TextHighlightService _highlightService;
+        /// <summary>
+        /// Service quản lý từ vựng
+        /// </summary>
         private readonly VocabularyService _vocabService;
+        /// <summary>
+        /// Văn bản được chọn hiện tại
+        /// </summary>
         private string _selectedText;
+        /// <summary>
+        /// Vị trí bắt đầu của văn bản được chọn
+        /// </summary>
         private int _selectedStartIndex;
+        /// <summary>
+        /// Độ dài của văn bản được chọn
+        /// </summary>
         private int _selectedLength;
+        /// <summary>
+        /// Timer điều khiển hiển thị popup
+        /// </summary>
         private DispatcherTimer _popupTimer;
+        /// <summary>
+        /// Quản lý hiển thị thông báo toast
+        /// </summary>
         private readonly ToastManager toastManager;
-
-        public ReadingTestPage()
+		private readonly LoaderManager loaderManager;
+		/// <summary>
+		/// Khởi tạo trang Reading Test với đầy đủ các service cần thiết
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Ném ra khi các service không được khởi tạo đúng</exception>
+		public ReadingTestPage()
         {
             this.InitializeComponent();
             // Khởi tạo ToastManager
             toastManager = new ToastManager(RootGrid);
+            loaderManager = new LoaderManager(App.MainWindow);
             try
             {
                 var readingTestService = ServiceLocator.GetService<IReadingTestService>();
@@ -53,7 +89,8 @@ namespace login_full.Views
                     readingTestService,
                     navigationService,
                     pdfExportService,
-                    _dictionaryService
+                    _dictionaryService,
+                    loaderManager
                 );
 
 				
@@ -73,7 +110,11 @@ namespace login_full.Views
                 ShowErrorDialog("Initialization Error", ex.Message);
             }
         }
-
+        /// <summary>
+        /// Hiển thị hộp thoại lỗi
+        /// </summary>
+        /// <param name="title">Tiêu đề lỗi</param>
+        /// <param name="message">Nội dung thông báo lỗi</param>
         private async void ShowErrorDialog(string title, string message)
         {
             ContentDialog errorDialog = new ContentDialog
@@ -86,7 +127,10 @@ namespace login_full.Views
 
             await errorDialog.ShowAsync();
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi điều hướng đến trang
+        /// </summary>
+        /// <param name="e">Tham số điều hướng chứa TestId</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -105,7 +149,9 @@ namespace login_full.Views
         }
 
 
-
+        /// <summary>
+        /// Xử lý nội dung văn bản dựa trên chế độ hiện tại (Normal/Vocab)
+        /// </summary>
         private void ProcessContent()
         {
             if (ViewModel.TestDetail?.Content == null) return;
@@ -122,7 +168,9 @@ namespace login_full.Views
                 ProcessNormalMode();
             }
         }
-
+        /// <summary>
+        /// Xử lý hiển thị văn bản ở chế độ thường
+        /// </summary>
         private void ProcessNormalMode()
         {
             // Hiển thị văn bản bình thường không có button
@@ -143,8 +191,10 @@ namespace login_full.Views
                 }
             }
         }
-
-		private void ProcessVocabMode()
+        /// <summary>
+        /// Xử lý hiển thị văn bản ở chế độ từ vựng, cho phép click vào từng từ
+        /// </summary>
+        private void ProcessVocabMode()
 		{
 			string[] paragraphs = ViewModel.TestDetail.Content.Split('\n');
 
@@ -217,11 +267,16 @@ namespace login_full.Views
 
             ContentParagraph.Inlines.Add(container);
         }
-
-		private async void WordButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện khi click vào một từ
+        /// Hiển thị thông tin từ điển và cho phép thêm/xóa từ vựng
+        /// </summary>
+        /// <param name="sender">Nút được click</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private async void WordButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is Button button && button.Content is TextBlock textBlock)
-			{
+            {
 				string word = textBlock.Text; // Get the clicked word
 				System.Diagnostics.Debug.WriteLine($"Clicked word: {word}");
 
@@ -239,7 +294,6 @@ namespace login_full.Views
                         isAdded = await _vocabService.GetVocabularyByKeyAsync(vocabId);
                         System.Diagnostics.Debug.WriteLine($"Vocab ID: {vocabId}");
 
-						if (vocabId != null)
 						{
 							
 							var parts = vocabId.Split('_');
@@ -356,8 +410,12 @@ namespace login_full.Views
                 }
             }
 		}
-
-		private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện khi văn bản được chọn trong RichTextBlock thay đổi.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
+        private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
             var richTextBlock = sender as RichTextBlock;
             if (richTextBlock != null && ViewModel.IsHighlightMode)
@@ -391,6 +449,11 @@ namespace login_full.Views
         }
 
         // Helper method để lấy toàn bộ text từ RichTextBlock
+        /// <summary>
+        /// Lấy toàn bộ văn bản từ RichTextBlock.
+        /// </summary>
+        /// <param name="richTextBlock">RichTextBlock cần lấy văn bản</param>
+        /// <returns>Chuỗi văn bản từ RichTextBlock</returns>
         private string GetFullText(RichTextBlock richTextBlock)
         {
             string text = string.Empty;
@@ -409,7 +472,11 @@ namespace login_full.Views
             }
             return text;
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi nút Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void HighlightButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(_selectedText)) return;
@@ -423,7 +490,11 @@ namespace login_full.Views
             ApplyHighlights();
             HighlightPopup.IsOpen = false;
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi nút Remove Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void RemoveHighlightButton_Click(object sender, RoutedEventArgs e)
         {
             // Tìm tất cả highlights có overlap với vùng được chọn
@@ -440,13 +511,23 @@ namespace login_full.Views
             HighlightPopup.IsOpen = false;
         }
         // Helper method để kiểm tra overlap giữa hai đoạn text
+        /// <summary>
+        /// Kiểm tra xem hai đoạn văn bản có overlap không.
+        /// </summary>
+        /// <param name="start1">Vị trí bắt đầu của đoạn 1</param>
+        /// <param name="length1">Độ dài của đoạn 1</param>
+        /// <param name="start2">Vị trí bắt đầu của đoạn 2</param>
+        /// <param name="length2">Độ dài của đoạn 2</param>
+        /// <returns>True nếu có overlap, ngược lại False</returns>
         private bool HasOverlap(int start1, int length1, int start2, int length2)
         {
             int end1 = start1 + length1;
             int end2 = start2 + length2;
             return !(end1 <= start2 || start1 >= end2);
         }
-
+        /// <summary>
+        /// Áp dụng các highlight lên văn bản trong RichTextBlock.
+        /// </summary>
         private void ApplyHighlights()
         {
             var highlights = _highlightService.GetHighlights("current_document_id");
@@ -472,7 +553,11 @@ namespace login_full.Views
                 ContentRichTextBlock.TextHighlighters.Add(textHighlighter);
             }
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi chế độ highlight của ViewModel thay đổi.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="isHighlightMode">Trạng thái chế độ highlight</param>
         private void ViewModel_OnHighlightModeChanged(object sender, bool isHighlightMode)
         {
             // Cập nhật visual state của nút highlight
@@ -484,6 +569,12 @@ namespace login_full.Views
                 HighlightPopup.IsOpen = false;
             }
         }
+
+        /// <summary>
+        /// Xử lý sự kiện khi nút Main Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void MainHighlightButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as AppBarToggleButton;
@@ -492,7 +583,11 @@ namespace login_full.Views
                 ViewModel.IsHighlightMode = button.IsChecked ?? false;
             }
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi timer của popup tick.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void PopupTimer_Tick(object sender, object e)
         {
             _popupTimer.Stop();

@@ -21,17 +21,29 @@ using Windows.Foundation.Collections;
 
 namespace login_full.Views
 {
-
-	public sealed partial class TestResultPage : Page
+    /// <summary>
+    /// Tang hiển thị kết quả tổng quan của bài kiểm tra.
+    // Hiển thị biểu đồ và thống kê về kết quả làm bài.
+    // </summary>
+    public sealed partial class TestResultPage : Page
 	{
-		public TestResultViewModel ViewModel { get; private set; }
-
-		public TestResultPage()
+        /// <summary>
+        /// ViewModel quản lý logic và dữ liệu cho trang Test Result
+        /// </summary>
+        public TestResultViewModel ViewModel { get; private set; }
+        /// <summary>
+        /// Khởi tạo trang Test Result
+        /// </summary>
+        public TestResultPage()
 		{
 			this.InitializeComponent();
 		}
-
-		protected override async void OnNavigatedTo(NavigationEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện khi điều hướng đến trang
+        /// Tải dữ liệu kết quả và vẽ biểu đồ thống kê
+        /// </summary>
+        /// <param name="e">Tham số điều hướng chứa thông tin để tải kết quả bài kiểm tra</param>
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 

@@ -9,6 +9,15 @@ using System.Threading.Tasks;
 
 namespace login_full.Models
 {
+	/// <summary>
+	/// Model quản lý phân trang cho danh sách bài test
+	/// </summary>
+	/// <remarks>
+	/// Quản lý:
+	/// - Danh sách items trên trang hiện tại
+	/// - Thông tin về trang hiện tại và tổng số trang
+	/// - Số lượng items trên mỗi trang
+	/// </remarks>
 	public class PaginatedItemsModels : INotifyPropertyChanged
 	{
 		private ObservableCollection<ReadingItemModels> _currentPageItems;

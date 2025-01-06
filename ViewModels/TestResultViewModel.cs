@@ -16,16 +16,53 @@ using login_full.API_Services;
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    // ViewModel quản lý và hiển thị kết quả tổng quan của bài kiểm tra.
+    // Cung cấp thống kê, biểu đồ và phân tích kết quả làm bài.
+    // </summary>
     public class TestResultViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Chi tiết bài kiểm tra hiện tại
+        /// </summary>
+        /// <remarks>
+        /// Chứa thông tin về:
+        /// - Danh sách câu hỏi
+        /// - Đáp án và câu trả lời
+        /// - Thời gian làm bài
+        /// </remarks>
         private readonly ReadingTestDetail _testDetail;
-
+        /// <summary>
+        /// Service vẽ biểu đồ thống kê
+        /// </summary>
+        /// <remarks>
+        /// Hỗ trợ vẽ các loại biểu đồ:
+        /// - Biểu đồ tròn thể hiện tỷ lệ đúng/sai
+        /// - Biểu đồ cột thể hiện kết quả theo loại câu hỏi
+        /// </remarks>
         private readonly IChartService _chartService;
-
+        /// <summary>
+        /// Service điều hướng giữa các trang
+        /// </summary>
         private readonly INavigationService _navigationService;
-
+        /// <summary>
+        /// Tổng hợp kết quả bài kiểm tra
+        /// </summary>
+        /// <remarks>
+        /// Dictionary chứa các chỉ số:
+        /// - "total": Tổng số câu hỏi
+        /// - "correct": Số câu đúng
+        /// - "wrong": Số câu sai
+        /// - "skip": Số câu bỏ qua
+        /// </remarks>
         private Dictionary<string, int> _summary;
-
+        /// <summary>
+        /// Service gọi API
+        /// </summary>
+        /// <remarks>
+        /// Xử lý các request đến server
+        /// Quản lý cache và retry logic
+        /// </remarks>
         private readonly ClientCaller _clientCaller;
 
         // Điều hướng
@@ -65,7 +102,14 @@ namespace login_full.ViewModels
 
             QuestionTypeStatistics = new ObservableCollection<QuestionTypeStats>(stats);
         }
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="TestResultViewModel"/>.
+        /// </summary>
+        /// <param name="testDetail">Chi tiết bài kiểm tra</param>
+        /// <param name="duration">Thời gian làm bài</param>
+        /// <param name="chartService">Service vẽ biểu đồ</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="answerID">ID của câu trả lời</param>
         public TestResultViewModel(ReadingTestDetail testDetail, TimeSpan duration, IChartService chartService, INavigationService navigationService, string answerID)
         {
             _navigationService = navigationService;
@@ -92,7 +136,10 @@ namespace login_full.ViewModels
 			TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
             InitializeQuestionTypeStats();
         }
-		public Dictionary<string, int> Summary
+        /// <summary>
+        /// Tổng hợp kết quả bài kiểm tra.
+        /// </summary>
+        public Dictionary<string, int> Summary
 		{
 			get => _summary;
 			private set
@@ -101,7 +148,12 @@ namespace login_full.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public async Task LoadSummaryAsync(string answerID)
+
+        /// <summary>
+        /// Tải tổng hợp kết quả từ API.
+        /// </summary>
+        /// <param name="answerID">ID của câu trả lời</param>
+        public async Task LoadSummaryAsync(string answerID)
 		{
             try
             {
@@ -139,7 +191,14 @@ namespace login_full.ViewModels
                 };
             }
 		}
-		private async Task RetryTest()
+        /// <summary>
+        /// Làm mới bài kiểm tra
+        /// </summary>
+        /// <remarks>
+        /// 1. Xóa cache câu trả lời cũ
+        /// 2. Điều hướng đến trang làm bài mới
+        /// </remarks>
+        private async Task RetryTest()
         {
 			await ClearCachedAnswers();
 			await _navigationService.NavigateToAsync(typeof(ReadingTestPage), _testDetail.Id);
@@ -160,7 +219,13 @@ namespace login_full.ViewModels
 				System.Diagnostics.Debug.WriteLine($"Error clearing cached answers: {ex.Message}");
 			}
 		}
-		private string GetQuestionTypeDisplayName(QuestionType type)
+
+        /// <summary>
+        /// Lấy tên hiển thị cho loại câu hỏi.
+        /// </summary>
+        /// <param name="type">Loại câu hỏi</param>
+        /// <returns>Tên hiển thị</returns>
+        private string GetQuestionTypeDisplayName(QuestionType type)
         {
             return type switch
             {
@@ -171,7 +236,19 @@ namespace login_full.ViewModels
                 _ => type.ToString()
             };
         }
-
+        /// <summary>
+        /// Vẽ biểu đồ tròn thể hiện kết quả
+        /// </summary>
+        /// <param name="canvas">Canvas để vẽ biểu đồ</param>
+        /// <param name="centerX">Tọa độ X của tâm</param>
+        /// <param name="centerY">Tọa độ Y của tâm</param>
+        /// <param name="radius">Bán kính biểu đồ</param>
+        /// <remarks>
+        /// Vẽ 3 phần:
+        /// - Câu đúng (màu xanh)
+        /// - Câu sai (màu đỏ)
+        /// - Câu chưa trả lời (màu xám)
+        /// </remarks>
         public void DrawChart(Canvas canvas, double centerX, double centerY, double radius)
         {
             _chartService.DrawPieChart(canvas, centerX, centerY, radius,

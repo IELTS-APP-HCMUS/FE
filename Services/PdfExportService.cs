@@ -8,8 +8,24 @@ using Windows.UI;
 
 namespace login_full.Services
 {
+    /// <summary>
+    // Service xuất dữ liệu bài kiểm tra đọc ra file PDF.
+    // Sử dụng thư viện QuestPDF để tạo và định dạng file PDF.
+    // </summary>
     public class PdfExportService : IPdfExportService
     {
+        /// <summary>
+        /// Xuất bài kiểm tra đọc ra file PDF.
+        /// </summary>
+        /// <param name="testDetail">Chi tiết bài kiểm tra đọc</param>
+        /// <param name="outputPath">Đường dẫn lưu file PDF</param>
+        /// <returns>Task hoàn thành việc xuất file</returns>
+        /// <remarks>
+        /// Cấu trúc file PDF bao gồm:
+        /// - Tiêu đề
+        /// - Nội dung bài đọc
+        /// - Danh sách câu hỏi và đáp án
+        /// </remarks>
         public async Task ExportReadingTestToPdfAsync(ReadingTestDetail testDetail, string outputPath)
         {
             QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable = false;
@@ -31,7 +47,10 @@ namespace login_full.Services
 
             await Task.CompletedTask;
         }
-
+        /// <summary>
+        /// Tạo phần header cho file PDF.
+        /// </summary>
+        /// <param name="container">Container của header</param>
         private void ComposeHeader(IContainer container)
         {
             container.Row(row =>
@@ -48,7 +67,11 @@ namespace login_full.Services
                 });
             });
         }
-
+        /// <summary>
+        /// Tạo phần nội dung cho file PDF.
+        /// </summary>
+        /// <param name="container">Container của nội dung</param>
+        /// <param name="testDetail">Chi tiết bài kiểm tra đọc</param>
         private void ComposeContent(IContainer container, ReadingTestDetail testDetail)
         {
             container.Column(column =>
@@ -100,7 +123,10 @@ namespace login_full.Services
                 }
             });
         }
-
+        /// <summary>
+        /// Tạo phần footer cho file PDF.
+        /// </summary>
+        /// <param name="container">Container của footer</param>
         private void ComposeFooter(IContainer container)
         {
             container.Row(row =>

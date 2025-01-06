@@ -8,10 +8,19 @@ using Microsoft.UI;
 
 namespace login_full.Helpers
 {
+    /// <summary>
+    // Quản lý hiển thị thông báo dạng toast.
+    // </summary>
     public class ToastManager(Grid rootGrid)
     {
+        /// <summary>
+        /// Grid gốc để hiển thị toast.
+        /// </summary>
         private readonly Grid RootGrid = rootGrid;
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="ToastManager"/>.
+        /// </summary>
+        /// <param name="rootGrid">Grid gốc để hiển thị toast</param>
         public async void ShowToast(string message)
         {
             // Tạo khung hiển thị toast
@@ -37,7 +46,7 @@ namespace login_full.Helpers
             RootGrid.Children.Add(toastContainer);
 
             // Chờ 5 giây
-            await Task.Delay(5000);
+            await Task.Delay(1000);
 
             // Gỡ toast ra khỏi giao diện
             RootGrid.Children.Remove(toastContainer);

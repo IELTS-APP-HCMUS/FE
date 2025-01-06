@@ -4,6 +4,11 @@ using System;
 using System.Collections.Generic;
 
 // API Response Model tổng quát
+
+/// <summary>
+/// Mô hình phản hồi từ API tổng quát.
+/// </summary>
+/// <typeparam name="T">Kiểu dữ liệu cho trường dữ liệu (data).</typeparam>
 public class ApiResponseModel<T>
 {
 	[JsonProperty("code")]
@@ -17,6 +22,10 @@ public class ApiResponseModel<T>
 }
 
 // Dữ liệu chính từ API
+
+/// <summary>
+/// Mô hình dữ liệu chính từ API.
+/// </summary>
 public class AnswerResultModel
 {
 	[JsonProperty("id")]
@@ -58,6 +67,10 @@ public class AnswerResultModel
 }
 
 // Chi tiết câu hỏi
+
+/// <summary>
+/// Chi tiết câu hỏi.
+/// </summary>
 public class AnswerDetailModel
 {
 	[JsonProperty("answer")]

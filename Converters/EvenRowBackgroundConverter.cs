@@ -8,7 +8,11 @@ namespace login_full.Views
 {
     public class EvenRowBackgroundConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+		/// <summary>
+		/// Chuyển đổi số trang thành màu nền
+		/// </summary>
+		/// <returns>Màu nền tương ứng với trạng thái của số trang</returns>
+		public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is int index)
             {

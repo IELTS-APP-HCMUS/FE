@@ -324,7 +324,9 @@
                                                        Foreground="Gray"/>
                                                 <Button Content="Start Now" 
                                                     Style="{StaticResource AccentButtonStyle}"
-                                                    HorizontalAlignment="Left" 
+                                                    HorizontalAlignment="Left"
+                                                    Background="#1B76A1"
+                                                    Foreground="White"
                                                     Margin="0,10,0,0"
                                                     Click="StartTest_Click"/>
                                             </StackPanel>

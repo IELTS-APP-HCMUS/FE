@@ -10,9 +10,19 @@ using login_full.Models;
 
 namespace login_full.Helpers
 {
+    /// <summary>
+    ///Quản lý lịch trình và sự kiện.
+    // Cung cấp các chức năng cập nhật và thêm sự kiện mới.
+    // </summary>
     public class ScheduleManager
     {
+        /// <summary>
+        /// ListView hiển thị lịch trình.
+        /// </summary>
         private readonly ListView ScheduleListView;
+        /// <summary>
+        /// Service quản lý lịch trình.
+        /// </summary>
         private readonly ScheduleService _scheduleService;
 
         public ScheduleManager(ListView scheduleListView)
@@ -20,7 +30,10 @@ namespace login_full.Helpers
             ScheduleListView = scheduleListView;
             _scheduleService = new ScheduleService();
         }
-
+        /// <summary>
+        /// Cập nhật lịch trình cho ngày cụ thể.
+        /// </summary>
+        /// <param name="date">Ngày cần cập nhật lịch trình</param>
         public void UpdateSchedule(DateTime date)
         {
             var scheduleItems = new List<ScheduleItem>
@@ -31,12 +44,19 @@ namespace login_full.Helpers
 
             ScheduleListView.ItemsSource = scheduleItems;
         }
+        /// <summary>
+        /// Cập nhật danh sách lịch trình từ API.
+        /// </summary>
+        /// <returns>Task hoàn thành việc cập nhật</returns>
         public async Task UpdateSchedulesAsync()
         {
             var schedules = await _scheduleService.GetSchedulesAsync();
             ScheduleListView.ItemsSource = schedules;
         }
-
+        /// <summary>
+        /// Thêm sự kiện mới vào lịch trình.
+        /// </summary>
+        /// <param name="xamlRoot">XamlRoot để hiển thị dialog</param>
         public async void AddNewEvent(XamlRoot xamlRoot)
         {
             ContentDialog dialog = new ContentDialog

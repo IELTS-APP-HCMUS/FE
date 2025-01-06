@@ -1,6 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-
+/// <summary>
+/// Đại diện cho một mục từ điển với các thông tin chi tiết.
+/// </summary>
 public class DictionaryEntry
 {
     public string Word { get; set; }
@@ -14,7 +16,9 @@ public class DictionaryEntry
 }
 
 
-
+/// <summary>
+/// Đại diện cho dữ liệu API với các thông tin được ánh xạ từ JSON.
+/// </summary>
 public class ApiData
 {
 	[JsonProperty("word_display")]

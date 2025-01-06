@@ -12,12 +12,24 @@ using System.Linq;
 
 namespace login_full.Services
 {
+    /// <summary>
+    // Service quản lý các lịch trình.
+    // Cung cấp các chức năng thêm và lấy danh sách lịch trình từ API.
+    // </summary>
     public class ScheduleService
     {
+        /// <summary>
+        /// Đối tượng HttpClient để thực hiện các yêu cầu HTTP.
+        /// </summary>
         private readonly HttpClient HttpClient = new HttpClient();
         /// <summary>
-        /// Gửi một lịch trình mới đến API bằng phương thức POST.
+        /// Thêm một lịch trình mới vào hệ thống thông qua API.
         /// </summary>
+        /// <param name="newSchedule">Đối tượng lịch trình cần thêm</param>
+        /// <returns>Trả về true nếu thêm thành công, ngược lại false</returns>
+        /// <remarks>
+        /// Sử dụng phương thức POST để gửi dữ liệu lịch trình mới.
+        /// </remarks>
         public async Task<bool> AddScheduleAsync(ScheduleItem newSchedule)
         {
             try
@@ -52,9 +64,12 @@ namespace login_full.Services
             }
         }
         /// <summary>
-        /// Gọi API để lấy danh sách lịch trình.
+        /// Lấy danh sách lịch trình từ API.
         /// </summary>
-        /// <returns>Danh sách các đối tượng ScheduleItem.</returns>
+        /// <returns>Danh sách các đối tượng ScheduleItem</returns>
+        /// <remarks>
+        /// Sử dụng phương thức GET để lấy dữ liệu từ API.
+        /// </remarks>
         public async Task<List<ScheduleItem>> GetSchedulesAsync()
         {
             try

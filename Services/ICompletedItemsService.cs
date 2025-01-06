@@ -7,11 +7,29 @@ using System.Threading.Tasks;
 
 namespace login_full.Services
 {
-    public interface ICompletedItemsService
+	/// <summary>
+	/// Định nghĩa giao diện dịch vụ cho các mục đã hoàn thành.
+	/// </summary>
+	public interface ICompletedItemsService
     {
-        bool IsShowingCompletedOnly { get; }
-        void ToggleCompletedItems();
-        void UpdateDisplayList();
-        event EventHandler<List<ReadingItemModels>> DisplayListUpdated;
+		/// <summary>
+		/// Xác định trạng thái hiển thị chỉ các mục đã hoàn thành.
+		/// </summary>
+		bool IsShowingCompletedOnly { get; }
+
+		/// <summary>
+		/// Chuyển đổi giữa chế độ hiển thị tất cả và chỉ các mục đã hoàn thành.
+		/// </summary>
+		void ToggleCompletedItems();
+
+		/// <summary>
+		/// Cập nhật danh sách hiển thị dựa trên trạng thái hiện tại.
+		/// </summary>
+		void UpdateDisplayList();
+
+		/// <summary>
+		/// Sự kiện kích hoạt khi danh sách hiển thị được cập nhật.
+		/// </summary>
+		event EventHandler<List<ReadingItemModels>> DisplayListUpdated;
     }
 }

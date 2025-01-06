@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace login_full.Models
 {
+    /// <summary>
+    /// Mô tả kế hoạch trong ngày của người dùng
+    /// </summary>
     public class ScheduleItem
     {
         public string Time { get; set; }

@@ -16,19 +16,33 @@ namespace login_full.Services
 {
 	public class ReadingTestService : IReadingTestService
 	{
-		private readonly Dictionary<string, ReadingTestDetail> _mockTests;
-		private readonly List<TestHistory> _testHistory;
+        /// <summary>
+        /// Bộ nhớ cache cho các bài kiểm tra giả lập.
+        /// </summary>
+        private readonly Dictionary<string, ReadingTestDetail> _mockTests;
+        /// <summary>
+        /// Lịch sử các bài kiểm tra.
+        /// </summary>
+        private readonly List<TestHistory> _testHistory;
 		private readonly ClientCaller _clientCaller;
 		private readonly DictionaryService _dictionaryService;
-
-		public ReadingTestService(LocalStorageService localStorageService, DictionaryService dictionaryService)
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="ReadingTestService"/>.
+        /// </summary>
+        /// <param name="localStorageService">Service lưu trữ cục bộ</param>
+        /// <param name="dictionaryService">Service từ điển</param>
+        public ReadingTestService(LocalStorageService localStorageService, DictionaryService dictionaryService)
 		{
 			_mockTests = new Dictionary<string, ReadingTestDetail>();
 			_clientCaller = new ClientCaller();
 			_dictionaryService = dictionaryService;
 		}
-
-		public async Task<ReadingTestDetail> GetTestDetailAsync(string testId)
+        /// <summary>
+        /// Lấy chi tiết bài kiểm tra từ API hoặc bộ nhớ cache.
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <returns>Chi tiết bài kiểm tra</returns>
+        public async Task<ReadingTestDetail> GetTestDetailAsync(string testId)
 		{
 			if (_mockTests.ContainsKey(testId))
 			{
@@ -117,8 +131,13 @@ namespace login_full.Services
 				throw;
 			}
 		}
-
-		public async Task SaveAnswerAsync(string testId, string questionId, string answer)
+        /// <summary>
+        /// Lưu câu trả lời của người dùng cho một câu hỏi.
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <param name="questionId">ID của câu hỏi</param>
+        /// <param name="answer">Câu trả lời của người dùng</param>
+        public async Task SaveAnswerAsync(string testId, string questionId, string answer)
 		{
 			await Task.Delay(100); // Giả lập delay
 			if (_mockTests.TryGetValue(testId, out var test))
@@ -130,8 +149,13 @@ namespace login_full.Services
 				}
 			}
 		}
-
-		public async Task<bool> UpdateTestCompletionStatus(string testId, bool isCompleted)
+        /// <summary>
+        /// Cập nhật trạng thái hoàn thành của bài kiểm tra.
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <param name="isCompleted">Trạng thái hoàn thành</param>
+        /// <returns>Trả về true nếu cập nhật thành công, ngược lại false</returns>
+        public async Task<bool> UpdateTestCompletionStatus(string testId, bool isCompleted)
 		{
 			await Task.Delay(100);
 			if (_mockTests.ContainsKey(testId))
@@ -141,8 +165,12 @@ namespace login_full.Services
 			}
 			return false;
 		}
-
-		public async Task<string> SubmitTestAsync(string testId)
+        /// <summary>
+        /// Nộp bài kiểm tra và gửi dữ liệu lên server.
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <returns>ID của bài kiểm tra đã nộp</returns>
+        public async Task<string> SubmitTestAsync(string testId)
 		{
 			try
 			{
@@ -249,8 +277,11 @@ namespace login_full.Services
 
 
 
-
-		public async Task<List<TestHistory>> GetTestHistoryAsync()
+        /// <summary>
+        /// Lấy lịch sử các bài kiểm tra.
+        /// </summary>
+        /// <returns>Danh sách lịch sử các bài kiểm tra</returns>
+        public async Task<List<TestHistory>> GetTestHistoryAsync()
 		{
 			try
 			{
@@ -266,32 +297,23 @@ namespace login_full.Services
 					var histories = new List<TestHistory>();
 					foreach (var i in items)
 					{
-						int quizID = int.Parse(i["quiz_id"].ToString());
-						HttpResponseMessage i_response = await _clientCaller.GetAsync($"/v1/quizzes/" + quizID);
-						if (i_response.IsSuccessStatusCode)
-						{
-							string i_stringResponse = await i_response.Content.ReadAsStringAsync();
-							JObject i_jsonResponse = JObject.Parse(i_stringResponse);
-
-							JObject i_dataResponse = (JObject)i_jsonResponse["data"];
-							string i_title = i_dataResponse["title"].ToString();
-							DateTime date_created = DateTime.Parse(i["date_created"].ToString());
-							TestHistory history = new TestHistory
-							{
-								AnswerId = i["id"].ToString(),
-								TestId = quizID.ToString(),
-								Title = i_title,
-								SubmitTime = date_created,
-								Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
-								TotalQuestions = int.Parse(i["total"].ToString()),
-								CorrectAnswers = int.Parse(i["success"].ToString()),
-								WrongAnswers = int.Parse(i["failed"].ToString()),
-								SkippedAnswers = int.Parse(i["skipped"].ToString())
-							};
-							histories.Add(history);
-						}
+						JObject detail = (JObject)i["detail"];
+                        TestHistory history = new()
+                        {
+							AnswerId = i["id"].ToString(),
+							TestId = i["quiz_id"].ToString(),
+							Title = detail["title"].ToString(),
+                            SubmitTime = DateTime.Parse(i["date_created"].ToString()),
+							Duration = TimeSpan.FromMinutes(60) - TimeSpan.FromSeconds(Convert.ToDouble(i["completed_duration"])),
+							TotalQuestions = int.Parse(i["total"].ToString()),
+							CorrectAnswers = int.Parse(i["success"].ToString()),
+							WrongAnswers = int.Parse(i["failed"].ToString()),
+							SkippedAnswers = int.Parse(i["skipped"].ToString())
+						};
+						histories.Add(history);
+						
 					}
-					return histories;
+                    return histories;
 				}
 				return new List<TestHistory>();
 			}
@@ -301,8 +323,12 @@ namespace login_full.Services
 				return new List<TestHistory>();
 			}
 		}
-
-		private QuestionType MapQuestionType(string questionType)
+        /// <summary>
+        /// Chuyển đổi loại câu hỏi từ chuỗi sang enum.
+        /// </summary>
+        /// <param name="questionType">Chuỗi loại câu hỏi</param>
+        /// <returns>Enum QuestionType tương ứng</returns>
+        private QuestionType MapQuestionType(string questionType)
 		{
 			return questionType switch
 			{
@@ -316,8 +342,12 @@ namespace login_full.Services
 				_ => throw new ArgumentException($"Unknown question type: {questionType}")
 			};
 		}
-
-		private string MapQuestionTypeForApi(QuestionType questionType)
+        /// <summary>
+        /// Chuyển đổi loại câu hỏi từ enum sang chuỗi cho API.
+        /// </summary>
+        /// <param name="questionType">Enum QuestionType</param>
+        /// <returns>Chuỗi loại câu hỏi cho API</returns>
+        private string MapQuestionTypeForApi(QuestionType questionType)
 		{
 			return questionType switch
 			{
@@ -328,8 +358,12 @@ namespace login_full.Services
 				_ => throw new ArgumentException($"Unknown question type: {questionType}")
 			};
 		}
-
-		public async Task<AnswerResultModel> GetAnswerDetailAsync(string answerId)
+        /// <summary>
+        /// Lấy chi tiết câu trả lời từ API.
+        /// </summary>
+        /// <param name="answerId">ID của câu trả lời</param>
+        /// <returns>Đối tượng AnswerResultModel chứa chi tiết câu trả lời</returns>
+        public async Task<AnswerResultModel> GetAnswerDetailAsync(string answerId)
 		{
 			string apiUrl = $"/v1/answers/{answerId}";
 

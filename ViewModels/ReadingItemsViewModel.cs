@@ -10,9 +10,14 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using login_full.Helpers;
 
 namespace login_full.ViewModels
 {
+    /// <summary>
+    /// ViewModelquản lý danh sách bài đọc và các chức năng lọc, tìm kiếm.
+    // Cung cấp giao diện để người dùng xem và chọn bài đọc để làm bài kiểm tra.
+    // </summary>
     public class ReadingItemsViewModel : ObservableObject
     {
         private readonly IReadingItemsService _readingItemsService;
@@ -40,6 +45,8 @@ namespace login_full.ViewModels
         private double _windowHeight;
         private bool _isCompletedFilterActive;
         private bool _isLoading;
+        private readonly FilteredSelection _filteredSelection;
+        private readonly LoaderManager _loaderManager;
 
         public ObservableCollection<ReadingItemModels> _items { get; private set; }
 		private ObservableCollection<ReadingItemModels> _allItems;
@@ -131,6 +138,9 @@ namespace login_full.ViewModels
 
 		// Commands
 		public IAsyncRelayCommand LoadItemsCommand { get; }
+        /// <summary>
+        /// Command xử lý tìm kiếm
+        /// </summary>
         public IAsyncRelayCommand<AutoSuggestBox> SearchCommand { get; }
         public IRelayCommand<AutoSuggestBox> ClearSearchCommand { get; }
         public IRelayCommand ToggleFilterCommand { get; }
@@ -142,8 +152,10 @@ namespace login_full.ViewModels
         public IRelayCommand NextPageCommand { get; }
         public IRelayCommand PreviousPageCommand { get; }
         public IRelayCommand<int> GoToPageCommand { get; }
-
-		public IAsyncRelayCommand ApplyFilterCommand { get; }
+        /// <summary>
+        /// Command áp dụng bộ lọc
+        /// </summary>
+        public IAsyncRelayCommand ApplyFilterCommand { get; }
 
 
 		public ISearchService SearchService
@@ -174,12 +186,23 @@ namespace login_full.ViewModels
 
         public ObservableCollection<int> PageNumbers { get; private set; }
 
-		public ReadingItemsViewModel(
+
+        /// <summary>
+        /// Khởi tạo ReadingItemsViewModel với các service cần thiết
+        /// </summary>
+        /// <param name="readingItemsService">Service xử lý bài đọc</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="searchService">Service tìm kiếm</param>
+        /// <param name="paginationService">Service phân trang</param>
+        /// <param name="completedItemsService">Service quản lý bài đã hoàn thành</param>
+        public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
             INavigationService navigationService,
             ISearchService searchService,
             IPaginationService paginationService,
-            ICompletedItemsService completedItemsService)
+            ICompletedItemsService completedItemsService,
+            LoaderManager loaderManager
+            )
         {
             _readingItemsService = readingItemsService;
             _navigationService = navigationService;
@@ -207,13 +230,35 @@ namespace login_full.ViewModels
             PageNumbers = new ObservableCollection<int>();
             UpdatePageNumbers();
 
+            _filteredSelection = new FilteredSelection
+            {
+                Passages = new Dictionary<int, bool>()
+                {
+                    {1, false},
+                    {2, false},
+                    {3, false}
+                },
+                QuestionTypes = new Dictionary<string, bool>()
+                {
+                    {"FILL_BLANK", false},
+                    {"MATCHING_HEADING", false},
+                    {"TRUE_FALSE", false},
+                    {"YES_NO", false}
+                }
+            };
+            _loaderManager = loaderManager;
+
             // Subscribe to search service events
             _searchService.SearchResultsUpdated += OnSearchResultsUpdated;
 
             // Khởi tạo trang đầu tiên là 1
             CurrentPage = 1;
         }
-
+        /// <summary>
+        /// Xử lý kết quả tìm kiếm từ SearchService
+        /// </summary>
+        /// <param name="sender">Đối tượng gửi sự kiện</param>
+        /// <param name="results">Danh sách kết quả tìm kiếm</param>
         private void OnSearchResultsUpdated(object sender, IEnumerable<ReadingItemModels> results)
         {
             var filteredResults = ShowingCompletedItems
@@ -223,8 +268,12 @@ namespace login_full.ViewModels
             _paginationService.UpdateItems(filteredResults);
             OnPropertyChanged(nameof(DisplayedItems));
         }
-
-		private async Task ApplyFilterAsync(string parameter)
+        /// <summary>
+        /// Áp dụng bộ lọc cho danh sách bài đọc
+        /// </summary>
+        /// <param name="parameter">Chuỗi chứa loại và giá trị lọc, định dạng: "FilterType_FilterValue"</param>
+        /// <returns>Task hoàn thành việc lọc</returns>
+        private Task ApplyFilterAsync(string parameter)
 		{
 			try
 			{
@@ -236,28 +285,59 @@ namespace login_full.ViewModels
 
 				System.Diagnostics.Debug.WriteLine($"FilterType: {filterType}, FilterValue: {filterValue}");
 
-				// Dùng cache gốc (_allItems) để lọc
-				List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
+                // Dùng cache gốc (_allItems) để lọc
+                List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
 
 				if (filterType.Equals("Passage", StringComparison.OrdinalIgnoreCase))
 				{
-					filteredItems = _allItems.Where(item =>
-						item.Tags != null &&
-						item.Tags.Any(tag =>
-							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
-						)
-					).ToList();
-				}
+                    //               if (_filteredSelection.Passages[int.Parse(param[2])])
+                    //               {
+                    //                   _filteredSelection.Passages[int.Parse(param[2])] = false;
+                    //                   return Task.CompletedTask;
+                    //               }
+                    //filteredItems = _allItems.Where(item =>
+                    //	item.Tags != null &&
+                    //	item.Tags.Any(tag =>
+                    //		tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                    //	)
+                    //).ToList();
+                    filteredItems = _filteredSelection.Passages[int.Parse(param[2])] ? [.. _allItems] : _allItems.Where(item =>
+                        item.Tags != null &&
+                        item.Tags.Any(tag =>
+                            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                        )
+                    ).ToList();
+                    bool temp = !_filteredSelection.Passages[int.Parse(param[2])];
+                    _filteredSelection.Reset();
+                    _filteredSelection.Passages[int.Parse(param[2])] = temp;
+                }
 				else if (filterType.Equals("QuestionType", StringComparison.OrdinalIgnoreCase))
 				{
-					filteredItems = _allItems.Where(item =>
-						item.Tags != null &&
-						item.Tags.Any(tag =>
-							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
-						)
-					).ToList();
+                    //if (_filteredSelection.QuestionTypes[filterValue])
+                    //{
+                    //    _filteredSelection.QuestionTypes[filterValue] = false;
+                    //    filteredItems = [.. _allItems];
+                    //}
+                    //else
+                    //{
+                    //    _filteredSelection.QuestionTypes[filterValue] = true;
+                    //    filteredItems = _allItems.Where(item =>
+                    //        item.Tags != null &&
+                    //        item.Tags.Any(tag =>
+                    //            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                    //        )
+                    //    ).ToList();
+                    //}
+                    filteredItems = _filteredSelection.QuestionTypes[filterValue] ? [.. _allItems] : _allItems.Where(item =>
+                        item.Tags != null &&
+                        item.Tags.Any(tag =>
+                            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                        )
+                    ).ToList();
+                    bool temp = !_filteredSelection.QuestionTypes[filterValue];
+                    _filteredSelection.Reset();
+                    _filteredSelection.QuestionTypes[filterValue] = temp;
 				}
-
 				ApplyLocalFilter(filterType, filterValue, filteredItems);
 			}
 			catch (Exception ex)
@@ -268,10 +348,11 @@ namespace login_full.ViewModels
 			{
 				IsLoading = false;
 			}
-		}
 
+            return Task.CompletedTask;
+        }
 
-		private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
+        private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
 		{
 			Items = new ObservableCollection<ReadingItemModels>(filteredItems);
 
@@ -285,7 +366,9 @@ namespace login_full.ViewModels
         {
 			try
 			{
+                _loaderManager.ShowLoader();
                 var items = await _readingItemsService.GetReadingItemsAsync();
+                _loaderManager.HideLoader();
                 Items = new ObservableCollection<ReadingItemModels>(items);
 				_allItems = new ObservableCollection<ReadingItemModels>(items);
 				InitializePagination();
@@ -295,7 +378,9 @@ namespace login_full.ViewModels
                 IsLoading = false;
             }
         }
-
+        /// <summary>
+        /// Khởi tạo lại phân trang sau khi có thay đổi về dữ liệu
+        /// </summary>
         private void InitializePagination()
         {
             var filteredItems = ShowingCompletedItems
@@ -349,7 +434,9 @@ namespace login_full.ViewModels
             CurrentPage = 1;
             InitializePagination();
         }
-
+        /// <summary>
+        /// Cập nhật layout khi thay đổi kích thước cửa sổ hoặc trạng thái filter
+        /// </summary>
         private void UpdateLayout()
         {
             double availableWidth = _windowWidth - SidebarWidth - 60;
@@ -427,7 +514,9 @@ namespace login_full.ViewModels
             _windowHeight = height;
             UpdateLayout();
         }
-
+        /// <summary>
+        /// Dọn dẹp tài nguyên khi ViewModel bị hủy
+        /// </summary>
         public void Cleanup()
         {
             // Unsubscribe from events
@@ -445,5 +534,26 @@ namespace login_full.ViewModels
         }
 
         
+    }
+}
+class FilteredSelection
+{
+    public Dictionary<int, bool> Passages { get; set; }
+    public Dictionary<string, bool> QuestionTypes { get; set; }
+    public void Reset()
+    {
+        Passages = new Dictionary<int, bool>()
+                {
+                    {1, false},
+                    {2, false},
+                    {3, false}
+                };
+        QuestionTypes = new Dictionary<string, bool>()
+                {
+                    {"FILL_BLANK", false},
+                    {"MATCHING_HEADING", false},
+                    {"TRUE_FALSE", false},
+                    {"YES_NO", false}
+                };
     }
 }

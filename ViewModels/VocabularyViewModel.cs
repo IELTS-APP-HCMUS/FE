@@ -16,10 +16,30 @@ using login_full.Services;
 
 namespace login_full.ViewModels
 {
+
+    /// <summary>
+    // ViewModel quản lý danh sách từ vựng và các chức năng liên quan.
+    // Cung cấp các tính năng: thêm, xóa, sửa, tìm kiếm và phân trang từ vựng.
+    // </summary>
     public partial class VocabularyViewModel : ObservableObject
     {
+        /// <summary>
+        /// Danh sách từ vựng có thể quan sát thay đổi
+        /// </summary>
         private ObservableCollection<VocabularyItem> _vocabularyItems;
+        /// <summary>
+        /// Service xử lý các thao tác với từ vựng
+        /// </summary>
+        /// <remarks>
+        /// Xử lý:
+        /// - Thêm/xóa/sửa từ vựng
+        /// - Đồng bộ với cơ sở dữ liệu
+        /// - Quản lý trạng thái học tập
+        /// </remarks>
         private readonly VocabularyService _vocabularyService;
+        /// <summary>
+        /// Trang hiện tại trong phân trang
+        /// </summary>
         private int _currentPage = 1;
         private int _pageSize = 5;
         private int _totalItems = 0;
@@ -30,7 +50,14 @@ namespace login_full.ViewModels
         private string _searchText;
         private List<VocabularyItem> _filteredData;
 
-       // xử lý API here
+        // xử lý API here
+        /// <summary>
+        /// Danh sách từ vựng hiển thị trên UI
+        /// </summary>
+        /// <remarks>
+        /// Binding hai chiều với ListView
+        /// Tự động cập nhật UI khi có thay đổi
+        /// </remarks>
         public ObservableCollection<VocabularyItem> VocabularyItems
         {
             get => _vocabularyItems;
@@ -73,14 +100,16 @@ namespace login_full.ViewModels
         public IRelayCommand<VocabularyItem> DeleteItemCommand { get; }
         public IRelayCommand<VocabularyItem> ToggleStatusCommand { get; }
         public IRelayCommand AddVocabCommand { get; }
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="VocabularyViewModel"/>.
+        /// </summary>
         public VocabularyViewModel()
         {
             _vocabularyService = new VocabularyService();
             VocabularyItems = new ObservableCollection<VocabularyItem>();
             _filteredData = new List<VocabularyItem>();
-            NextPageCommand = new RelayCommand(NextPage, () => CanGoNext);
-            PreviousPageCommand = new RelayCommand(PreviousPage, () => CanGoPrevious);
+            NextPageCommand = new RelayCommand(NextPage);
+            PreviousPageCommand = new RelayCommand(PreviousPage);
             ChangePageSizeCommand = new RelayCommand<int>(ChangePageSize);
             DeleteItemCommand = new RelayCommand<VocabularyItem>(DeleteItem);
             ToggleStatusCommand = new RelayCommand<VocabularyItem>(ToggleStatus);
@@ -196,7 +225,9 @@ namespace login_full.ViewModels
 
             LoadPagedData();
         }
-
+        /// <summary>
+        /// Tải dữ liệu phân trang.
+        /// </summary>
         private void LoadPagedData()
         {
             try 
@@ -236,7 +267,9 @@ namespace login_full.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Error in UpdatePageInfo: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Chuyển đến trang tiếp theo.
+        /// </summary>
         private void NextPage()
         {
             int totalPages = (_totalItems + _pageSize - 1) / _pageSize;
@@ -246,7 +279,9 @@ namespace login_full.ViewModels
                 LoadPagedData();
             }
         }
-
+        /// <summary>
+        /// Quay lại trang trước đó.
+        /// </summary>
         private void PreviousPage()
         {
             if (_currentPage > 1)
@@ -255,7 +290,10 @@ namespace login_full.ViewModels
                 LoadPagedData();
             }
         }
-
+        /// <summary>
+        /// Thay đổi kích thước trang.
+        /// </summary>
+        /// <param name="newSize">Kích thước trang mới</param>
         private void ChangePageSize(int newSize)
         {
             _pageSize = newSize;
@@ -264,31 +302,87 @@ namespace login_full.ViewModels
         }
 
         // xóa dựa vào VocabularyItem
+        //private async void DeleteItem(VocabularyItem item)
+        //{
+        //    if (item != null)
+        //    {
+        //        await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
+        //        VocabularyItems.Remove(item);
+        //        _sampleData.Remove(item);
+        //        _totalItems--;
+
+        //        for (int i = 0; i < _sampleData.Count; i++)
+        //        {
+        //            _sampleData[i].Index = i + 1;
+        //        }
+
+        //        LoadPagedData();
+
+        //        if (VocabularyItems.Count == 0 && _currentPage > 1)
+        //        {
+        //            _currentPage--;
+        //            LoadPagedData();
+        //        }
+        //    }
+        //}
+        /// <summary>
+        /// Xóa từ vựng
+        /// </summary>
+        /// <param name="item">Từ vựng cần xóa</param>
+        /// <remarks>
+        /// 1. Hiển thị dialog xác nhận
+        /// 2. Xóa từ database nếu người dùng đồng ý
+        /// 3. Cập nhật UI và danh sách local
+        /// </remarks>
         private async void DeleteItem(VocabularyItem item)
         {
             if (item != null)
             {
-                await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
-                VocabularyItems.Remove(item);
-                _sampleData.Remove(item);
-                _totalItems--;
-                
-                for (int i = 0; i < _sampleData.Count; i++)
+                // Tạo dialog xác nhận
+                ContentDialog deleteDialog = new ContentDialog
                 {
-                    _sampleData[i].Index = i + 1;
-                }
-                
-                LoadPagedData();
-                
-                if (VocabularyItems.Count == 0 && _currentPage > 1)
+                    Title = "Xác nhận xóa",
+                    Content = $"Bạn có chắc chắn muốn xóa từ \"{item.Word}\" khỏi sổ từ vựng?",
+                    PrimaryButtonText = "Xóa",
+                    CloseButtonText = "Hủy",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+
+                // Hiển thị dialog và đợi phản hồi
+                var result = await deleteDialog.ShowAsync();
+
+                // Chỉ xóa nếu người dùng nhấn nút Xóa
+                if (result == ContentDialogResult.Primary)
                 {
-                    _currentPage--;
+                    await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
+                    VocabularyItems.Remove(item);
+                    _sampleData.Remove(item);
+                    _totalItems--;
+
+                    // Cập nhật lại index cho tất cả items
+                    for (int i = 0; i < _sampleData.Count; i++)
+                    {
+                        _sampleData[i].Index = i + 1;
+                    }
+
                     LoadPagedData();
+
+                    // Nếu trang hiện tại không còn item nào, quay lại trang trước
+                    if (VocabularyItems.Count == 0 && _currentPage > 1)
+                    {
+                        _currentPage--;
+                        LoadPagedData();
+                    }
                 }
             }
         }
 
         // thay đổi trạng thái đã học -> dang học và ngược lại
+        /// <summary>
+        /// Thay đổi trạng thái đã học -> đang học và ngược lại.
+        /// </summary>
+        /// <param name="item">Từ vựng cần thay đổi trạng thái</param>
         private async void ToggleStatus(VocabularyItem item)
         {
             if (item != null)
@@ -305,6 +399,9 @@ namespace login_full.ViewModels
 
 
         // thêm từ vựng 
+        /// <summary>
+        /// Hiển thị dialog thêm từ vựng mới.
+        /// </summary>
         private async void ShowAddVocabDialog()
         {
             var stackPanel = new StackPanel
@@ -400,7 +497,19 @@ namespace login_full.ViewModels
                 }
             }
         }
-
+        /// <summary>
+        /// Tìm kiếm từ vựng theo từ khóa
+        /// </summary>
+        /// <param name="searchText">Từ khóa tìm kiếm</param>
+        /// <remarks>
+        /// Tìm kiếm theo các tiêu chí:
+        /// - Từ vựng
+        /// - Loại từ
+        /// - Nghĩa
+        /// - Ví dụ
+        /// - Ghi chú
+        /// Không phân biệt chữ hoa/thường
+        /// </remarks>
         private void SearchVocabulary(string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))

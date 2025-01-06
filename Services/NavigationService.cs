@@ -9,21 +9,36 @@ using Windows.UI.WebUI;
 
 namespace login_full.Services
 {
+    /// <summary>
+    // Service điều hướng giữa các trang trong ứng dụng.
+    // Cung cấp các chức năng điều hướng và khởi tạo frame.
+    // </summary>
     public class NavigationService : INavigationService
     {
+        /// <summary>
+        /// Frame điều hướng.
+        /// </summary>
         private Frame _frame;
 
         //public NavigationService()
         //{
-            
+
         //}
 
         // Hoặc cho phép set Frame sau khi khởi tạo
+        /// <summary>
+        /// Khởi tạo frame điều hướng.
+        /// </summary>
+        /// <param name="frame">Frame cần khởi tạo</param>
         public void Initialize(Frame frame)
         {
             _frame = frame ?? throw new ArgumentNullException(nameof(frame));
         }
-
+        /// <summary>
+        /// Điều hướng đến trang cụ thể.
+        /// </summary>
+        /// <param name="pageType">Loại trang cần điều hướng đến</param>
+        /// <returns>Task hoàn thành việc điều hướng</returns>
         public Task NavigateToAsync(Type pageType)
         {
             if (_frame == null)
@@ -34,7 +49,12 @@ namespace login_full.Services
             _frame.Navigate(pageType);
             return Task.CompletedTask;
         }
-
+        /// <summary>
+        /// Điều hướng đến trang cụ thể với tham số.
+        /// </summary>
+        /// <param name="pageType">Loại trang cần điều hướng đến</param>
+        /// <param name="parameter">Tham số truyền vào trang</param>
+        /// <returns>Task hoàn thành việc điều hướng</returns>
         public Task NavigateToAsync(Type pageType, object parameter)
         {
             try

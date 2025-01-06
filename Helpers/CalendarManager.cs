@@ -14,19 +14,30 @@ using Newtonsoft.Json.Linq;
 
 namespace login_full.Helpers
 {
+    /// <summary>
+    /// Quản lý lịchvà hiển thị các ngày trong tháng.
+    // Cung cấp các chức năng điều hướng tháng và hiển thị lịch sử nộp bài.
+    // </summary>
     public class SubmitTestTimeItem
     {
         public string DateCreated { get; set; }
     }
     public class CalendarManager
     {
+        /// <summary>
+        /// Grid hiển thị lịch.
+        /// </summary>
         private readonly Grid CalendarGrid;
         private readonly TextBlock MonthYearDisplay;
         private DateTime currentDate;
         private Button selectedDateButton;
         private Dictionary<string, int> dateCount;
         private readonly ClientCaller clientCaller = new();
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="CalendarManager"/>.
+        /// </summary>
+        /// <param name="calendarGrid">Grid hiển thị lịch</param>
+        /// <param name="monthYearDisplay">TextBlock hiển thị tháng và năm</param>
         public CalendarManager(Grid calendarGrid, TextBlock monthYearDisplay)
         {
             CalendarGrid = calendarGrid;
@@ -49,6 +60,10 @@ namespace login_full.Helpers
             // Add the style to the application resources
             Application.Current.Resources["CalendarDayButtonStyle"] = calendarDayButtonStyle;
         }
+        /// <summary>
+        /// Lấy lịch sử thời gian nộp bài từ API.
+        /// </summary>
+        /// <returns>Danh sách các mục thời gian nộp bài</returns>
         public async Task<List<SubmitTestTimeItem>> GetSubmitTimeHistoryAsync()
         {
             try
@@ -78,6 +93,10 @@ namespace login_full.Helpers
                 return [];
             }
         }
+        /// <summary>
+        /// Tạo các ngày trong lịch cho tháng cụ thể.
+        /// </summary>
+        /// <param name="date">Ngày để tạo lịch</param>
         public void GenerateCalendarDays(DateTime date)
         {
             CalendarGrid.Children.Clear();
@@ -143,6 +162,11 @@ namespace login_full.Helpers
 
             MonthYearDisplay.Text = date.ToString("MMMM yyyy");
         }
+        /// <summary>
+        /// Lấy màu sắc dựa trên số lượng bài nộp.
+        /// </summary>
+        /// <param name="count">Số lượng bài nộp</param>
+        /// <returns>Màu sắc tương ứng</returns>
         public static SolidColorBrush GetColorBasedOnCount(int count)
         {
             // Tô màu xanh lá từ nhạt đến đậm dựa trên ngưỡng.
@@ -157,6 +181,11 @@ namespace login_full.Helpers
             else
                 return new SolidColorBrush(Color.FromArgb(255, 0, 100, 0)); // Đậm
         }
+
+        /// <summary>
+        /// Xử lý số lượng bài nộp theo ngày.
+        /// </summary>
+        /// <param name="items">Danh sách các mục thời gian nộp bài</param>
         public void ProcessDateCreatedCount(List<SubmitTestTimeItem> items)
         {
             var tempdateCount = new Dictionary<string, int>();
@@ -186,7 +215,11 @@ namespace login_full.Helpers
             currentDate = currentDate.AddMonths(1);
             GenerateCalendarDays(currentDate);
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi nút ngày được nhấn.
+        /// </summary>
+        /// <param name="clickedButton">Nút ngày được nhấn</param>
+        /// <returns>Ngày được chọn</returns>
         public DateTime DayButtonClick(Button clickedButton)
         {
             // Reset previously selected date button

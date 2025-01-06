@@ -7,7 +7,17 @@ using System.Threading.Tasks;
 
 namespace login_full.Models
 {
-    public class SearchManager 
+	/// <summary>
+	/// Quản lý chức năng tìm kiếm cho reading items
+	/// </summary>
+	/// <remarks>
+	/// Cung cấp các chức năng:
+	/// - Tìm kiếm theo text
+	/// - Gợi ý tìm kiếm
+	/// - Reset tìm kiếm
+	/// - Cập nhật kết quả tìm kiếm với phân trang
+	/// </remarks>
+	public class SearchManager 
     {
         private List<ReadingItemModels> _allItems;
         private PaginatedItemsModels _paginatedItems;

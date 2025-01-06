@@ -19,7 +19,17 @@ using login_full.Helpers;
 
 namespace login_full.Components.Home
 {
-    public sealed partial class Schedule : UserControl
+
+	/// <summary>
+	/// Component quản lý lịch học trong ngày
+	/// </summary>
+	/// <remarks>
+	/// Chức năng:
+	/// - Hiển thị danh sách sự kiện
+	/// - Thêm sự kiện mới
+	/// - Quản lý thời gian
+	/// </remarks>
+	public sealed partial class Schedule : UserControl
     {
 		private readonly ScheduleManager scheduleManager = null;
 		public Schedule()

@@ -24,6 +24,15 @@ using YamlDotNet.Core.Tokens;
 
 namespace login_full.Components.Home.Performance
 {
+	/// <summary>
+	/// Component hiển thị và quản lý mục tiêu điểm IELTS
+	/// </summary>
+	/// <remarks>
+	/// Chức năng:
+	/// - Hiển thị điểm mục tiêu cho từng kỹ năng
+	/// - Tính toán điểm tổng quan
+	/// - Cho phép cập nhật mục tiêu điểm
+	/// </remarks>
 	public sealed partial class Target : UserControl
 	{
 		public TargetUpdatePopUp TargetUpdatePopUpCompControl => TargetUpdatePopUpComp;
@@ -86,7 +95,8 @@ namespace login_full.Components.Home.Performance
 			{
 				// Tính trung bình các giá trị
 				var average = (data.TargetReading + data.TargetListening + data.TargetWriting + data.TargetSpeaking) / 4.0;
-				OverallScore = average.ToString();
+				double roundedAverage = Math.Round(average * 2) / 2;
+				OverallScore = roundedAverage.ToString();
 				OverallScoreTextBlock.Text = OverallScore;
 			}
 			else
