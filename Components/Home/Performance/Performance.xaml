@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
 	<Grid Margin="50,50,50,0" x:Name="PerformGrid">
-		<Border Background="#FFF5F5" CornerRadius="28" Padding="20">
+        <Border Background="#DFEEF9" CornerRadius="28" Padding="20">
 			<StackPanel>
 				<TextBlock Text="Hiệu suất làm bài của bạn" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20"/>
 				<!--<local:TargetUpdatePopUp x:Name="TargetUpdatePopUp"/>-->

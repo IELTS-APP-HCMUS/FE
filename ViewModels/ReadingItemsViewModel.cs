@@ -39,9 +39,10 @@ namespace login_full.ViewModels
         private double _windowWidth;
         private double _windowHeight;
         private bool _isCompletedFilterActive;
+        private bool _isLoading;
 
         public ObservableCollection<ReadingItemModels> _items { get; private set; }
-
+		private ObservableCollection<ReadingItemModels> _allItems;
 		public ObservableCollection<ReadingItemModels> Items
 		{
 			get => _items;
@@ -106,8 +107,30 @@ namespace login_full.ViewModels
             set => SetProperty(ref _isCompletedFilterActive, value);
         }
 
-        // Commands
-        public IAsyncRelayCommand LoadItemsCommand { get; }
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
+		private int? _selectedPassageTag;
+		private int? _selectedQuestionTypeTag;
+
+		public int? SelectedPassageTag
+		{
+			get => _selectedPassageTag;
+			set => SetProperty(ref _selectedPassageTag, value);
+		}
+
+		public int? SelectedQuestionTypeTag
+		{
+			get => _selectedQuestionTypeTag;
+			set => SetProperty(ref _selectedQuestionTypeTag, value);
+		}
+
+
+		// Commands
+		public IAsyncRelayCommand LoadItemsCommand { get; }
         public IAsyncRelayCommand<AutoSuggestBox> SearchCommand { get; }
         public IRelayCommand<AutoSuggestBox> ClearSearchCommand { get; }
         public IRelayCommand ToggleFilterCommand { get; }
@@ -119,6 +142,8 @@ namespace login_full.ViewModels
         public IRelayCommand NextPageCommand { get; }
         public IRelayCommand PreviousPageCommand { get; }
         public IRelayCommand<int> GoToPageCommand { get; }
+
+		public IAsyncRelayCommand ApplyFilterCommand { get; }
 
 
 		public ISearchService SearchService
@@ -135,7 +160,19 @@ namespace login_full.ViewModels
 			}
 		}
 
+        public IPaginationService PaginationService => _paginationService;
 
+        public bool CanGoToNextPage => _paginationService.State.CurrentPage < _paginationService.State.TotalPages;
+        public bool CanGoToPreviousPage => _paginationService.State.CurrentPage > 1;
+
+        private int _currentPage = 1;
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set => SetProperty(ref _currentPage, value);
+        }
+
+        public ObservableCollection<int> PageNumbers { get; private set; }
 
 		public ReadingItemsViewModel(
             IReadingItemsService readingItemsService,
@@ -163,12 +200,18 @@ namespace login_full.ViewModels
             NextPageCommand = new RelayCommand(NextPage);
             PreviousPageCommand = new RelayCommand(PreviousPage);
             GoToPageCommand = new RelayCommand<int>(GoToPage);
+			ApplyFilterCommand = new AsyncRelayCommand<string>(ApplyFilterAsync);
 
-            // Initialize collections
-            Items = new ObservableCollection<ReadingItemModels>();
+			// Initialize collections
+			Items = new ObservableCollection<ReadingItemModels>();
+            PageNumbers = new ObservableCollection<int>();
+            UpdatePageNumbers();
 
             // Subscribe to search service events
             _searchService.SearchResultsUpdated += OnSearchResultsUpdated;
+
+            // Khởi tạo trang đầu tiên là 1
+            CurrentPage = 1;
         }
 
         private void OnSearchResultsUpdated(object sender, IEnumerable<ReadingItemModels> results)
@@ -181,28 +224,77 @@ namespace login_full.ViewModels
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
-        private async Task LoadItemsAsync()
+		private async Task ApplyFilterAsync(string parameter)
+		{
+			try
+			{
+				IsLoading = true;
+
+				var param = parameter.Split('_');
+				var filterType = param[0];  
+				var filterValue = string.Join("_", param.Skip(1)); 
+
+				System.Diagnostics.Debug.WriteLine($"FilterType: {filterType}, FilterValue: {filterValue}");
+
+				// Dùng cache gốc (_allItems) để lọc
+				List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
+
+				if (filterType.Equals("Passage", StringComparison.OrdinalIgnoreCase))
+				{
+					filteredItems = _allItems.Where(item =>
+						item.Tags != null &&
+						item.Tags.Any(tag =>
+							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+						)
+					).ToList();
+				}
+				else if (filterType.Equals("QuestionType", StringComparison.OrdinalIgnoreCase))
+				{
+					filteredItems = _allItems.Where(item =>
+						item.Tags != null &&
+						item.Tags.Any(tag =>
+							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+						)
+					).ToList();
+				}
+
+				ApplyLocalFilter(filterType, filterValue, filteredItems);
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Filter Error: {ex.Message}");
+			}
+			finally
+			{
+				IsLoading = false;
+			}
+		}
+
+
+		private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
+		{
+			Items = new ObservableCollection<ReadingItemModels>(filteredItems);
+
+			InitializePagination();
+
+			System.Diagnostics.Debug.WriteLine($"Filter applied locally: {filterType} - {filterValue} | Total: {filteredItems.Count} items.");
+		}
+
+
+		public async Task LoadItemsAsync()
         {
 			try
 			{
                 var items = await _readingItemsService.GetReadingItemsAsync();
-				if (items != null)
-				{
-					// Switch back to the main thread if necessary (WPF/WinUI usually auto does this)
-					Items = new ObservableCollection<ReadingItemModels>(items);
-					System.Diagnostics.Debug.WriteLine($"Count: {Items.Count}");
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("No items fetched from service.");
-				}
+                Items = new ObservableCollection<ReadingItemModels>(items);
+				_allItems = new ObservableCollection<ReadingItemModels>(items);
 				InitializePagination();
 			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Error in LoadItemsAsync: {ex.Message}");
-			}
-		}
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         private void InitializePagination()
         {
@@ -212,7 +304,13 @@ namespace login_full.ViewModels
 
             _paginationService.UpdateItems(filteredItems);
             _paginationService.UpdateItemsPerPage(IsFilterExpanded);
+            
+            // Reset về trang 1 khi khởi tạo lại pagination
+            CurrentPage = 1;
+            _paginationService.GoToPage(1);
+            
             OnPropertyChanged(nameof(DisplayedItems));
+            UpdatePageNumbers();
         }
 
         private async Task HandleSearchAsync(AutoSuggestBox searchBox)
@@ -226,6 +324,9 @@ namespace login_full.ViewModels
             if (searchBox == null) return;
             searchBox.Text = string.Empty;
             _searchService.ResetSearch();
+            
+            // Reset về trang 1 khi clear tìm kiếm
+            CurrentPage = 1;
             InitializePagination();
         }
 
@@ -243,6 +344,9 @@ namespace login_full.ViewModels
             ShowingCompletedItems = showCompleted;
             ShowingUncompletedItems = !showCompleted;
             _completedItemsService.ToggleCompletedItems();
+            
+            // Reset về trang 1 khi lọc items
+            CurrentPage = 1;
             InitializePagination();
         }
 
@@ -289,19 +393,32 @@ namespace login_full.ViewModels
         private void NextPage()
         {
             _paginationService.NextPage();
+            UpdatePageNumbers();
+            OnPropertyChanged(nameof(CanGoToNextPage));
+            OnPropertyChanged(nameof(CanGoToPreviousPage));
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
         private void PreviousPage()
         {
             _paginationService.PreviousPage();
+            UpdatePageNumbers();
+            OnPropertyChanged(nameof(CanGoToNextPage));
+            OnPropertyChanged(nameof(CanGoToPreviousPage));
             OnPropertyChanged(nameof(DisplayedItems));
         }
 
         private void GoToPage(int pageNumber)
         {
-            _paginationService.GoToPage(pageNumber);
-            OnPropertyChanged(nameof(DisplayedItems));
+            if (pageNumber >= 1 && pageNumber <= _paginationService.State.TotalPages)
+            {
+                _paginationService.GoToPage(pageNumber);
+                CurrentPage = pageNumber;
+                UpdatePageNumbers();
+                OnPropertyChanged(nameof(CanGoToNextPage));
+                OnPropertyChanged(nameof(CanGoToPreviousPage));
+                OnPropertyChanged(nameof(DisplayedItems));
+            }
         }
 
         public void UpdateWindowSize(double width, double height)
@@ -317,14 +434,12 @@ namespace login_full.ViewModels
             _searchService.SearchResultsUpdated -= OnSearchResultsUpdated;
         }
 
-        public ObservableCollection<int> PageNumbers { get; private set; }
-
         private void UpdatePageNumbers()
         {
             PageNumbers.Clear();
-            for (int i = 1; i <= _paginationService.State.TotalPages; i++)
+            foreach (var pageNum in _paginationService.VisiblePageNumbers)
             {
-                PageNumbers.Add(i);
+                PageNumbers.Add(pageNum);
             }
             OnPropertyChanged(nameof(PageNumbers));
         }

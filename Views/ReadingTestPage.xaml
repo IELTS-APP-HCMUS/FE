@@ -4,74 +4,99 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:login_full.Views"
+    x:Name="PageRoot"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:local1="using:login_full.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-    <!--<Page.Resources>
-        <ResourceDictionary>
-            <Style x:Key="DefaultContentDialogStyle" TargetType="ContentDialog">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"/>
+    <Page.Resources>
+        <!-- Template cho dialog từ điển -->
+        <DataTemplate x:Key="DictionaryDialogTemplate">
+            <StackPanel Spacing="10">
+                <!-- Header với từ và phát âm -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="{Binding Word}" 
+                             FontSize="20" 
+                             FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Pronunciation}"
+                             FontStyle="Italic"/>
+                </StackPanel>
+
+                <!-- Loại từ -->
+                <TextBlock Text="{Binding WordClass}"
+                         FontStyle="Italic"
+                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+
+                <!-- Nghĩa tiếng Anh -->
+                <StackPanel>
+                    <TextBlock Text="Definition:"
+                             FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Meaning}"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Nghĩa tiếng Việt -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Giải thích:"
+                             FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Explanation}"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Từ/cấu trúc liên quan -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Related Words:"
+                             FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding RelatedWords}"
+                                Margin="10,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                         Margin="0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Ví dụ -->
+                <StackPanel Margin="0,10,0,0">
+                    <TextBlock Text="Examples:"
+                             FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding Examples}"
+                                Margin="10,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                         TextWrapping="Wrap"
+                                         Margin="0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+                
+            </StackPanel>
+        </DataTemplate>
+        <!-- Style cho ContentDialog -->
+        <Style x:Key="DictionaryDialogStyle" TargetType="ContentDialog">
+            <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+            <Setter Property="Foreground" Value="{ThemeResource DefaultTextForegroundThemeBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseLowBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ContentDialog">
-                        <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+            <Setter Property="MaxWidth" Value="500"/>
+            <Setter Property="MinWidth" Value="320"/>
+            <Setter Property="MaxHeight" Value="756"/>
+            <Setter Property="MinHeight" Value="184"/>
+        </Style>
 
-                                -->
-    <!-- Title -->
-    <!--
-                                <TextBlock Text="{TemplateBinding Title}"
-                                     Grid.Row="0"
-                                     Margin="24,24,24,0"
-                                     Style="{ThemeResource TitleTextBlockStyle}"/>
+        <SolidColorBrush x:Key="HighlightActiveBrush" Color="#FFE6B8"/>
 
-                                -->
-    <!-- Content -->
-    <!--
-                                <ContentPresenter Grid.Row="1"
-                                            Content="{TemplateBinding Content}"
-                                            Margin="24,16,24,0"/>
-
-                                -->
-    <!-- Buttons -->
-    <!--
-                                <StackPanel Grid.Row="2"
-                                      Orientation="Horizontal"
-                                      HorizontalAlignment="Right"
-                                      Margin="24,24,24,24"
-                                      Spacing="8">
-                                    <Button x:Name="SecondaryButton"
-                                        Content="{TemplateBinding SecondaryButtonText}"
-                                        Style="{StaticResource DefaultButtonStyle}"
-                                        Command="{TemplateBinding SecondaryButtonCommand}"/>
-                                    <Button x:Name="PrimaryButton"
-                                        Content="{TemplateBinding PrimaryButtonText}"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        Command="{TemplateBinding PrimaryButtonCommand}"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            </Style>
-       </ResourceDictionary>
-    </Page.Resources>-->
+        <local1:BoolToSolidColorBrushConverter x:Key="BoolToHighlightBackgroundConverter" 
+                                             TrueBrush="{StaticResource HighlightActiveBrush}"
+                                             FalseBrush="Transparent"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -117,27 +142,41 @@
         </Grid>
 
         <!-- Main Content -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" x:Name="RootGrid" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Nội dung bài đọc -->
-            <ScrollViewer Grid.Column="0" Padding="20">
+           <ScrollViewer x:Name="MainScrollViewer" Grid.Column="0" Padding="20" HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
                 <!-- Thêm thanh công cụ cho bài đọc -->
                 <StackPanel>
                     <CommandBar Background="Transparent" 
                            IsOpen="False" 
                            DefaultLabelPosition="Right"
                            Margin="0,0,0,20">
-                        <AppBarButton Icon="ZoomIn" Label="Zoom In"/>
-                        <AppBarButton Icon="ZoomOut" Label="Zoom Out"/>
+                        <AppBarButton Icon="ZoomIn" 
+                                      Label="Zoom In"
+                                      Command="{x:Bind ViewModel.ZoomInCommand}"/>
+                        <AppBarButton Icon="ZoomOut" 
+                                      Label="Zoom Out"
+                                      Command="{x:Bind ViewModel.ZoomOutCommand}"/>
                         <AppBarSeparator/>
-                        <AppBarButton x:Name="HighlightButton"  Icon="Highlight" Label="Highlight" />
-                        <AppBarButton Icon="Comment" Label="Vocab Mode"/>
+                        <AppBarToggleButton x:Name="MainHighlightButton" 
+                                            Icon="Highlight" 
+                                            Label="Highlight"
+                                            IsChecked="{x:Bind ViewModel.IsHighlightMode, Mode=TwoWay}"
+                                            Click="MainHighlightButton_Click"/>
+                 
+                        <AppBarToggleButton x:Name="VocabMode" 
+                                            Icon="Font" 
+                                            Label="Vocab Mode"
+                                            IsChecked="{x:Bind ViewModel.IsVocabMode, Mode=TwoWay}"/>
                         <AppBarSeparator/>
-                        <AppBarButton Icon="Save" Label="Save Progress"/>
+                        <AppBarButton Icon="Save" 
+                                      Label="Save Progress"
+                                      Command="{x:Bind ViewModel.SaveProgressCommand}"/>
                     </CommandBar>
 
                     <!-- Existing content -->
@@ -145,10 +184,18 @@
                           Style="{ThemeResource TitleTextBlockStyle}"
                           TextWrapping="Wrap"/>
 
-                    <TextBlock Text="{x:Bind ViewModel.TestDetail.Content, Mode=OneWay}"
-                          TextWrapping="Wrap"
-                          Margin="0,20,0,0"
-                          Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <RichTextBlock x:Name="ContentRichTextBlock" 
+                                   Margin="0,20,0,0" 
+                                   TextWrapping="Wrap"
+                                 
+                                  SelectionChanged="ContentRichTextBlock_SelectionChanged"
+                                   IsTextSelectionEnabled="True">
+                        <Paragraph x:Name="ContentParagraph"/>
+                    </RichTextBlock>
+
+
+
+
                 </StackPanel>
             </ScrollViewer>
 
@@ -195,6 +242,18 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,0,0,20">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="Question " 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                        <TextBlock Text="{Binding ElementName=QuestionsItemsControl, 
+                                                        Path=ItemsSource.IndexOf[DataContext]}" 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                        <TextBlock Text=":" 
+                                                 FontWeight="SemiBold" 
+                                                 FontSize="16"/>
+                                    </StackPanel>
                                     <TextBlock Text="{Binding QuestionText}"
                                          TextWrapping="Wrap"
                                          Style="{ThemeResource BodyTextBlockStyle}"
@@ -233,5 +292,32 @@
                     Margin="20"/>
             </Grid>
         </Grid>
+
+        <!-- Add this popup -->
+        <Popup x:Name="HighlightPopup" 
+               IsLightDismissEnabled="True">
+            <Border Background="White" 
+                    BorderBrush="Gray" 
+                    BorderThickness="1" 
+                    CornerRadius="4"
+                    Padding="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="HighlightButton" 
+                            Click="HighlightButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE1D9;"/>
+                            <TextBlock Text="Highlight" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="RemoveHighlightButton" 
+                            Click="RemoveHighlightButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE1D8;"/>
+                            <TextBlock Text="Remove" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </Page>

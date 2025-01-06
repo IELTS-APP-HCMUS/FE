@@ -3,15 +3,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace login_full.API_Services
 {
 	public class LoginApiService
 	{
-		private static readonly HttpClient client = new HttpClient();
+		//private static readonly HttpClient client = new HttpClient();
+		private ClientCaller _clientCaller = new();
 
-		public async Task<string> LoginAsync(string email, string password)
+        public async Task<string> LoginAsync(string email, string password)
 		{
 			var loginData = new
 			{
@@ -19,12 +19,11 @@ namespace login_full.API_Services
 				password = password
 			};
 
-			string json = JsonConvert.SerializeObject(loginData);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var content = ClientCaller.GetContent(loginData);
 
-			try
-			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content); 
+            try
+            {
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content); 
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -43,19 +42,22 @@ namespace login_full.API_Services
 		}
 		public async Task<string> LoginWithOAuthAsync(string idToken)
 		{
+			//string url = $"{_baseUrl}/api/users/login";
+
 			var oAuthData = new
 			{
 				id_token = idToken
 			};
 
-			string json = JsonConvert.SerializeObject(oAuthData);
+			//string json = JsonConvert.SerializeObject(oAuthData);
 			
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
-			System.Diagnostics.Debug.WriteLine(json);
+			//var content = new StringContent(json, Encoding.UTF8, "application/json");
+			//System.Diagnostics.Debug.WriteLine(json);
+			var content = ClientCaller.GetContent(oAuthData);
 
-			try
+            try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -83,12 +85,11 @@ namespace login_full.API_Services
 				role = role
 			};
 
-			string json = JsonConvert.SerializeObject(signupData);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var content = ClientCaller.GetContent(signupData);
 
-			try
+            try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/signup", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/signup", content);
 
 				if (response.IsSuccessStatusCode)
 				{

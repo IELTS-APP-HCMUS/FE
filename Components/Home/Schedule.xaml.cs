@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,10 +26,16 @@ namespace login_full.Components.Home
         {
             this.InitializeComponent();
 			scheduleManager = new ScheduleManager(ScheduleListView);
-		}
+            this.Loaded += ScheduleUserControl_Loaded;
+        }
 		private void AddNewEvent_Click(object sender, RoutedEventArgs e)
 		{
 			scheduleManager.AddNewEvent(this.XamlRoot);
 		}
-	}
+        private async void ScheduleUserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Lấy lịch từ API và cập nhật giao diện
+            await scheduleManager.UpdateSchedulesAsync();
+        }
+    }
 }

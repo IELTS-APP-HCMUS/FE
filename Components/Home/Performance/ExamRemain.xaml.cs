@@ -1,23 +1,12 @@
 ﻿using login_full.Context;
 using login_full.Models;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using login_full.API_Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,10 +15,12 @@ namespace login_full.Components.Home.Performance
 {
 	public sealed partial class ExamRemain : UserControl
 	{
-		public ExamRemain()
+		private readonly ClientCaller _clientCaller;
+        public ExamRemain()
 		{
 			this.InitializeComponent();
-		}
+            _clientCaller = new ClientCaller();
+        }
 
 		private async void ExamDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
 		{
@@ -50,13 +41,9 @@ namespace login_full.Components.Home.Performance
 				{
 					using (HttpClient client = new HttpClient())
 					{
-						// Lấy access token từ GlobalState
-						string accessToken = GlobalState.Instance.AccessToken;
-						// Thêm access token vào header Authorization
-						client.DefaultRequestHeaders.Authorization =
-							new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+						string url = $"/api/users/target";
 						// Gửi yêu cầu GET đến API
-						HttpResponseMessage response = await client.PatchAsync("https://ielts-app-api-4.onrender.com/api/users/target", content);
+						HttpResponseMessage response = await _clientCaller.PatchAsync(url, content);
 
 						// Kiểm tra phản hồi từ API
 						if (response.IsSuccessStatusCode)

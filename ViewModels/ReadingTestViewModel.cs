@@ -13,6 +13,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using login_full.Views;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
+using java.awt;
 
 
 
@@ -21,12 +23,7 @@ namespace login_full.ViewModels
     public class ReadingTestViewModel : INotifyPropertyChanged
     {
 
-        //public HighlightViewModel HighlightVM { get; }
-        //public ObservableCollection<HighlightModel> Highlights { get; } = new();
 
-        //public IRelayCommand ToggleHighlightCommand { get; }
-        //public IRelayCommand HighlightSelectedTextCommand { get; }
-        //public IRelayCommand RemoveHighlightCommand { get; }
 
 
         private readonly IReadingTestService _testService;
@@ -39,7 +36,7 @@ namespace login_full.ViewModels
         public IRelayCommand SubmitCommand { get; }
         public IAsyncRelayCommand ExitCommand { get; }
 
-        
+
 
         public IRelayCommand ZoomInCommand { get; }
         public IRelayCommand ZoomOutCommand { get; }
@@ -47,7 +44,10 @@ namespace login_full.ViewModels
         public IRelayCommand AddNoteCommand { get; }
         public IRelayCommand SaveProgressCommand { get; }
 
-        public string FormattedTimeRemaining
+		public IRelayCommand<VocabularyItem> AddToVocabularyCommand { get; }
+		public IRelayCommand<ContentDialog> CloseDialogCommand { get; }
+
+		public string FormattedTimeRemaining
         {
             get
             {
@@ -68,10 +68,61 @@ namespace login_full.ViewModels
         }
 
 
-        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService/*, IHighlightService highlightService*/)
+        private bool _isVocabMode;
+        public bool IsVocabMode
         {
-            _testService = testService;
-            _navigationService = navigationService;
+            get => _isVocabMode;
+            set
+            {
+                _isVocabMode = value;
+                OnPropertyChanged();
+                // Trigger content reprocessing when mode changes
+                ProcessContentCommand.Execute(null);
+            }
+        }
+
+        // Add ProcessContentCommand
+        public IRelayCommand ProcessContentCommand { get; }
+
+
+        private bool _isHighlightMode;
+        public bool IsHighlightMode
+        {
+            get => _isHighlightMode;
+            set
+            {
+                if (_isHighlightMode != value)
+                {
+                    _isHighlightMode = value;
+                    OnPropertyChanged();
+                    // Thông báo cho UI biết trạng thái highlight đã thay đổi
+                    System.Diagnostics.Debug.WriteLine($"IsHighlightMode changed to: {value}"); // For debugging
+                    OnHighlightModeChanged?.Invoke(this, _isHighlightMode);
+                  
+                }
+            }
+        }
+
+        // Thêm event để thông báo khi highlight mode thay đổi
+        public event EventHandler<bool> OnHighlightModeChanged;
+
+        // Thêm method để kiểm tra xem có thể highlight không
+        public bool CanHighlight()
+        {
+            return IsHighlightMode && !string.IsNullOrEmpty(TestDetail?.Content);
+        }
+
+        private readonly IPdfExportService _pdfExportService;
+        private readonly TextHighlightService _highlightService;
+		private readonly DictionaryService _dictionaryService;
+
+		public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService)
+        {
+            _testService = testService ?? throw new ArgumentNullException(nameof(testService));
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
+			_dictionaryService = dictionaryService ?? throw new ArgumentNullException(nameof(dictionaryService));
+			_highlightService = ServiceLocator.GetService<TextHighlightService>();
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -82,22 +133,125 @@ namespace login_full.ViewModels
             _timer.Tick += Timer_Tick;
 
 
-       
+
             //HighlightVM = new HighlightViewModel(highlightService);
 
             ZoomInCommand = new RelayCommand(ZoomIn);
             ZoomOutCommand = new RelayCommand(ZoomOut);
-            HighlightCommand = new RelayCommand(ToggleHighlight);
+            HighlightCommand = new RelayCommand(ToggleHighlightMode);
             AddNoteCommand = new RelayCommand(AddNote);
             SaveProgressCommand = new RelayCommand(SaveProgress);
             ExitCommand = new AsyncRelayCommand(ShowExitDialog);
-        }
+
+            // Initialize ProcessContentCommand
+            ProcessContentCommand = new RelayCommand(() =>
+            {
+                OnContentProcessingRequested?.Invoke(this, EventArgs.Empty);
+            });
+
+            IsHighlightMode = false;
+
+
+			AddToVocabularyCommand = new RelayCommand<VocabularyItem>(async (vocabItem) =>
+			{
+				System.Diagnostics.Debug.WriteLine($"AddToVocabularyCommand executed! Word: {vocabItem.Word}");
+				await AddToVocabulary(vocabItem);
+			});
+		}
 
         private void ZoomIn() { /* Implementation */ }
         private void ZoomOut() { /* Implementation */ }
-        private void ToggleHighlight() { /* Implementation */ }
+
+        private void ToggleHighlightMode()
+        {
+            IsHighlightMode = !IsHighlightMode;
+            System.Diagnostics.Debug.WriteLine($"Highlight mode: {IsHighlightMode}");
+        }
+
         private void AddNote() { /* Implementation */ }
-        private void SaveProgress() { /* Implementation */ }
+        private async void SaveProgress()
+        {
+            if (_pdfExportService == null)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Lỗi",
+                    Content = "Dịch vụ xuất PDF chưa được khởi tạo",
+                    CloseButtonText = "OK",
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+                return;
+            }
+
+            var mainWindow = App.MainWindow;
+            if (mainWindow == null) return;
+
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("PDF files", new List<string>() { ".pdf" });
+            picker.SuggestedFileName = $"Reading_Test_{TestDetail.Id}";
+
+            // Initialize the picker with the window handle
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(mainWindow));
+
+            var file = await picker.PickSaveFileAsync();
+            if (file != null)
+            {
+                ContentDialog loadingDialog = null;
+                try
+                {
+                    loadingDialog = new ContentDialog
+                    {
+                        Title = "Đang xuất PDF",
+                        Content = "Vui lòng đợi trong giây lát...",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    // Hiển thị dialog loading
+                    var loadingTask = loadingDialog.ShowAsync();
+
+                    // Xuất PDF
+                    await _pdfExportService.ExportReadingTestToPdfAsync(TestDetail, file.Path);
+
+                    // Đóng dialog loading
+                    loadingDialog.Hide();
+
+                    // Đợi dialog loading đóng hoàn toàn
+                    await Task.Delay(100);
+
+                    // Hiển thị dialog thành công
+                    var successDialog = new ContentDialog
+                    {
+                        Title = "Thành công",
+                        Content = "Bài làm đã được lưu thành công!",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await successDialog.ShowAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Đảm bảo dialog loading đã đóng
+                    if (loadingDialog != null)
+                    {
+                        loadingDialog.Hide();
+                        await Task.Delay(100);
+                    }
+
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = "Lỗi",
+                        Content = $"Không thể lưu file: {ex.Message}",
+                        CloseButtonText = "OK",
+                        XamlRoot = mainWindow.Content.XamlRoot
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
 
 
 
@@ -124,11 +278,11 @@ namespace login_full.ViewModels
             else
             {
                 _timer.Stop();
-                _= SubmitTest();
+                _ = SubmitTest();
             }
         }
 
-       
+
 
         private async Task SubmitTest()
         {
@@ -151,8 +305,8 @@ namespace login_full.ViewModels
 
             if (result == ContentDialogResult.Primary)
             {
-                string success = await _testService.SubmitTestAsync(TestDetail.Id);
-                if (success != "")
+                string answerID = await _testService.SubmitTestAsync(TestDetail.Id);
+                if (answerID != "")
                 {
                     TestDetail.Progress.IsCompleted = true;
 
@@ -161,10 +315,10 @@ namespace login_full.ViewModels
 
 
                     // Tạo TestResultViewModel và chuyển hướng
-                    var resultViewModel = new TestResultViewModel(TestDetail, timeSpent, (App.Current as App).ChartService, _navigationService);
-                    await resultViewModel.LoadSummaryAsync(success);
+                    var resultViewModel = new TestResultViewModel(TestDetail, timeSpent, (App.Current as App).ChartService, _navigationService, answerID);
+                    await resultViewModel.LoadSummaryAsync(answerID);
 					(App.Current as App).CurrentTestResult = resultViewModel;
-                    await _navigationService.NavigateToAsync(typeof(TestResultPage), success);
+                    await _navigationService.NavigateToAsync(typeof(TestResultPage), answerID);
                 }
             }
             else
@@ -204,5 +358,81 @@ namespace login_full.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
+
+        public event EventHandler OnContentProcessingRequested;
+
+		public async Task<DictionaryEntry> FetchWordDetailsAsync(string word)
+		{
+			try
+			{
+				// Ensure content and test details exist
+				if (TestDetail == null || string.IsNullOrEmpty(TestDetail.Content))
+				{
+					throw new Exception("No content available for fetching word details.");
+				}
+
+				// Generate word indices using DictionaryService
+				int quizId = int.Parse(TestDetail.Id);
+				var vocabId = _dictionaryService.GetVocabId(word, TestDetail.Content, quizId);
+
+				if (vocabId == null)
+				{
+					throw new Exception($"Word '{word}' not found in the content.");
+				}
+
+				// Extract indices
+				var parts = vocabId.Split('_');
+				int sentenceIndex = int.Parse(parts[1]);
+				int wordIndex = int.Parse(parts[2]);
+
+				// Fetch details from API
+				var wordDetails = await _dictionaryService.FetchWordFromApiAsync(quizId, sentenceIndex, wordIndex, word);
+
+				if (wordDetails == null)
+				{
+					throw new Exception($"No data found for '{word}'");
+				}
+
+				return wordDetails;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Error fetching word details: {ex.Message}");
+				throw;
+			}
+		}
+
+		private async Task AddToVocabulary(VocabularyItem vocabItem)
+		{
+			if (vocabItem == null) return; // Early exit if vocabItem is null
+
+			// Prepare the vocabulary item
+			var newVocab = new VocabularyItem
+			{
+				Word = vocabItem.Word,
+				WordType = vocabItem.WordType,
+				Meaning = vocabItem.Meaning,
+				Example = string.Join("\n", vocabItem.Example),
+				Note = vocabItem.Meaning,
+				Status = "Đang học"
+			};
+
+			// Try to add the vocabulary asynchronously
+			bool success = await _dictionaryService.AddVocabularyAsync(newVocab);
+
+			// Show success or error dialog
+			var dialog = new ContentDialog
+			{
+				Title = success ? "Thành công" : "Lỗi",
+				Content = success
+						  ? "Từ vựng đã được thêm vào sổ từ vựng."
+						  : "Không thể thêm từ vào sổ từ vựng. Vui lòng thử lại.",
+				CloseButtonText = "OK",
+				XamlRoot = App.MainWindow.Content.XamlRoot
+			};
+			
+			await dialog.ShowAsync();
+		}
+		
+	}
 }

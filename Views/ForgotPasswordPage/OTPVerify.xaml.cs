@@ -7,7 +7,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-
+using login_full.API_Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -21,14 +21,15 @@ namespace login_full.Views.ForgotPasswordPage
 	public sealed partial class OTPVerify : Page
 	{
 		private string Email { get; set; }
-
-		/// <summary>
-		/// Khởi tạo lớp `OTPVerify` và thiết lập giao diện người dùng.
-		/// </summary>
-		public OTPVerify()
+		private readonly ClientCaller _clientCaller;
+        /// <summary>
+        /// Khởi tạo lớp `OTPVerify` và thiết lập giao diện người dùng.
+        /// </summary>
+        public OTPVerify()
 		{
 			this.InitializeComponent();
-		}
+            _clientCaller = new ClientCaller();
+        }
 		/// <summary>
 		/// Được gọi khi điều hướng đến trang này, nhận email từ tham số điều hướng.
 		/// </summary>
@@ -56,14 +57,13 @@ namespace login_full.Views.ForgotPasswordPage
 
 		private async Task<string> VerifyOtpAsync(string email, string otp)
 		{
+			string url = $"/api/auth/validate-otp";
 			string json = JsonConvert.SerializeObject(new { email, otp });
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			try
 			{
-				using HttpClient client = new HttpClient();
-			
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/validate-otp", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -139,5 +139,11 @@ namespace login_full.Views.ForgotPasswordPage
 		{
 			await App.NavigationService.NavigateToAsync(typeof(PasswordReset), email);
 		}
+
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage));
+		}
+
 	}
 }

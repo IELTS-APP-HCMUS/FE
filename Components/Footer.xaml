@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-	<Grid x:Name="FooterGrid" Background="#0E5470" Padding="20,40,20,20" Margin="0,50,0,0">
+    <Grid x:Name="FooterGrid" Background="#1B76A1" Padding="20,40,20,20" Margin="0,50,0,0">
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="FooterLayoutStates">
 				<!-- Wide Layout State (horizontal layout) -->

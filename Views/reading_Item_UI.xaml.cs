@@ -6,6 +6,9 @@ using login_full.Services;
 using login_full.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+
 
 namespace login_full.Views
 {
@@ -41,27 +44,29 @@ namespace login_full.Views
 
 		private async void InitializeAsync()
 		{
-
 			var readingItemsService = new ReadingItemsService();
 			var paginationService = new PaginationService();
 
-			// Await fetching items to ensure it completes
+			// Fetch items asynchronously and wait until they are loaded
 			var readingItems = await readingItemsService.GetReadingItemsAsync();
 
 			if (readingItems == null || !readingItems.Any())
 			{
-				System.Diagnostics.Debug.WriteLine("No reading items found. Ensure the service returns data.");
+				System.Diagnostics.Debug.WriteLine("[WARNING] No reading items found. Ensure the service returns data.");
 			}
 
-			// Update ViewModel services with fetched data
+			// Update ViewModel with loaded data
 			ViewModel.SearchService = new SearchService(readingItems.ToList(), paginationService);
-			
 
-			// Optionally refresh the ViewModel's data
+			// Load items into ViewModel
 			ViewModel.LoadItemsCommand.Execute(null);
 
+			// Explicitly update DataContext
 			this.DataContext = ViewModel;
+
+			
 		}
+
 		/// <summary>
 		/// Khởi tạo lớp "OnNavigatedTo" để xử lý sự kiện khi điều hướng đến trang này.
 		/// </summary>
@@ -169,24 +174,48 @@ namespace login_full.Views
 
 		private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
 		{
-			if (args.ChosenSuggestion != null)
+			try 
 			{
-				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
+				ViewModel.IsLoading = true;
+				if (args.ChosenSuggestion != null)
+				{
+					await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, true);
+				}
+				else
+				{
+					await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
+				}
 			}
-			else
+			finally
 			{
-				await ViewModel.SearchService.HandleSearchQueryAsync(sender.Text, false);
+				ViewModel.IsLoading = false;
 			}
 		}
 
-		private void UncompletedFilter_Click(object sender, RoutedEventArgs e)
+		private async void UncompletedFilter_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.FilterCommand.Execute(false);
+			try
+			{
+				ViewModel.IsLoading = true;
+				ViewModel.FilterCommand.Execute(false);
+			}
+			finally 
+			{
+				ViewModel.IsLoading = false;
+			}
 		}
 
-		private void CompletedFilter_Click(object sender, RoutedEventArgs e)
+		private async void CompletedFilter_Click(object sender, RoutedEventArgs e)
 		{
-			ViewModel.FilterCommand.Execute(true);
+			try
+			{
+				ViewModel.IsLoading = true;
+				ViewModel.FilterCommand.Execute(true);
+			}
+			finally
+			{
+				ViewModel.IsLoading = false;
+			}
 		}
 		private void ToggleFilter_Click(object sender, RoutedEventArgs e)
 		{

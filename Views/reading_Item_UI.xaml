@@ -17,6 +17,7 @@
         <local1:BooleanNegationConverter x:Key="BooleanNegationConverter"/>
         <local1:DivideByFourConverter x:Key="DivideByFourConverter"/>
         <local1:DivideByThreeConverter x:Key="DivideByThreeConverter"/>
+        <local1:PageNumberBackgroundConverter x:Key="PageNumberBackgroundConverter"/>
 
         <Style x:Key="CustomAutoSuggestBoxStyle" TargetType="AutoSuggestBox">
             <Setter Property="Background" Value="White"/>
@@ -105,48 +106,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!--<Grid x:Name="FullHeader" Height="60" Background="#4EACD2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" 
-                Text="MEPASS" 
-                FontSize="32" 
-                FontWeight="Bold" 
-                Foreground="White" 
-                VerticalAlignment="Center" 
-                Margin="37,0,50,0"/>
-
-            <StackPanel Grid.Column="1"
-                 Orientation="Horizontal" 
-                 HorizontalAlignment="Center" 
-                 VerticalAlignment="Center" Margin="10,0,0,0">
-                <HyperlinkButton Content="Trang chủ" FontSize="18" Foreground="Black" Margin="0,0,0,0" Click="Home_Click"/>
-                <HyperlinkButton Content="Reading " FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
-                <HyperlinkButton Content="Full Test" FontSize="18" Foreground="Black" Margin="0,0,0,0"/>
-            </StackPanel>
-
-            <Button Grid.Column="2" 
-                Style="{StaticResource TextBlockButtonStyle}" 
-                Margin="0,0,20,0" 
-                Click="UserProfileButton_Click">
-                <StackPanel Orientation="Horizontal">
-                    <Ellipse Width="35" Height="34">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="/Assets/working_from_home.png"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
-                    <TextBlock Text="Thành Phát Nguyễn" VerticalAlignment="Center" Margin="10,0" Foreground="White"/>
-                    <FontIcon Glyph="&#xE70D;" FontFamily="Segoe MDL2 Assets" Foreground="White" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-        </Grid>-->
 
         <components:Header Grid.Row="0" DataContext="{Binding Profile}"/>
 
@@ -159,7 +119,7 @@
             <!-- Left Sidebar -->
             <Grid x:Name="FilterSidebar" 
                     Grid.Column="0" 
-                    Background="White"
+                    Background="#E5F2FC"
                     Width="{x:Bind ViewModel.SidebarWidth, Mode=TwoWay}">
                 <StackPanel>
                     <!-- Toggle Filter Button -->
@@ -182,24 +142,59 @@
             Margin="10,0">
                         <TextBlock Text="Passage (Độ khó)" FontSize="15" FontWeight="SemiBold"/>
                         <StackPanel Spacing="15" Margin="0,20,0,0">
-                            <Button Content="Easy" Background="#49BBBD" Height="33" Width="200"/>
-                            <Button Content="Medium" Background="#F48C06" Height="33" Width="200"/>
-                            <Button Content="Hard" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Very Hard" Background="#EE645B" Height="33" Width="200"/>
+                            <Button Content="Passage 1"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200" 
+                                    CornerRadius="2"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_1"/>
+                            <Button Content="Passage 2"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_2"/>
+                            <Button Content="Passage 3"
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="Passage_passage_3"/>
                         </StackPanel>
 
                         <TextBlock Text="Loại câu hỏi" FontSize="15" FontWeight="SemiBold" Margin="0,40,0,20"/>
                         <StackPanel Spacing="15">
-                            <Button Content="Gap Filling" Background="#9DCCFF" Height="33" Width="200"/>
-                            <Button Content="Matching headings" Background="#F48C06" Height="33" Width="200"/>
-                            <Button Content="True - False Not Given" Background="#FAD0CE" Height="33" Width="200"/>
-                            <Button Content="Yes - No - Not Given" Background="#9DCCFF" Height="33" Width="200"/>
+                            <Button Content="Gap Filling" 
+                                    Background="#9DCCFF" 
+                                    Height="33" Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="QuestionType_FILL_BLANK"/>
+                            <Button Content="Matching headings" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}"
+                                    CommandParameter="QuestionType_MATCHING_HEADING"
+                                    />
+                            <Button Content="True - False Not Given" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}" 
+                                    CommandParameter="QuestionType_TRUE_FALSE"/>
+                            <Button Content="Yes - No - Not Given" 
+                                    Background="#9DCCFF" 
+                                    Height="33" 
+                                    Width="200"
+                                    Command="{x:Bind ViewModel.ApplyFilterCommand}" 
+                                    CommandParameter="QuestionType_YES_NO"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="1">
-                <Grid Height="Auto" MinHeight="76" VerticalAlignment="Top" Background="#49BBBD">
+                <Grid Height="Auto" MinHeight="76" VerticalAlignment="Top" Background="#E5F2FC">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -211,16 +206,21 @@
                               Orientation="Horizontal" 
                               Margin="20,15,0,15">
                         <Button Content="Bài chưa làm"
-            Click="UncompletedFilter_Click"
-            Style="{StaticResource FilterButtonStyle}">
+                                Click="UncompletedFilter_Click"
+                                CornerRadius="10"
+                                BorderBrush="Black"
+                                Margin="0,0,10,0"
+            >
                             <Button.Background>
                                 <SolidColorBrush Color="{x:Bind ViewModel.ShowingUncompletedItems, Mode=OneWay, Converter={StaticResource BoolToButtonColorConverter}}"/>
                             </Button.Background>
                         </Button>
 
                         <Button Content="Bài đã làm"
-            Click="CompletedFilter_Click"
-            Style="{StaticResource FilterButtonStyle}">
+                                Click="CompletedFilter_Click"
+                                CornerRadius="10"
+                                BorderBrush="Black"
+            >
                             <Button.Background>
                                 <SolidColorBrush Color="{x:Bind ViewModel.ShowingCompletedItems, Mode=OneWay, Converter={StaticResource BoolToButtonColorConverter}}"/>
                             </Button.Background>
@@ -245,7 +245,7 @@
 
                         <AutoSuggestBox x:Name="SearchBox"
                                         Style="{StaticResource CustomAutoSuggestBoxStyle}"
-                                        PlaceholderText="Search your favourite course"
+                                        PlaceholderText="Search your favourite passage"
                                         QueryIcon="Find"
                                         Width="400"
                                         TextChanged="SearchBox_TextChanged"
@@ -286,10 +286,10 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Margin="0,77,0,0">
-                    <Rectangle Fill="#9DCCFF" 
+                    <Rectangle Fill="White" 
                                Opacity="0.3"/>
 
-                    <ScrollViewer Margin="0,0,0,0">
+                    <ScrollViewer Margin="0,0,0,0" Background="#E5F2FC" Opacity="20">
                         <StackPanel HorizontalAlignment="Center" >
                             <ItemsControl x:Name="MyItemsControl" 
                                              ItemsSource="{Binding DisplayedItems}"
@@ -301,12 +301,12 @@
                                             Margin="8" 
                                             CornerRadius="20" 
                                             Padding="15"
-                                            BorderBrush="#D9D9D9" 
+                                            BorderBrush="White" 
                                             BorderThickness="1"
                                             Width="270"
-                                            Height="350">
+                                            Height="300">
                                             <StackPanel>
-                                                <Image Source="/Assets/reading_win.png" 
+                                                <Image Source="{Binding ImagePath}"
                                                    Height="auto" 
                                                    MaxHeight="140"
                                                    Stretch="Uniform"
@@ -333,40 +333,53 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-
                             <StackPanel Orientation="Horizontal" 
                                         HorizontalAlignment="Center" 
                                         Margin="0,20,0,40">
                                 <Button Content="&lt;" 
-                                        Click="PreviousPage_Click"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        Background="#275051"
-                                        Margin="5,0"/>
+                                                Command="{x:Bind ViewModel.PreviousPageCommand}"
+                                              
+                                                Background="#BFF7F8"
+                                                
+                                                Width="40"
+                                                Height="40"
+                                                Margin="5,0"
+                                                />
 
-                                <ItemsControl x:Name="PaginationNumbers" ItemsSource="{x:Bind ViewModel.PageNumbers}">
+                                <ItemsControl x:Name="PaginationItemsControl"
+                                     ItemsSource="{x:Bind ViewModel.PageNumbers, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <StackPanel Orientation="Horizontal"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate x:DataType="x:Int32">
                                             <Button Content="{Binding}"
-                                                    Click="PageNumber_Click"
-                                                    Style="{StaticResource AccentButtonStyle}"
-                                                    Background="#275051"
+                                                    Command="{Binding ElementName=PaginationItemsControl, Path=DataContext.GoToPageCommand}"
+                                                    CommandParameter="{Binding}"
                                                     Width="40"
                                                     Height="40"
-                                                    Margin="5,0"/>
+                                                    Margin="5,0"
+                                                    >
+                                                <Button.Background>
+                                                    <SolidColorBrush Color="{Binding ElementName=PaginationItemsControl, 
+                                                        Path=DataContext.CurrentPage, 
+                                                        Converter={StaticResource PageNumberBackgroundConverter}, 
+                                                        ConverterParameter={Binding}}"/>
+                                                </Button.Background>
+                                            </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
                                 <Button Content="&gt;" 
-                                        Click="NextPage_Click"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        Background="#275051"
-                                        Margin="5,0"/>
+                                        Command="{x:Bind ViewModel.NextPageCommand}"                                     
+                                        Background="#BFF7F8"
+                                        Width="40"
+                                        Height="40"
+                                        Margin="5,0"
+                                        />  
                             </StackPanel>
 
 
@@ -376,6 +389,23 @@
                 </Grid>
             </Grid>
 
+        </Grid>
+        
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingOverlay" 
+              Background="#80000000"
+              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
+            <StackPanel HorizontalAlignment="Center" 
+                        VerticalAlignment="Center">
+                <ProgressRing IsActive="True" 
+                            Width="50" 
+                            Height="50"
+                            Foreground="White"/>
+                <TextBlock Text="Loading..." 
+                         Foreground="White"
+                         FontSize="16" 
+                         Margin="0,10,0,0"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

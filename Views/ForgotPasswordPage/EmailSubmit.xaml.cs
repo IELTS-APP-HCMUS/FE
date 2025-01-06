@@ -14,8 +14,6 @@ using Google.Apis.Util;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
 
-
-
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -27,15 +25,16 @@ namespace login_full.Views.ForgotPasswordPage
 	public sealed partial class EmailSubmit : Page
 	{
 		private readonly LoginApiService _loginApiService;
-
-		/// <summary>
-		/// Khởi tạo lớp EmailSubmit và thiết lập LoginApiService.
-		/// </summary>
-		public EmailSubmit()
+		private readonly ClientCaller _clientCaller;
+        /// <summary>
+        /// Khởi tạo lớp EmailSubmit và thiết lập LoginApiService.
+        /// </summary>
+        public EmailSubmit()
 		{
 			this.InitializeComponent();
 			_loginApiService = new LoginApiService();
-		}
+            _clientCaller = new ClientCaller();
+        }
 
 		/// <summary>
 		/// Gửi yêu cầu OTP đến email của người dùng thông qua API.
@@ -44,14 +43,12 @@ namespace login_full.Views.ForgotPasswordPage
 		/// <returns>Chuỗi JSON phản hồi từ API hoặc thông báo lỗi.</returns>
 		private async Task<string> SendOtpToEmail(string email)
 		{
-			string json = JsonConvert.SerializeObject(new { email });
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			string url = $"api/auth/request-reset-password";
+			var content = ClientCaller.GetContent(new { email });
 
 			try
 			{
-				HttpClient client = new HttpClient();
-			
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/auth/request-reset-password", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync(url, content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -106,16 +103,14 @@ namespace login_full.Views.ForgotPasswordPage
 				}
 			}
 		}
-		private static readonly HttpClient client = new HttpClient();
 
 		private async Task<string> SendEmail(string email)
 		{
-			string json = JsonConvert.SerializeObject(new {email});
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var content = ClientCaller.GetContent(new { email });
 
 			try
 			{
-				HttpResponseMessage response = await client.PostAsync("https://ielts-app-api-4.onrender.com/api/users/login", content);
+				HttpResponseMessage response = await _clientCaller.PostAsync("api/users/login", content);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -277,5 +272,11 @@ namespace login_full.Views.ForgotPasswordPage
 		{
 			await App.NavigationService.NavigateToAsync(typeof(HomePage)); // Navigate như thế này đây
 		}
+
+		private async void BackToLoginButton_Click(object sender, RoutedEventArgs e)
+		{
+			await App.NavigationService.NavigateToAsync(typeof(LoginPage)); // Replace 'LoginPage' with the actual name of your login page class.
+		}
+
 	}
 }

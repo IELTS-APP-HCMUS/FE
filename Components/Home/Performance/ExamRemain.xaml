@@ -25,7 +25,7 @@
 			<StackPanel Grid.Column="0" Width="140">
 				<TextBlock Text="Ngày dự thi" Margin="4,0,0,5" />
 				<Button x:Name="ExamDateButton" Content="{Binding NextExamDate, Converter={StaticResource currencyFormatter}}" CornerRadius="10"
-					Background="#FFE4E1" Foreground="Black"
+					Background="#DFEEF9" Foreground="Black"
 					HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
 					<Button.Flyout>
 						<Flyout>
@@ -36,7 +36,7 @@
 			</StackPanel>
 			<StackPanel Grid.Column="1" Width="140">
 				<TextBlock Text="Số ngày còn lại" Margin="4,0,0,5"/>
-				<Border Background="#FFE4E1" Padding="5" CornerRadius="10">
+                <Border Background="#DFEEF9" Padding="5" CornerRadius="10">
 					<TextBlock x:Name="RemainingDaysText" Text="{Binding TargetStudyDuration}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 				</Border>
 			</StackPanel>

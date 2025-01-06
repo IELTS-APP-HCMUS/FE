@@ -13,17 +13,17 @@
 	<Grid Background="#fff">
 		<!-- Tiêu đề -->
 		<header:ForgotHeader Title="Verify OTP" Describe="An authentication code has been sent to your email."/>
-		<!--<StackPanel Margin="90, 40, 0, 0" HorizontalAlignment="Left" Width="600">
+		<StackPanel Margin="90, 40, 0, 0" HorizontalAlignment="Left" Width="600">
 			<StackPanel.Resources>
 				<Style TargetType="TextBlock">
 					<Setter Property="Foreground" Value="Black"/>
 				</Style>
 			</StackPanel.Resources>
-			<Button Content="← Back to login" FontSize="14" HorizontalAlignment="Left" Foreground="Black"/>
+            <Button Content="← Back to login" FontSize="14" HorizontalAlignment="Left" Foreground="Black" Click="BackToLoginButton_Click"/>
 			<TextBlock Text="Verify OTP" FontSize="34" FontWeight="Bold" Margin="0,40,0,10"/>
 			<TextBlock Text="An authentication code has been sent to your email." 
                FontSize="14" Foreground="Gray" TextWrapping="Wrap" Margin="0,30,0,0"/>
-		</StackPanel>-->
+		</StackPanel>
 
 		<!-- Form nhập otp -->
 		<Grid Margin="90,200,0,10" Width="300" HorizontalAlignment="Left">

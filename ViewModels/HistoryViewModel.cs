@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,6 +17,10 @@ namespace login_full.ViewModels
         private readonly IReadingTestService _readingTestService;
         private readonly INavigationService _navigationService;
         private ObservableCollection<TestHistory> _testHistories;
+        private ObservableCollection<TestHistory> _displayedHistories;
+        private int _itemsPerPage = 10;
+        private int _currentPage = 1;
+        private int _totalPages;
 
         public ObservableCollection<TestHistory> TestHistories
         {
@@ -24,17 +28,60 @@ namespace login_full.ViewModels
             set => SetProperty(ref _testHistories, value);
         }
 
+        public ObservableCollection<TestHistory> DisplayedHistories
+        {
+            get => _displayedHistories;
+            set => SetProperty(ref _displayedHistories, value);
+        }
+
+        public int ItemsPerPage
+        {
+            get => _itemsPerPage;
+            set
+            {
+                if (SetProperty(ref _itemsPerPage, value))
+                {
+                    UpdatePagination();
+                }
+            }
+        }
+
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set
+            {
+                if (SetProperty(ref _currentPage, value))
+                {
+                    UpdatePagination();
+                }
+            }
+        }
+
+        public int TotalPages
+        {
+            get => _totalPages;
+            set => SetProperty(ref _totalPages, value);
+        }
+
+        public string PageInfo => $"{CurrentPage}/{TotalPages}";
+
+        public List<int> AvailableItemsPerPage => new List<int> { 5, 10, 15 };
+
         public IRelayCommand SortByNameCommand { get; }
-		public IRelayCommand SortByTimeCommand { get; }
+        public IRelayCommand SortByTimeCommand { get; }
+        public IRelayCommand NextPageCommand { get; }
+        public IRelayCommand PreviousPageCommand { get; }
 
-
-		public HistoryViewModel(IReadingTestService readingTestService, INavigationService navigationService)
+        public HistoryViewModel(IReadingTestService readingTestService, INavigationService navigationService)
         {
             _readingTestService = readingTestService;
             _navigationService = navigationService;
             SortByNameCommand = new RelayCommand(SortByName);
-			SortByTimeCommand = new RelayCommand(SortByTime);
-			LoadTestHistories();
+            SortByTimeCommand = new RelayCommand(SortByTime);
+            NextPageCommand = new RelayCommand(NextPage, CanGoToNextPage);
+            PreviousPageCommand = new RelayCommand(PreviousPage, CanGoToPreviousPage);
+            LoadTestHistories();
         }
 
         private async void LoadTestHistories()
@@ -51,19 +98,60 @@ namespace login_full.ViewModels
         private void SortByTime()
         {
             var sorted = TestHistories.OrderBy(x => x.SubmitTime).ToList();
-			TestHistories = new ObservableCollection<TestHistory>(sorted);
-		}
-		public async void RetakeTest(string testId)
+            TestHistories = new ObservableCollection<TestHistory>(sorted);
+        }
+
+        private void UpdatePagination()
+        {
+            if (_testHistories == null) return;
+
+            TotalPages = (int)Math.Ceiling(_testHistories.Count / (double)ItemsPerPage);
+
+            var skip = (CurrentPage - 1) * ItemsPerPage;
+            var items = _testHistories.Skip(skip).Take(ItemsPerPage);
+            DisplayedHistories = new ObservableCollection<TestHistory>(items);
+
+            OnPropertyChanged(nameof(PageInfo));
+            (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+            (PreviousPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+        }
+
+        private bool CanGoToNextPage() => CurrentPage < TotalPages;
+        private bool CanGoToPreviousPage() => CurrentPage > 1;
+
+        private void NextPage()
+        {
+            if (CanGoToNextPage())
+            {
+                CurrentPage++;
+            }
+        }
+
+        private void PreviousPage()
+        {
+            if (CanGoToPreviousPage())
+            {
+                CurrentPage--;
+            }
+        }
+
+        public async void RetakeTest(string testId)
         {
             await _navigationService.NavigateToAsync(typeof(ReadingTestPage), testId);
         }
 
-        public async void ViewResult(string testId)
-        {
-            await _navigationService.NavigateToAsync(typeof(TestDetailResultPage), testId);
-        }
+		public async void ViewResult(string testId, string answerId)
+		{
+			// Truyền cả testId và answerId vào trang Xem lại
+			await _navigationService.NavigateToAsync(typeof(TestDetailResultPage),
+				new Dictionary<string, string>
+				{
+			{ "testId", testId },
+			{ "answerId", answerId }
+				});
+		}
 
-        public async void RefreshHistory()
+		public async void RefreshHistory()
         {
             await LoadTestHistoriesAsync();
         }
@@ -74,11 +162,12 @@ namespace login_full.ViewModels
             var testHistories = histories.Select(h =>
             {
                 h.RetakeCommand = new RelayCommand(() => RetakeTest(h.TestId));
-                h.ViewResultCommand = new RelayCommand(() => ViewResult(h.TestId));
+                h.ViewResultCommand = new RelayCommand(() => ViewResult(h.TestId, h.AnswerId));
                 return h;
             });
-            TestHistories = new ObservableCollection<TestHistory>(testHistories);
+            _testHistories = new ObservableCollection<TestHistory>(testHistories);
+            UpdatePagination();
         }
 
     }
-} 
+}

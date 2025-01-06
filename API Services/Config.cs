@@ -7,7 +7,7 @@ public class ConfigService
 {
 	// Changed DbConfig to use Dictionary<string, string> instead of object for clarity
 	public Dictionary<string, string> DbConfig { get; private set; }
-
+	public Dictionary<string, string> ServerConfig { get; private set; }
 	public ConfigService()
 	{
 		string basePath = AppContext.BaseDirectory;
@@ -24,6 +24,7 @@ public class ConfigService
 			var deserializer = new Deserializer();
 			var config = deserializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(yaml);
 			DbConfig = config["database"];
+			ServerConfig = config["server"];
 		}
 		catch (Exception ex)
 		{
@@ -36,4 +37,6 @@ public class ConfigService
 	public string GetDbName() => DbConfig.ContainsKey("name") ? DbConfig["name"] : throw new KeyNotFoundException("Name not found in config");
 	public string GetDbUser() => DbConfig.ContainsKey("user") ? DbConfig["user"] : throw new KeyNotFoundException("User not found in config");
 	public string GetDbPassword() => DbConfig.ContainsKey("password") ? DbConfig["password"] : throw new KeyNotFoundException("Password not found in config");
+
+	public string GetBaseUrl() => ServerConfig.ContainsKey("host") ? ServerConfig["host"] : throw new KeyNotFoundException("Base URL not found in config");
 }
