@@ -60,10 +60,10 @@
                     <ColumnDefinition Width="0.4*"/>  <!-- STT -->
                     <ColumnDefinition Width="1*"/> <!-- Từ vựng -->
                     <ColumnDefinition Width="1*"/> <!-- Trạng thái -->
-                    <ColumnDefinition Width="0.7*"/> <!-- Loại từ -->
-                    <ColumnDefinition Width="1*"/> <!-- Nghĩa của từ -->
+                    <ColumnDefinition Width="0.9*"/> <!-- Loại từ -->
+                    <ColumnDefinition Width="1.2*"/> <!-- Nghĩa của từ -->
                     <ColumnDefinition Width="4.3*"/> <!-- Ví dụ -->
-                    <ColumnDefinition Width="2.2*"/> <!-- Ghi chú -->
+                    <ColumnDefinition Width="1.8*"/> <!-- Ghi chú -->
                     <ColumnDefinition Width="0.2*"/>
                    
                     <ColumnDefinition Width="0.2*"/>  <!-- Action -->
@@ -88,6 +88,7 @@
                 Background="White">
                 <ListView.ItemTemplate>
                     <DataTemplate>
+                        <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
                         <Grid >
                        
                                 <!--<Grid.Resources>
@@ -109,13 +110,13 @@
                                     <!-- Từ vựng -->
                                     <ColumnDefinition Width="1*"/>
                                     <!-- Trạng thái -->
-                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="0.9*"/>
                                     <!-- Loại từ -->
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1.2*"/>
                                     <!-- Nghĩa của từ -->
                                     <ColumnDefinition Width="4.3*"/>
                                     <!-- Ví dụ -->
-                                    <ColumnDefinition Width="2.2*"/>
+                                    <ColumnDefinition Width="1.8*"/>
                                     <!-- Ghi chú -->
                                      
                                     <ColumnDefinition Width="0.4*"/>
@@ -162,8 +163,7 @@
                                        Grid.Column="5"
                                        TextWrapping="Wrap"
                                        TextTrimming="CharacterEllipsis"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       />
                             <TextBlock Text="{Binding Note}" Grid.Column="6" 
                                        TextWrapping="Wrap"
                                         TextTrimming="CharacterEllipsis"
@@ -177,6 +177,7 @@
                                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" />
                             </Button>
                         </Grid>
+                        </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

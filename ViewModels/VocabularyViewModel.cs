@@ -264,26 +264,69 @@ namespace login_full.ViewModels
         }
 
         // xóa dựa vào VocabularyItem
+        //private async void DeleteItem(VocabularyItem item)
+        //{
+        //    if (item != null)
+        //    {
+        //        await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
+        //        VocabularyItems.Remove(item);
+        //        _sampleData.Remove(item);
+        //        _totalItems--;
+
+        //        for (int i = 0; i < _sampleData.Count; i++)
+        //        {
+        //            _sampleData[i].Index = i + 1;
+        //        }
+
+        //        LoadPagedData();
+
+        //        if (VocabularyItems.Count == 0 && _currentPage > 1)
+        //        {
+        //            _currentPage--;
+        //            LoadPagedData();
+        //        }
+        //    }
+        //}
         private async void DeleteItem(VocabularyItem item)
         {
             if (item != null)
             {
-                await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
-                VocabularyItems.Remove(item);
-                _sampleData.Remove(item);
-                _totalItems--;
-                
-                for (int i = 0; i < _sampleData.Count; i++)
+                // Tạo dialog xác nhận
+                ContentDialog deleteDialog = new ContentDialog
                 {
-                    _sampleData[i].Index = i + 1;
-                }
-                
-                LoadPagedData();
-                
-                if (VocabularyItems.Count == 0 && _currentPage > 1)
+                    Title = "Xác nhận xóa",
+                    Content = $"Bạn có chắc chắn muốn xóa từ \"{item.Word}\" khỏi sổ từ vựng?",
+                    PrimaryButtonText = "Xóa",
+                    CloseButtonText = "Hủy",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+
+                // Hiển thị dialog và đợi phản hồi
+                var result = await deleteDialog.ShowAsync();
+
+                // Chỉ xóa nếu người dùng nhấn nút Xóa
+                if (result == ContentDialogResult.Primary)
                 {
-                    _currentPage--;
+                    await _vocabularyService.DeleteVocabularyAsync(item.WordKey);
+                    VocabularyItems.Remove(item);
+                    _sampleData.Remove(item);
+                    _totalItems--;
+
+                    // Cập nhật lại index cho tất cả items
+                    for (int i = 0; i < _sampleData.Count; i++)
+                    {
+                        _sampleData[i].Index = i + 1;
+                    }
+
                     LoadPagedData();
+
+                    // Nếu trang hiện tại không còn item nào, quay lại trang trước
+                    if (VocabularyItems.Count == 0 && _currentPage > 1)
+                    {
+                        _currentPage--;
+                        LoadPagedData();
+                    }
                 }
             }
         }
