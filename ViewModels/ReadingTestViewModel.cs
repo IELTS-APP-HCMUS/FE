@@ -15,6 +15,7 @@ using login_full.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using java.awt;
+using login_full.Helpers;
 
 
 
@@ -115,14 +116,16 @@ namespace login_full.ViewModels
         private readonly IPdfExportService _pdfExportService;
         private readonly TextHighlightService _highlightService;
 		private readonly DictionaryService _dictionaryService;
+        private readonly LoaderManager _loaderManager;
 
-		public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService)
+        public ReadingTestViewModel(IReadingTestService testService, INavigationService navigationService, IPdfExportService pdfExportService, DictionaryService dictionaryService, LoaderManager loaderManager)
         {
             _testService = testService ?? throw new ArgumentNullException(nameof(testService));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _pdfExportService = pdfExportService ?? throw new ArgumentNullException(nameof(pdfExportService));
 			_dictionaryService = dictionaryService ?? throw new ArgumentNullException(nameof(dictionaryService));
 			_highlightService = ServiceLocator.GetService<TextHighlightService>();
+            _loaderManager = loaderManager;
 
             SubmitCommand = new RelayCommand(async () => await SubmitTest());
 
@@ -305,7 +308,10 @@ namespace login_full.ViewModels
 
             if (result == ContentDialogResult.Primary)
             {
+
+                _loaderManager.ShowLoader();
                 string answerID = await _testService.SubmitTestAsync(TestDetail.Id);
+                _loaderManager.HideLoader();
                 if (answerID != "")
                 {
                     TestDetail.Progress.IsCompleted = true;

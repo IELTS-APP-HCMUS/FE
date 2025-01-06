@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using login_full.Helpers;
 
 
 namespace login_full.Views
@@ -28,13 +29,15 @@ namespace login_full.Views
 			var paginationService = new PaginationService();
 			var searchService = new SearchService(new List<ReadingItemModels>(), paginationService);
 			var completedItemsService = new CompletedItemsService(new List<ReadingItemModels>(), paginationService);
+            var loaderManager = new LoaderManager(App.MainWindow);
 
-			ViewModel = new ReadingItemsViewModel(
+            ViewModel = new ReadingItemsViewModel(
 				readingItemsService,
 				navigationService,
 				searchService,
 				paginationService,
-				completedItemsService
+				completedItemsService,
+				loaderManager
 			);
 
 			// Start async initialization

@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Globalization;
 using login_full.Models;
 using login_full.Helpers;
+using System.Threading.Tasks;
 
 
 namespace login_full.Views
@@ -28,12 +29,14 @@ namespace login_full.Views
         private int _selectedLength;
         private DispatcherTimer _popupTimer;
         private readonly ToastManager toastManager;
+        private readonly LoaderManager loaderManager;
 
         public ReadingTestPage()
         {
             this.InitializeComponent();
             // Khởi tạo ToastManager
             toastManager = new ToastManager(RootGrid);
+            loaderManager = new LoaderManager(App.MainWindow);
             try
             {
                 var readingTestService = ServiceLocator.GetService<IReadingTestService>();
@@ -53,7 +56,8 @@ namespace login_full.Views
                     readingTestService,
                     navigationService,
                     pdfExportService,
-                    _dictionaryService
+                    _dictionaryService,
+                    loaderManager
                 );
 
 				
@@ -221,7 +225,7 @@ namespace login_full.Views
 		private async void WordButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is Button button && button.Content is TextBlock textBlock)
-			{
+            {
 				string word = textBlock.Text; // Get the clicked word
 				System.Diagnostics.Debug.WriteLine($"Clicked word: {word}");
 
