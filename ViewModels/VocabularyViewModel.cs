@@ -100,7 +100,9 @@ namespace login_full.ViewModels
         public IRelayCommand<VocabularyItem> DeleteItemCommand { get; }
         public IRelayCommand<VocabularyItem> ToggleStatusCommand { get; }
         public IRelayCommand AddVocabCommand { get; }
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="VocabularyViewModel"/>.
+        /// </summary>
         public VocabularyViewModel()
         {
             _vocabularyService = new VocabularyService();
@@ -223,7 +225,9 @@ namespace login_full.ViewModels
 
             LoadPagedData();
         }
-
+        /// <summary>
+        /// Tải dữ liệu phân trang.
+        /// </summary>
         private void LoadPagedData()
         {
             try 
@@ -263,7 +267,9 @@ namespace login_full.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Error in UpdatePageInfo: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Chuyển đến trang tiếp theo.
+        /// </summary>
         private void NextPage()
         {
             int totalPages = (_totalItems + _pageSize - 1) / _pageSize;
@@ -273,7 +279,9 @@ namespace login_full.ViewModels
                 LoadPagedData();
             }
         }
-
+        /// <summary>
+        /// Quay lại trang trước đó.
+        /// </summary>
         private void PreviousPage()
         {
             if (_currentPage > 1)
@@ -282,7 +290,10 @@ namespace login_full.ViewModels
                 LoadPagedData();
             }
         }
-
+        /// <summary>
+        /// Thay đổi kích thước trang.
+        /// </summary>
+        /// <param name="newSize">Kích thước trang mới</param>
         private void ChangePageSize(int newSize)
         {
             _pageSize = newSize;
@@ -368,6 +379,10 @@ namespace login_full.ViewModels
         }
 
         // thay đổi trạng thái đã học -> dang học và ngược lại
+        /// <summary>
+        /// Thay đổi trạng thái đã học -> đang học và ngược lại.
+        /// </summary>
+        /// <param name="item">Từ vựng cần thay đổi trạng thái</param>
         private async void ToggleStatus(VocabularyItem item)
         {
             if (item != null)
@@ -384,6 +399,9 @@ namespace login_full.ViewModels
 
 
         // thêm từ vựng 
+        /// <summary>
+        /// Hiển thị dialog thêm từ vựng mới.
+        /// </summary>
         private async void ShowAddVocabDialog()
         {
             var stackPanel = new StackPanel

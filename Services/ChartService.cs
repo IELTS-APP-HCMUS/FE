@@ -23,6 +23,17 @@ namespace login_full.Services
 {
     public class ChartService : IChartService
     {
+
+        /// <summary>
+        /// Vẽ biểu đồ tròn thể hiện kết quả bài kiểm tra.
+        /// </summary>
+        /// <param name="canvas">Canvas để vẽ biểu đồ</param>
+        /// <param name="centerX">Tọa độ X của tâm</param>
+        /// <param name="centerY">Tọa độ Y của tâm</param>
+        /// <param name="radius">Bán kính biểu đồ</param>
+        /// <param name="correctPercentage">Tỷ lệ câu đúng</param>
+        /// <param name="wrongPercentage">Tỷ lệ câu sai</param>
+        /// <param name="unansweredPercentage">Tỷ lệ câu chưa trả lời</param>
         public void DrawPieChart(Canvas canvas, double centerX, double centerY, double radius,
                                double correctPercentage, double wrongPercentage, double unansweredPercentage)
         {
@@ -67,7 +78,16 @@ namespace login_full.Services
                             unansweredPercentage / 100 * 360, Colors.WhiteSmoke);
             }
         }
-
+        /// <summary>
+        /// Vẽ một phần của biểu đồ tròn.
+        /// </summary>
+        /// <param name="canvas">Canvas để vẽ</param>
+        /// <param name="centerX">Tọa độ X của tâm</param>
+        /// <param name="centerY">Tọa độ Y của tâm</param>
+        /// <param name="radius">Bán kính</param>
+        /// <param name="startAngle">Góc bắt đầu</param>
+        /// <param name="sweepAngle">Góc quét</param>
+        /// <param name="color">Màu sắc</param>
         private void DrawPieSlice(Canvas canvas, double centerX, double centerY,
                                 double radius, double startAngle, double sweepAngle, Color color)
         {
@@ -113,7 +133,14 @@ namespace login_full.Services
             canvas.Children.Add(path);
         }
 
-        // Thêm phương thức mới để vẽ hình tròn đầy đủ
+        /// <summary>
+        /// Vẽ hình tròn đầy đủ.
+        /// </summary>
+        /// <param name="canvas">Canvas để vẽ</param>
+        /// <param name="centerX">Tọa độ X của tâm</param>
+        /// <param name="centerY">Tọa độ Y của tâm</param>
+        /// <param name="radius">Bán kính</param>
+        /// <param name="color">Màu sắc</param>
         private void DrawFullCircle(Canvas canvas, double centerX, double centerY, double radius, Color color)
         {
             var ellipse = new Microsoft.UI.Xaml.Shapes.Ellipse

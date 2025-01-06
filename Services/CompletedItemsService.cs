@@ -7,16 +7,33 @@ using System.Threading.Tasks;
 
 namespace login_full.Services
 {
+    /// <summary>
+    // Service quản lý các mục đã hoàn thành.
+    // Cung cấp các chức năng hiển thị và lọc các mục đọc đã hoàn thành.
+    // </summary>
     public class CompletedItemsService : ICompletedItemsService
     {
+        /// <summary>
+        /// Danh sách tất cả các mục đọc.
+        /// </summary>
         private readonly List<ReadingItemModels> _allItems;
+        /// <summary>
+        /// Service phân trang.
+        /// </summary>
         private readonly IPaginationService _paginationService;
+        /// <summary>
+        /// Trạng thái hiển thị chỉ các mục đã hoàn thành.
+        /// </summary>
         private bool _showingCompletedOnly;
 
         public bool IsShowingCompletedOnly => _showingCompletedOnly;
 
         public event EventHandler<List<ReadingItemModels>> DisplayListUpdated;
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="CompletedItemsService"/>.
+        /// </summary>
+        /// <param name="items">Danh sách các mục đọc</param>
+        /// <param name="paginationService">Service phân trang</param>
         public CompletedItemsService(
             List<ReadingItemModels> items,
             IPaginationService paginationService)
@@ -25,13 +42,17 @@ namespace login_full.Services
             _paginationService = paginationService;
             _showingCompletedOnly = false;
         }
-
+        /// <summary>
+        /// Chuyển đổi trạng thái hiển thị chỉ các mục đã hoàn thành.
+        /// </summary>
         public void ToggleCompletedItems()
         {
             _showingCompletedOnly = !_showingCompletedOnly;
             UpdateDisplayList();
         }
-
+        /// <summary>
+        /// Cập nhật danh sách hiển thị dựa trên trạng thái hiện tại.
+        /// </summary>
         public async void UpdateDisplayList()
         {
             try

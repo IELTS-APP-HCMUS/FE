@@ -102,7 +102,14 @@ namespace login_full.ViewModels
 
             QuestionTypeStatistics = new ObservableCollection<QuestionTypeStats>(stats);
         }
-
+        /// <summary>
+        /// Khởi tạo một instance mới của <see cref="TestResultViewModel"/>.
+        /// </summary>
+        /// <param name="testDetail">Chi tiết bài kiểm tra</param>
+        /// <param name="duration">Thời gian làm bài</param>
+        /// <param name="chartService">Service vẽ biểu đồ</param>
+        /// <param name="navigationService">Service điều hướng</param>
+        /// <param name="answerID">ID của câu trả lời</param>
         public TestResultViewModel(ReadingTestDetail testDetail, TimeSpan duration, IChartService chartService, INavigationService navigationService, string answerID)
         {
             _navigationService = navigationService;
@@ -129,7 +136,10 @@ namespace login_full.ViewModels
 			TestDuration = $"Thời gian làm bài: {duration.Minutes:D2}:{duration.Seconds:D2}";
             InitializeQuestionTypeStats();
         }
-		public Dictionary<string, int> Summary
+        /// <summary>
+        /// Tổng hợp kết quả bài kiểm tra.
+        /// </summary>
+        public Dictionary<string, int> Summary
 		{
 			get => _summary;
 			private set
@@ -138,7 +148,12 @@ namespace login_full.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public async Task LoadSummaryAsync(string answerID)
+
+        /// <summary>
+        /// Tải tổng hợp kết quả từ API.
+        /// </summary>
+        /// <param name="answerID">ID của câu trả lời</param>
+        public async Task LoadSummaryAsync(string answerID)
 		{
             try
             {
@@ -204,7 +219,13 @@ namespace login_full.ViewModels
 				System.Diagnostics.Debug.WriteLine($"Error clearing cached answers: {ex.Message}");
 			}
 		}
-		private string GetQuestionTypeDisplayName(QuestionType type)
+
+        /// <summary>
+        /// Lấy tên hiển thị cho loại câu hỏi.
+        /// </summary>
+        /// <param name="type">Loại câu hỏi</param>
+        /// <returns>Tên hiển thị</returns>
+        private string GetQuestionTypeDisplayName(QuestionType type)
         {
             return type switch
             {

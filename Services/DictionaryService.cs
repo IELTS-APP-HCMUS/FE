@@ -9,18 +9,34 @@ using Microsoft.ML.Tokenizers;
 using SharpToken;
 using login_full.Models;
 
-
+/// <summary>
+// Service quản lý từ điển.
+// Cung cấp các chức năng tìm kiếm và thêm từ vựng.
+// </summary>
 public class DictionaryService
 {
-	private readonly Dictionary<string, DictionaryEntry> _dictionary;
+    /// <summary>
+    /// Từ điển lưu trữ các từ và định nghĩa.
+    /// </summary>
+    private readonly Dictionary<string, DictionaryEntry> _dictionary;
 	private readonly ClientCaller _clientCaller;
-
-	public DictionaryService()
+    /// <summary>
+    /// Khởi tạo một instance mới của <see cref="DictionaryService"/>.
+    /// </summary>
+    public DictionaryService()
 	{
 		_dictionary = new Dictionary<string, DictionaryEntry>(StringComparer.OrdinalIgnoreCase){};
 		_clientCaller = new ClientCaller();
 	}
-	public async Task<DictionaryEntry> FetchWordFromApiAsync(int quizId, int sentenceIndex, int wordIndex, string word)
+    /// <summary>
+    /// Lấy thông tin từ vựng từ API.
+    /// </summary>
+    /// <param name="quizId">ID của bài kiểm tra</param>
+    /// <param name="sentenceIndex">Chỉ số câu</param>
+    /// <param name="wordIndex">Chỉ số từ</param>
+    /// <param name="word">Từ cần tìm</param>
+    /// <returns>Đối tượng DictionaryEntry chứa thông tin từ vựng</returns>
+    public async Task<DictionaryEntry> FetchWordFromApiAsync(int quizId, int sentenceIndex, int wordIndex, string word)
 	{
 		try
 		{
@@ -57,13 +73,21 @@ public class DictionaryService
 
 		return null;
 	}
-
-	public DictionaryEntry GetWord(string word)
+    /// <summary>
+    /// Lấy thông tin từ vựng từ từ điển cục bộ.
+    /// </summary>
+    /// <param name="word">Từ cần tìm</param>
+    /// <returns>Đối tượng DictionaryEntry chứa thông tin từ vựng</returns>
+    public DictionaryEntry GetWord(string word)
 	{
 		return _dictionary.TryGetValue(word, out var entry) ? entry : null;
 	}
-
-	public Dictionary<string, List<(int sentenceIndex, int wordIndex)>> GenerateWordIndices(string content)
+    /// <summary>
+    /// Tạo danh sách chỉ số từ trong nội dung.
+    /// </summary>
+    /// <param name="content">Nội dung cần phân tích</param>
+    /// <returns>Dictionary chứa từ và danh sách chỉ số</returns>
+    public Dictionary<string, List<(int sentenceIndex, int wordIndex)>> GenerateWordIndices(string content)
 	{
 		var wordIndexMap = new Dictionary<string, List<(int, int)>>(StringComparer.OrdinalIgnoreCase);
 
@@ -93,7 +117,15 @@ public class DictionaryService
 
 		return wordIndexMap;
 	}
-	public string GetVocabId(string word, string content, int quizId)
+
+    /// <summary>
+    /// Lấy ID từ vựng dựa trên từ và nội dung.
+    /// </summary>
+    /// <param name="word">Từ cần tìm</param>
+    /// <param name="content">Nội dung chứa từ</param>
+    /// <param name="quizId">ID của bài kiểm tra</param>
+    /// <returns>ID từ vựng</returns>
+    public string GetVocabId(string word, string content, int quizId)
 	{
 		var indices = GenerateWordIndices(content);
 		if (indices.ContainsKey(word))
@@ -103,8 +135,12 @@ public class DictionaryService
 		}
 		return null;
 	}
-
-	public async Task<bool> AddVocabularyAsync(VocabularyItem vocab)
+    /// <summary>
+    /// Thêm từ vựng vào hệ thống thông qua API.
+    /// </summary>
+    /// <param name="vocab">Đối tượng từ vựng cần thêm</param>
+    /// <returns>Trả về true nếu thêm thành công, ngược lại false</returns>
+    public async Task<bool> AddVocabularyAsync(VocabularyItem vocab)
 	{
 		try
 		{

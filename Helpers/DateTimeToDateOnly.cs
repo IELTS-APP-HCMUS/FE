@@ -9,9 +9,20 @@ using login_full.Models;
 
 namespace login_full.Helpers
 {
-	class DateTimeToDateOnly : IValueConverter
+    /// <summary>
+    /// Chuyển đổi DateTime sang DateOnly.
+    /// </summary>
+    class DateTimeToDateOnly : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, string language)
+        /// <summary>
+        /// Chuyển đổi DateTime sang DateOnly.
+        /// </summary>
+        /// <param name="value">Giá trị DateTime cần chuyển đổi</param>
+        /// <param name="targetType">Loại dữ liệu đích</param>
+        /// <param name="parameter">Tham số bổ sung</param>
+        /// <param name="language">Ngôn ngữ</param>
+        /// <returns>Đối tượng DateOnly</returns>
+        public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			string dateTime = (string)value;
 			if(dateTime == "- / - / -")

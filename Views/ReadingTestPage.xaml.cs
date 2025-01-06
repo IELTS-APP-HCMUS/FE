@@ -406,8 +406,12 @@ namespace login_full.Views
                 }
             }
 		}
-
-		private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện khi văn bản được chọn trong RichTextBlock thay đổi.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
+        private void ContentRichTextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
             var richTextBlock = sender as RichTextBlock;
             if (richTextBlock != null && ViewModel.IsHighlightMode)
@@ -441,6 +445,11 @@ namespace login_full.Views
         }
 
         // Helper method để lấy toàn bộ text từ RichTextBlock
+        /// <summary>
+        /// Lấy toàn bộ văn bản từ RichTextBlock.
+        /// </summary>
+        /// <param name="richTextBlock">RichTextBlock cần lấy văn bản</param>
+        /// <returns>Chuỗi văn bản từ RichTextBlock</returns>
         private string GetFullText(RichTextBlock richTextBlock)
         {
             string text = string.Empty;
@@ -459,7 +468,11 @@ namespace login_full.Views
             }
             return text;
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi nút Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void HighlightButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(_selectedText)) return;
@@ -473,7 +486,11 @@ namespace login_full.Views
             ApplyHighlights();
             HighlightPopup.IsOpen = false;
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi nút Remove Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void RemoveHighlightButton_Click(object sender, RoutedEventArgs e)
         {
             // Tìm tất cả highlights có overlap với vùng được chọn
@@ -490,13 +507,23 @@ namespace login_full.Views
             HighlightPopup.IsOpen = false;
         }
         // Helper method để kiểm tra overlap giữa hai đoạn text
+        /// <summary>
+        /// Kiểm tra xem hai đoạn văn bản có overlap không.
+        /// </summary>
+        /// <param name="start1">Vị trí bắt đầu của đoạn 1</param>
+        /// <param name="length1">Độ dài của đoạn 1</param>
+        /// <param name="start2">Vị trí bắt đầu của đoạn 2</param>
+        /// <param name="length2">Độ dài của đoạn 2</param>
+        /// <returns>True nếu có overlap, ngược lại False</returns>
         private bool HasOverlap(int start1, int length1, int start2, int length2)
         {
             int end1 = start1 + length1;
             int end2 = start2 + length2;
             return !(end1 <= start2 || start1 >= end2);
         }
-
+        /// <summary>
+        /// Áp dụng các highlight lên văn bản trong RichTextBlock.
+        /// </summary>
         private void ApplyHighlights()
         {
             var highlights = _highlightService.GetHighlights("current_document_id");
@@ -522,7 +549,11 @@ namespace login_full.Views
                 ContentRichTextBlock.TextHighlighters.Add(textHighlighter);
             }
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi chế độ highlight của ViewModel thay đổi.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="isHighlightMode">Trạng thái chế độ highlight</param>
         private void ViewModel_OnHighlightModeChanged(object sender, bool isHighlightMode)
         {
             // Cập nhật visual state của nút highlight
@@ -534,6 +565,12 @@ namespace login_full.Views
                 HighlightPopup.IsOpen = false;
             }
         }
+
+        /// <summary>
+        /// Xử lý sự kiện khi nút Main Highlight được nhấn.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void MainHighlightButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as AppBarToggleButton;
@@ -542,7 +579,11 @@ namespace login_full.Views
                 ViewModel.IsHighlightMode = button.IsChecked ?? false;
             }
         }
-
+        /// <summary>
+        /// Xử lý sự kiện khi timer của popup tick.
+        /// </summary>
+        /// <param name="sender">Đối tượng phát sinh sự kiện</param>
+        /// <param name="e">Thông tin sự kiện</param>
         private void PopupTimer_Tick(object sender, object e)
         {
             _popupTimer.Stop();

@@ -116,8 +116,12 @@ namespace login_full.ViewModels
 			CalculateScore(); 
 		}
 
-		// Toggle hiển thị lời giải thích
-		private void ToggleExplanation(ReadingTestQuestion question)
+        // Toggle hiển thị lời giải thích
+        /// <summary>
+        /// Chuyển đổi trạng thái hiển thị giải thích cho câu hỏi.
+        /// </summary>
+        /// <param name="question">Câu hỏi cần chuyển đổi</param>
+        private void ToggleExplanation(ReadingTestQuestion question)
 		{
 			if (question != null)
 			{

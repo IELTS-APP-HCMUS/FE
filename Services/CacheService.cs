@@ -7,9 +7,20 @@ using Windows.Storage;
 
 namespace login_full.Services
 {
-	public class CacheService
+
+    /// <summary>
+    // Service quản lý cache cho ứng dụng.
+    // Cung cấp các chức năng xóa cache cho câu trả lời bài kiểm tra.
+    // </summary>
+    public class CacheService
 	{
-		public async Task ClearTestAnswersAsync(string testId)
+
+        /// <summary>
+        /// Xóa cache câu trả lời cho bài kiểm tra cụ thể.
+        /// </summary>
+        /// <param name="testId">ID của bài kiểm tra</param>
+        /// <returns>Task hoàn thành việc xóa cache</returns>
+        public async Task ClearTestAnswersAsync(string testId)
 		{
 			// Clear cached answers for the given test ID
 			ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
