@@ -68,30 +68,30 @@ namespace login_full.Services
             State.CurrentPage = Math.Min(State.CurrentPage, State.TotalPages);
 
             // Tính toán các số trang hiển thị
-           // VisiblePageNumbers = CalculateVisiblePages(State.CurrentPage, State.TotalPages);
+            VisiblePageNumbers = CalculateVisiblePages(State.CurrentPage, State.TotalPages);
         }
 
-        //private List<int> CalculateVisiblePages(int currentPage, int totalPages)
-        //{
-        //    var pages = new List<int>();
-        //    const int maxVisiblePages = 5;
+        private List<int> CalculateVisiblePages(int currentPage, int totalPages)
+        {
+            var pages = new List<int>();
+            const int maxVisiblePages = 5; // Số lượng nút trang hiển thị
 
-        //    int start = Math.Max(1, currentPage - 2);
-        //    int end = Math.Min(totalPages, start + maxVisiblePages - 1);
+            int start = Math.Max(1, currentPage - 2);
+            int end = Math.Min(totalPages, start + maxVisiblePages - 1);
 
-        //    // Điều chỉnh start nếu end đã ở cuối
-        //    if (end == totalPages)
-        //    {
-        //        start = Math.Max(1, end - maxVisiblePages + 1);
-        //    }
+            // Điều chỉnh start nếu end đã ở cuối
+            if (end == totalPages)
+            {
+                start = Math.Max(1, end - maxVisiblePages + 1);
+            }
 
-        //    for (int i = start; i <= end; i++)
-        //    {
-        //        pages.Add(i);
-        //    }
+            for (int i = start; i <= end; i++)
+            {
+                pages.Add(i);
+            }
 
-        //    return pages;
-        //}
+            return pages;
+        }
 
         private void UpdateCurrentPageItems()
         {

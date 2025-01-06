@@ -22,7 +22,7 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Button x:Name="OverallScoreButton" Grid.Column="0" Click="ScoreCategoryButton_Click" Background="#FFE4E1" CornerRadius="10" Padding="10,5" Margin="0,0,5,0">
+            <Button x:Name="OverallScoreButton" Grid.Column="0" Click="ScoreCategoryButton_Click" Background="#DFEEF9" CornerRadius="10" Padding="10,5" Margin="0,0,5,0">
 				<StackPanel>
 					<TextBlock Text="Overall score" FontSize="12" Margin="0,0,5,10"/>
 					<StackPanel Orientation="Horizontal">
@@ -31,25 +31,25 @@
 					</StackPanel>
 				</StackPanel>
 			</Button>
-			<Button x:Name="ReadingButton" Grid.Column="1" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+            <Button x:Name="ReadingButton" Grid.Column="1" Click="ScoreCategoryButton_Click" Background="#DFEEF9" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
 				<StackPanel>
 					<TextBlock Text="Reading" FontSize="12" Margin="0,0,5,10"/>
 					<TextBlock x:Name="ReadingScoreTextBlock" Text="{Binding TargetReading}" FontWeight="Bold"/>
 				</StackPanel>
 			</Button>
-			<Button x:Name="ListeningButton" Grid.Column="2" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+            <Button x:Name="ListeningButton" Grid.Column="2" Click="ScoreCategoryButton_Click" Background="#DFEEF9" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
 				<StackPanel>
 					<TextBlock Text="Listening" FontSize="12" Margin="0,0,5,10"/>
 					<TextBlock x:Name="ListeningScoreTextBlock" Text="{Binding TargetListening}" FontWeight="Bold"/>
 				</StackPanel>
 			</Button>
-			<Button x:Name="WritingButton" Grid.Column="3" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
+            <Button x:Name="WritingButton" Grid.Column="3" Click="ScoreCategoryButton_Click" Background="#DFEEF9" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="10,5" Width="95" Margin="0,0,5,0">
 				<StackPanel>
 					<TextBlock Text="Writing" FontSize="12" Margin="0,0,5,10"/>
 					<TextBlock x:Name="WritingScoreTextBlock" Text="{Binding TargetWriting}" FontWeight="Bold"/>
 				</StackPanel>
 			</Button>
-			<Button Grid.Column="4" Click="ScoreCategoryButton_Click" Background="#FFE4E1" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Width="95" Padding="10,5">
+            <Button Grid.Column="4" Click="ScoreCategoryButton_Click" Background="#DFEEF9" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Width="95" Padding="10,5">
 				<StackPanel>
 					<TextBlock Text="Speaking" FontSize="12" Margin="0,0,5,10"/>
 					<TextBlock x:Name="SpeakingScoreTextBlock" Text="{Binding TargetSpeaking}" FontWeight="Bold"/>

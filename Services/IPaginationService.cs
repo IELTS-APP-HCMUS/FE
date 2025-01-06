@@ -11,14 +11,12 @@ namespace login_full.Services
     public interface IPaginationService
     {
         PaginatedItemsModels State { get; }
-
-      //  List<int> VisiblePageNumbers { get; }
+        List<int> VisiblePageNumbers { get; }
         void UpdateItems(IEnumerable<ReadingItemModels> items);
         void UpdateItemsPerPage(bool isSidebarExpanded);
         void NextPage();
         void PreviousPage();
         void GoToPage(int page);
         Task UpdateItemsAsync(IEnumerable<ReadingItemModels> items);
-
     }
 }

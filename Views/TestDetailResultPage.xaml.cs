@@ -1,9 +1,10 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using login_full.ViewModels;
 using login_full.Models;
 using login_full.Services;
+using System.Collections.Generic;
 
 namespace login_full.Views
 {
@@ -17,44 +18,33 @@ namespace login_full.Views
 
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
+		protected override async void OnNavigatedTo(NavigationEventArgs e)
+		{
+			base.OnNavigatedTo(e);
 
-			if (e.Parameter is string testId)
+			if (e.Parameter is Dictionary<string, string> parameters &&
+				parameters.TryGetValue("testId", out string testId) &&
+				parameters.TryGetValue("answerId", out string answerId))
 			{
-				System.Diagnostics.Debug.WriteLine($"Navigated with Test ID: {testId}");
+				System.Diagnostics.Debug.WriteLine($"Navigated with Test ID: {testId} and Answer ID: {answerId}");
 
-	
 				var readingTestService = ServiceLocator.GetService<IReadingTestService>();
 				var navigationService = App.NavigationService;
-
-				var testDetail = await readingTestService.GetTestDetailAsync(testId);
-				if (testDetail == null)
-				{
-					System.Diagnostics.Debug.WriteLine("TestDetail is null. Exiting.");
-					return;
-				}
-
-				System.Diagnostics.Debug.WriteLine($"TestDetail fetched: {testDetail.Title} with {testDetail.Questions?.Count} questions");
 
 				
 				ViewModel = new TestDetailResultViewModel(
 					readingTestService,
 					navigationService,
-					testDetail
-				);
-
-
-				foreach (var question in testDetail.Questions)
-				{
-					System.Diagnostics.Debug.WriteLine($"Initializing options for question: {question.QuestionText}");
-					question.InitializeOptionModels();
-				}
+					new ReadingTestDetail());
 
 				this.DataContext = ViewModel;
-				System.Diagnostics.Debug.WriteLine("DataContext set successfully.");
+
+				await ViewModel.LoadDataAsync(testId, answerId);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Invalid navigation parameters.");
 			}
 		}
-    }
+	}
 }

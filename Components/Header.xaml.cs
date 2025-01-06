@@ -18,6 +18,7 @@ using Windows.Foundation.Collections;
 using login_full.Models;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using login_full.Views;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -84,7 +85,13 @@ namespace login_full.Components
 			await NavigateToPage(typeof(HomePage));
 		}
 
-		private async void AboutUs_Click(object sender, RoutedEventArgs e)
+        private async void Vocal_Click(object sender, RoutedEventArgs e)
+        {
+            await NavigateToPage(typeof(VocabularyPage));
+        }
+
+
+        private async void AboutUs_Click(object sender, RoutedEventArgs e)
 		{
 			await NavigateToPage(typeof(AboutUsPage));
 		}

@@ -12,17 +12,44 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using login_full.Models;
+using login_full.Views;
+using login_full.Services;
+using login_full.ViewModels;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace login_full.Components.Home
 {
-	public sealed partial class Suggestion : UserControl
-	{
-		public Suggestion()
-		{
-			this.InitializeComponent();
-		}
-	}
+    public sealed partial class Suggestion : UserControl
+    {
+        private SuggestionViewModel ViewModel { get; }
+        public Suggestion()
+        {
+            this.InitializeComponent();
+            var readingItemsService = new ReadingItemsService(); // Create or get the service instance
+            ViewModel = new SuggestionViewModel(readingItemsService);
+
+            // Set the DataContext to the ViewModel
+            this.DataContext = ViewModel;
+
+            // Load items asynchronously
+            _ = LoadSuggestionsAsync(); // Fire and forget
+            //var readingItemsService = new ReadingItemsService();
+            //this.DataContext = new SuggestionViewModel(readingItemsService);
+        }
+        private async Task LoadSuggestionsAsync()
+        {
+            await ViewModel.LoadItemsAsync();
+        }
+        private async void StartTest_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var item = button.DataContext as ReadingItemModels;
+            await App.NavigationService.NavigateToAsync(typeof(ReadingTestPage), item.TestId);
+            //Frame.Navigate(typeof(Views.ReadingTestPage), item.TestId);
+        }
+    }
 }

@@ -19,6 +19,7 @@ using Microsoft.UI;
 using login_full.Views;
 using login_full.Views.ForgotPasswordPage;
 using System.Text.RegularExpressions;
+using YamlDotNet.Core.Tokens;
 
 namespace login_full
 {
@@ -68,7 +69,42 @@ namespace login_full
 				// Check saved credentials
 				if (_authService.HasSavedCredentials())
 				{
-					await NavigateToHomePage();
+                    string username = _authService.GetSavedUsername();
+                    string password = _authService.GetSavedPassword();
+
+                    string response = await _loginApiService.LoginAsync(username, password);
+
+                    if (response.StartsWith("Error"))
+                    {
+                        ErrorMessageTextBlock.Text = "Invalid email or password";
+                        ErrorMessageTextBlock.Visibility = Visibility.Visible;
+                        return;
+                    }
+
+                    try
+                    {
+                        var jsonResponse = JObject.Parse(response);
+
+                        if (jsonResponse["code"].ToString() == "200")
+                        {
+                            string token = jsonResponse["data"].ToString();
+                            System.Diagnostics.Debug.WriteLine(token);
+                            GlobalState.Instance.AccessToken = token;
+                            App.IsLoggedInWithGoogle = false;
+                            await NavigateToHomePage();
+                        }
+                        else
+                        {
+                            string errorMessage = jsonResponse["error_detail"].ToString();
+                            ErrorMessageTextBlock.Text = errorMessage;
+                            ErrorMessageTextBlock.Visibility = Visibility.Visible;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessageTextBlock.Text = ex.Message;
+                        ErrorMessageTextBlock.Visibility = Visibility.Visible;
+                    }
 				}
 			}
 			catch (Exception ex)
@@ -157,7 +193,9 @@ namespace login_full
 				{
 					App.IsLoggedInWithGoogle = true;
 					GlobalState.Instance.AccessToken = jsonResponse["data"].ToString();
-					await ShowSuccessDialogAsync("Login successful with Google!");
+                    System.Diagnostics.Debug.WriteLine(jsonResponse["data"].ToString());
+
+                    await ShowSuccessDialogAsync("Login successful with Google!");
 					_ = NavigateToHomePage();
 				}
 				else
@@ -221,27 +259,29 @@ namespace login_full
 			RegisterButton.Background = new SolidColorBrush(Colors.Transparent);
 			LoginPanel.Visibility = Visibility.Visible;
 			RegisterPanel.Visibility = Visibility.Collapsed;
-		}
-		/// <summary>
-		/// Xử lý sự kiện khi người dùng chuyển sang giao diện đăng ký.
-		/// </summary>
-		/// <param name="sender">Nguồn sự kiện.</param>
-		/// <param name="e">Thông tin sự kiện.</param>
+            ErrorMessageTextBlock.Visibility = Visibility.Collapsed;
+        }
+        /// <summary>
+        /// Xử lý sự kiện khi người dùng chuyển sang giao diện đăng ký.
+        /// </summary>
+        /// <param name="sender">Nguồn sự kiện.</param>
+        /// <param name="e">Thông tin sự kiện.</param>
 
-		private void RegisterButtonToggle_Click(object sender, RoutedEventArgs e)
+        private void RegisterButtonToggle_Click(object sender, RoutedEventArgs e)
 		{
 			LoginButton.Background = new SolidColorBrush(Colors.Transparent);
 			RegisterButton.Background = new SolidColorBrush(Colors.White);
 			LoginPanel.Visibility = Visibility.Collapsed;
 			RegisterPanel.Visibility = Visibility.Visible;
-		}
-		/// <summary>
-		/// Xử lý sự kiện khi người dùng nhấn nút đăng nhập, gửi yêu cầu đăng nhập và xử lý phản hồi.
-		/// </summary>
-		/// <param name="sender">Nguồn sự kiện.</param>
-		/// <param name="e">Thông tin sự kiện.</param>
+            ErrorMessageTextBlock.Visibility = Visibility.Collapsed;
+        }
+        /// <summary>
+        /// Xử lý sự kiện khi người dùng nhấn nút đăng nhập, gửi yêu cầu đăng nhập và xử lý phản hồi.
+        /// </summary>
+        /// <param name="sender">Nguồn sự kiện.</param>
+        /// <param name="e">Thông tin sự kiện.</param>
 
-		private async void Login1Button_Click(object sender, RoutedEventArgs e)
+        private async void Login1Button_Click(object sender, RoutedEventArgs e)
 		{
 			string username = UsernameTextBox.Text;
 			string password = PasswordBox.Password;

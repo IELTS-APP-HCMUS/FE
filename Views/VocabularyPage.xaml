@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="login_full.Views.VocabularyPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:login_full.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:components="using:login_full.Components"
+    xmlns:viewmodels="using:login_full.ViewModels"
+    xmlns:converters="using:login_full.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <components:Header Grid.Row="0" DataContext="{Binding Profile}"/>
+        
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <AutoSuggestBox
+                    x:Name="SearchBox"
+                    PlaceholderText="Tìm kiếm từ vựng..."
+                    QueryIcon="Find"
+                    Width="300"
+                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextChanged="SearchBox_TextChanged"
+                    HorizontalAlignment="Left"/>
+
+                <Button 
+                    Grid.Column="1"
+                    x:Name="AddVocabButton"
+                    Background="#1B76A1"
+                    Command="{Binding AddVocabCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE710;" Foreground="White"/>
+                        <TextBlock Text="Thêm từ vựng" Margin="8,0,0,0" Foreground="White"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,0,0,0" Padding="10" Background="#1B76A1" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>  <!-- STT -->
+                    <ColumnDefinition Width="1*"/> <!-- Từ vựng -->
+                    <ColumnDefinition Width="1*"/> <!-- Trạng thái -->
+                    <ColumnDefinition Width="0.7*"/> <!-- Loại từ -->
+                    <ColumnDefinition Width="1*"/> <!-- Nghĩa của từ -->
+                    <ColumnDefinition Width="4.3*"/> <!-- Ví dụ -->
+                    <ColumnDefinition Width="2.2*"/> <!-- Ghi chú -->
+                    <ColumnDefinition Width="0.2*"/>
+                   
+                    <ColumnDefinition Width="0.2*"/>  <!-- Action -->
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="#" Grid.Column="0" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Từ vựng" Grid.Column="1" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Trạng thái" Grid.Column="2" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Loại từ" Grid.Column="3" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Nghĩa của từ" Grid.Column="4" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Ví dụ" Grid.Column="5" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Ghi chú" Grid.Column="6" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="" Grid.Column="7" Foreground="White"/>
+            </Grid>
+
+            <ListView
+                x:Name="VocabularyListView"
+                Grid.Row="2"
+                SelectionMode="Single"
+                ItemsSource="{Binding VocabularyItems}"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                Background="White">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid >
+                       
+                                <!--<Grid.Resources>
+                                <SolidColorBrush x:Key="AlternateRowBackground" Color="#F5F5F5"/>
+                            </Grid.Resources>
+
+                            <Grid.Background>
+                                <Binding Path="Index">
+                                    <Binding.Converter>
+                                        <local:EvenRowBackgroundConverter/>
+                                    </Binding.Converter>
+                                </Binding>
+                            </Grid.Background>-->
+                            
+                            <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <!-- STT -->
+                                    <ColumnDefinition Width="1*"/>
+                                    <!-- Từ vựng -->
+                                    <ColumnDefinition Width="1*"/>
+                                    <!-- Trạng thái -->
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <!-- Loại từ -->
+                                    <ColumnDefinition Width="1*"/>
+                                    <!-- Nghĩa của từ -->
+                                    <ColumnDefinition Width="4.3*"/>
+                                    <!-- Ví dụ -->
+                                    <ColumnDefinition Width="2.2*"/>
+                                    <!-- Ghi chú -->
+                                     
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <!-- Action -->
+                                </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Index}" Grid.Column="0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Word}" Grid.Column="1"
+                                       TextWrapping="Wrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                            <Button 
+                                Grid.Column="2"
+                                Command="{Binding DataContext.ToggleStatusCommand, ElementName=VocabularyListView}"
+                                CommandParameter="{Binding}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Padding="0">
+                                
+                                <TextBlock 
+                                    Text="{Binding Status}" 
+                                    Grid.Column="2"
+                                    Foreground="{Binding StatusColor}"/>
+                            </Button>
+                            <TextBlock Text="{Binding WordType}" 
+                                       Grid.Column="3"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Meaning}" 
+                                       Grid.Column="4" 
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis" 
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Example}" 
+                                       Grid.Column="5"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Note}" Grid.Column="6" 
+                                       TextWrapping="Wrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>    
+                            <Button 
+                                Grid.Column="7"
+                                Command="{Binding DataContext.DeleteItemCommand, ElementName=VocabularyListView}"
+                                CommandParameter="{Binding}"
+                                Background="Transparent">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid Grid.Row="3" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox
+                    x:Name="PageSizeComboBox"
+                    Grid.Column="0"
+                    SelectedIndex="0"
+                    SelectionChanged="PageSizeComboBox_SelectionChanged">
+                    <ComboBoxItem Content="5 hàng"/>
+                    <ComboBoxItem Content="10 hàng"/>
+                    <ComboBoxItem Content="15 hàng"/>
+                </ComboBox>
+
+                <StackPanel
+                    Grid.Column="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+                    <Button 
+                        Command="{Binding PreviousPageCommand}"
+                        IsEnabled="{Binding CanGoPrevious}">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;"/>
+                    </Button>
+                    <TextBlock
+                        Text="{Binding PageInfo}"
+                        VerticalAlignment="Center"
+                        Margin="12,0"/>
+                    <Button 
+                        Command="{Binding NextPageCommand}"
+                        IsEnabled="{Binding CanGoNext}">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

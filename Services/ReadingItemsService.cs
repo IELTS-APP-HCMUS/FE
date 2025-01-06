@@ -7,47 +7,23 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using login_full.Context;
-using System.Diagnostics;
+using login_full.API_Services;
+
 
 namespace login_full.Services
 {
 	public class ReadingItemsService : IReadingItemsService
 	{
-		private readonly HttpClient _httpClient;
 		public readonly ObservableCollection<ReadingItemModels> _items ;
 		private bool _isInitialized;
+		private readonly ClientCaller _clientCaller;
 
 		// Public property to expose _items
 		public ReadingItemsService()
 		{
-			_httpClient = new HttpClient();
-			_items = new ObservableCollection<ReadingItemModels>
-		{
-			new ReadingItemModels
-			{
-				TestId = "test1",
-				Title = "Gap Filling - Easy",
-				Description = "Practice your gap-filling skills with easy passages",
-				Duration = "10 mins",
-				Difficulty = "Easy",
-				Category = "Gap Filling",
-				ImagePath = "/Assets/reading_win.png",
-				IsSubmitted = true
-			},
-			new ReadingItemModels
-			{
-				TestId ="test2",
-				Title = "Matching Headings - Intermediate",
-				Description = "Match the correct headings to the passages",
-				Duration = "15 mins",
-				Difficulty = "Intermediate",
-				Category = "Matching",
-				ImagePath = "/Assets/reading_win.png",
-				IsSubmitted = false
-			},
-        };
-
-		}
+			_items = new ObservableCollection<ReadingItemModels> { };
+            _clientCaller = new ClientCaller();
+        }
 
 		public async Task InitializeAsync()
 		{
@@ -62,10 +38,9 @@ namespace login_full.Services
 		{
 			try
 			{
-				// Attempt to load items from the API
+				
 				await FetchItemsFromAPIAsync(1,25);
 
-				// If no items were fetched, load mock data
 				if (!_items.Any())
 				{
 					System.Diagnostics.Debug.WriteLine("No items fetched from API, loading mock data.");
@@ -79,86 +54,80 @@ namespace login_full.Services
 		}
 
 		private async Task FetchItemsFromAPIAsync(
-			int ?pageNumber = null,
-			int ?pageSize = null,
-			int ?submittedStatus = null,
-			string? searchTerm = null,
-			int? type = null,
-			int? tagPassage = null,
-			int? tagQuestionType = null)
+	int? pageNumber = null,
+	int? pageSize = null,
+	int? submittedStatus = null,
+	string? searchTerm = null,
+	int? type = null,
+	int? tagPassage = null,
+	int? tagQuestionType = null)
+		{
+			try
 			{
-				try
+				// Build Query Parameters
+				var queryParams = new Dictionary<string, string>
+		{
+			{ "page", pageNumber.ToString() },
+			{ "page_size", pageSize.ToString() },
+			{ "submitted_status", submittedStatus.ToString() }
+		};
+
+				if (!string.IsNullOrEmpty(searchTerm)) queryParams.Add("search", searchTerm);
+				if (type.HasValue) queryParams.Add("type", type.ToString());
+				if (tagPassage.HasValue) queryParams.Add("tag_passage", tagPassage.ToString());
+				if (tagQuestionType.HasValue) queryParams.Add("tag_question_type", tagQuestionType.ToString());
+
+				string queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+				string url = $"/v1/quizzes?{queryString}";
+
+				HttpResponseMessage response = await _clientCaller.GetAsync(url);
+
+				if (response.IsSuccessStatusCode)
 				{
-					
-				using (HttpClient client = new HttpClient())
+					string stringResponse = await response.Content.ReadAsStringAsync();
+					System.Diagnostics.Debug.WriteLine($"API url: {url}");
+					var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(stringResponse);
+
+					_items.Clear();
+
+					foreach (var item in apiResponse.Data.Items)
 					{
-					string accessToken = GlobalState.Instance.AccessToken;
-
-					// Add Bearer Token for Authorization
-					client.DefaultRequestHeaders.Authorization =
-						new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-					// Build Query Parameters
-					var queryParams = new Dictionary<string, string>
-					{
-						{ "page", pageNumber.ToString() },
-						{ "page_size", pageSize.ToString() },
-						{ "submitted_status", submittedStatus.ToString() }
-					};
-
-					if (!string.IsNullOrEmpty(searchTerm)) queryParams.Add("search", searchTerm);
-					if (type.HasValue) queryParams.Add("type", type.ToString());
-					if (tagPassage.HasValue) queryParams.Add("tag_passage", tagPassage.ToString());
-					if (tagQuestionType.HasValue) queryParams.Add("tag_question_type", tagQuestionType.ToString());
-
-					string queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
-					string url = $"https://ielts-app-api-4.onrender.com/v1/quizzes?{queryString}";
-				
-					HttpResponseMessage response = await client.GetAsync(url);
-
-					if (response.IsSuccessStatusCode)
-					{
-						string stringResponse = await response.Content.ReadAsStringAsync();
-						System.Diagnostics.Debug.WriteLine($"API url: {url}");
-						// Deserialize API Response
-						var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(stringResponse);
-
-						// Clear the existing _items
-						_items.Clear();
-
-						// Map API Data into ReadingItemModels
-						foreach (var item in apiResponse.Data.Items)
+						var mappedItem = new ReadingItemModels
 						{
-							var mappedItem = new ReadingItemModels
-							{
-								TestId = item.Id.ToString(),
-								Title = item.Title ?? "Default Title", // Fallback if null
-								Description = item.ShortDescription ?? "Default Description",
-								Duration = $"{item.Time} mins",
-								Difficulty = ExtractDifficultyFromTags(item.Tags),
-								Category = ExtractCategoryFromTags(item.Tags),
-								ImagePath = "/Assets/reading_win.png", // Default Image
-								IsSubmitted = item.IsSubmitted, // Map SubmittedStatus to IsCompleted
-							};
-
-							_items.Add(mappedItem);
-							System.Diagnostics.Debug.WriteLine($"Mapped item: Id={mappedItem.TestId}, Title={mappedItem.Title}, Description={mappedItem.Description}, Duration={mappedItem.Duration}, Difficulty={mappedItem.Difficulty}, Category={mappedItem.Category}, IsSubmitted={mappedItem.IsSubmitted}");
-
-						}
-
-						System.Diagnostics.Debug.WriteLine($"Successfully fetched {apiResponse.Data.Items.Count} items from API.");
+							TestId = item.Id.ToString(),
+							Title = item.Title ?? "Default Title",
+							Description = item.ShortDescription ?? "Default Description",
+							Duration = $"{item.Time} mins",
+							Tags = item.Tags,
+							Difficulty = ExtractDifficultyFromTags(item.Tags),
+							Category = ExtractCategoryFromTags(item.Tags),
+							ImagePath = !string.IsNullOrEmpty(item.Thumbnail)
+										? item.Thumbnail 
+										: "/Assets/reading_win.png",
+							IsSubmitted = item.IsSubmitted,
+						};
+						
+						_items.Add(mappedItem);
+						System.Diagnostics.Debug.WriteLine($"Image URL: {mappedItem.ImagePath}");
+						System.Diagnostics.Debug.WriteLine($"Mapped item: Id={mappedItem.TestId}, Title={mappedItem.Title}, Description={mappedItem.Description}, Duration={mappedItem.Duration}, Difficulty={mappedItem.Difficulty}, Category={mappedItem.Category}, IsSubmitted={mappedItem.IsSubmitted}, ImagePath= {mappedItem.ImagePath}");
 					}
-					else
-					{
-						System.Diagnostics.Debug.WriteLine($"Error fetching quizzes: {response.StatusCode} - {response.ReasonPhrase}");
-					}
+
+					System.Diagnostics.Debug.WriteLine($"Successfully fetched {apiResponse.Data.Items.Count} items from API.");
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine($"Error fetching quizzes: {response.StatusCode} - {response.ReasonPhrase}");
 				}
 			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"Exception in FetchItemsFromAPIAsync: {ex.Message}");
 			}
+
+			
+
 		}
+
 
 
 
@@ -214,26 +183,20 @@ namespace login_full.Services
 			return filteredItems;
 		}
 
-		private string ExtractDifficultyFromTags(IEnumerable<login_full.Models.Tag> tags)
+		private string ExtractDifficultyFromTags(IEnumerable<Tag> tags)
 		{
-			var passageTag = tags.FirstOrDefault(tag =>
-				tag.Code.StartsWith("passage_", StringComparison.OrdinalIgnoreCase));
+			var passageTag = tags?.FirstOrDefault(tag =>
+				tag.TagPositions != null &&
+				tag.TagPositions.Any(pos => pos.Position == "reading_passage_search"));
+
 			return passageTag?.Title ?? "Unknown";
 		}
 
-		private string ExtractCategoryFromTags(IEnumerable<login_full.Models.Tag> tags)
+		private string ExtractCategoryFromTags(IEnumerable<Tag> tags)
 		{
-			// Look for tags related to reading question types
-			var questionTypeTag = tags.FirstOrDefault(tag =>
-				tag.Code.Equals("MATCHING_HEADING", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("MATCHING_INFO", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("MULTIPLE_CHOICE_MANY", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("MAP_DIAGRAM_LABEL", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("OTHERS", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("FILL_BLANK", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("TRUE_FALSE", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("YES_NO", StringComparison.OrdinalIgnoreCase) ||
-				tag.Code.Equals("MULTIPLE_CHOICE_ONE", StringComparison.OrdinalIgnoreCase));
+			var questionTypeTag = tags?.FirstOrDefault(tag =>
+				tag.TagPositions != null &&
+				tag.TagPositions.Any(pos => pos.Position == "reading_question_types_search"));
 
 			return questionTypeTag?.Title ?? "General";
 		}
