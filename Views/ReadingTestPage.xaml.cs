@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Globalization;
 using login_full.Models;
 using login_full.Helpers;
+using System.Threading.Tasks;
 
 
 namespace login_full.Views
@@ -58,15 +59,17 @@ namespace login_full.Views
         /// Quản lý hiển thị thông báo toast
         /// </summary>
         private readonly ToastManager toastManager;
-        /// <summary>
-        /// Khởi tạo trang Reading Test với đầy đủ các service cần thiết
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Ném ra khi các service không được khởi tạo đúng</exception>
-        public ReadingTestPage()
+		private readonly LoaderManager loaderManager;
+		/// <summary>
+		/// Khởi tạo trang Reading Test với đầy đủ các service cần thiết
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Ném ra khi các service không được khởi tạo đúng</exception>
+		public ReadingTestPage()
         {
             this.InitializeComponent();
             // Khởi tạo ToastManager
             toastManager = new ToastManager(RootGrid);
+            loaderManager = new LoaderManager(App.MainWindow);
             try
             {
                 var readingTestService = ServiceLocator.GetService<IReadingTestService>();
@@ -86,7 +89,8 @@ namespace login_full.Views
                     readingTestService,
                     navigationService,
                     pdfExportService,
-                    _dictionaryService
+                    _dictionaryService,
+                    loaderManager
                 );
 
 				
@@ -272,7 +276,7 @@ namespace login_full.Views
         private async void WordButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is Button button && button.Content is TextBlock textBlock)
-			{
+            {
 				string word = textBlock.Text; // Get the clicked word
 				System.Diagnostics.Debug.WriteLine($"Clicked word: {word}");
 

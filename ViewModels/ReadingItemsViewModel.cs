@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using login_full.Helpers;
 
 namespace login_full.ViewModels
 {
@@ -44,6 +45,8 @@ namespace login_full.ViewModels
         private double _windowHeight;
         private bool _isCompletedFilterActive;
         private bool _isLoading;
+        private readonly FilteredSelection _filteredSelection;
+        private readonly LoaderManager _loaderManager;
 
         public ObservableCollection<ReadingItemModels> _items { get; private set; }
 		private ObservableCollection<ReadingItemModels> _allItems;
@@ -197,7 +200,9 @@ namespace login_full.ViewModels
             INavigationService navigationService,
             ISearchService searchService,
             IPaginationService paginationService,
-            ICompletedItemsService completedItemsService)
+            ICompletedItemsService completedItemsService,
+            LoaderManager loaderManager
+            )
         {
             _readingItemsService = readingItemsService;
             _navigationService = navigationService;
@@ -225,6 +230,24 @@ namespace login_full.ViewModels
             PageNumbers = new ObservableCollection<int>();
             UpdatePageNumbers();
 
+            _filteredSelection = new FilteredSelection
+            {
+                Passages = new Dictionary<int, bool>()
+                {
+                    {1, false},
+                    {2, false},
+                    {3, false}
+                },
+                QuestionTypes = new Dictionary<string, bool>()
+                {
+                    {"FILL_BLANK", false},
+                    {"MATCHING_HEADING", false},
+                    {"TRUE_FALSE", false},
+                    {"YES_NO", false}
+                }
+            };
+            _loaderManager = loaderManager;
+
             // Subscribe to search service events
             _searchService.SearchResultsUpdated += OnSearchResultsUpdated;
 
@@ -250,7 +273,7 @@ namespace login_full.ViewModels
         /// </summary>
         /// <param name="parameter">Chuỗi chứa loại và giá trị lọc, định dạng: "FilterType_FilterValue"</param>
         /// <returns>Task hoàn thành việc lọc</returns>
-        private async Task ApplyFilterAsync(string parameter)
+        private Task ApplyFilterAsync(string parameter)
 		{
 			try
 			{
@@ -262,28 +285,59 @@ namespace login_full.ViewModels
 
 				System.Diagnostics.Debug.WriteLine($"FilterType: {filterType}, FilterValue: {filterValue}");
 
-				// Dùng cache gốc (_allItems) để lọc
-				List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
+                // Dùng cache gốc (_allItems) để lọc
+                List<ReadingItemModels> filteredItems = new List<ReadingItemModels>();
 
 				if (filterType.Equals("Passage", StringComparison.OrdinalIgnoreCase))
 				{
-					filteredItems = _allItems.Where(item =>
-						item.Tags != null &&
-						item.Tags.Any(tag =>
-							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
-						)
-					).ToList();
-				}
+                    //               if (_filteredSelection.Passages[int.Parse(param[2])])
+                    //               {
+                    //                   _filteredSelection.Passages[int.Parse(param[2])] = false;
+                    //                   return Task.CompletedTask;
+                    //               }
+                    //filteredItems = _allItems.Where(item =>
+                    //	item.Tags != null &&
+                    //	item.Tags.Any(tag =>
+                    //		tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                    //	)
+                    //).ToList();
+                    filteredItems = _filteredSelection.Passages[int.Parse(param[2])] ? [.. _allItems] : _allItems.Where(item =>
+                        item.Tags != null &&
+                        item.Tags.Any(tag =>
+                            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                        )
+                    ).ToList();
+                    bool temp = !_filteredSelection.Passages[int.Parse(param[2])];
+                    _filteredSelection.Reset();
+                    _filteredSelection.Passages[int.Parse(param[2])] = temp;
+                }
 				else if (filterType.Equals("QuestionType", StringComparison.OrdinalIgnoreCase))
 				{
-					filteredItems = _allItems.Where(item =>
-						item.Tags != null &&
-						item.Tags.Any(tag =>
-							tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
-						)
-					).ToList();
+                    //if (_filteredSelection.QuestionTypes[filterValue])
+                    //{
+                    //    _filteredSelection.QuestionTypes[filterValue] = false;
+                    //    filteredItems = [.. _allItems];
+                    //}
+                    //else
+                    //{
+                    //    _filteredSelection.QuestionTypes[filterValue] = true;
+                    //    filteredItems = _allItems.Where(item =>
+                    //        item.Tags != null &&
+                    //        item.Tags.Any(tag =>
+                    //            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                    //        )
+                    //    ).ToList();
+                    //}
+                    filteredItems = _filteredSelection.QuestionTypes[filterValue] ? [.. _allItems] : _allItems.Where(item =>
+                        item.Tags != null &&
+                        item.Tags.Any(tag =>
+                            tag.Code.Equals(filterValue, StringComparison.OrdinalIgnoreCase)
+                        )
+                    ).ToList();
+                    bool temp = !_filteredSelection.QuestionTypes[filterValue];
+                    _filteredSelection.Reset();
+                    _filteredSelection.QuestionTypes[filterValue] = temp;
 				}
-
 				ApplyLocalFilter(filterType, filterValue, filteredItems);
 			}
 			catch (Exception ex)
@@ -294,10 +348,11 @@ namespace login_full.ViewModels
 			{
 				IsLoading = false;
 			}
-		}
 
+            return Task.CompletedTask;
+        }
 
-		private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
+        private void ApplyLocalFilter(string filterType, string filterValue, List<ReadingItemModels> filteredItems)
 		{
 			Items = new ObservableCollection<ReadingItemModels>(filteredItems);
 
@@ -311,7 +366,9 @@ namespace login_full.ViewModels
         {
 			try
 			{
+                _loaderManager.ShowLoader();
                 var items = await _readingItemsService.GetReadingItemsAsync();
+                _loaderManager.HideLoader();
                 Items = new ObservableCollection<ReadingItemModels>(items);
 				_allItems = new ObservableCollection<ReadingItemModels>(items);
 				InitializePagination();
@@ -477,5 +534,26 @@ namespace login_full.ViewModels
         }
 
         
+    }
+}
+class FilteredSelection
+{
+    public Dictionary<int, bool> Passages { get; set; }
+    public Dictionary<string, bool> QuestionTypes { get; set; }
+    public void Reset()
+    {
+        Passages = new Dictionary<int, bool>()
+                {
+                    {1, false},
+                    {2, false},
+                    {3, false}
+                };
+        QuestionTypes = new Dictionary<string, bool>()
+                {
+                    {"FILL_BLANK", false},
+                    {"MATCHING_HEADING", false},
+                    {"TRUE_FALSE", false},
+                    {"YES_NO", false}
+                };
     }
 }

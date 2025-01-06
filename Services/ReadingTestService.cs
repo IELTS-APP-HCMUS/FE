@@ -297,32 +297,45 @@ namespace login_full.Services
 					var histories = new List<TestHistory>();
 					foreach (var i in items)
 					{
-						int quizID = int.Parse(i["quiz_id"].ToString());
-						HttpResponseMessage i_response = await _clientCaller.GetAsync($"/v1/quizzes/" + quizID);
-						if (i_response.IsSuccessStatusCode)
-						{
-							string i_stringResponse = await i_response.Content.ReadAsStringAsync();
-							JObject i_jsonResponse = JObject.Parse(i_stringResponse);
+						JObject detail = (JObject)i["detail"];
+                        TestHistory history = new()
+                        {
+							AnswerId = i["id"].ToString(),
+							TestId = i["quiz_id"].ToString(),
+							Title = detail["title"].ToString(),
+                            SubmitTime = DateTime.Parse(i["date_created"].ToString()),
+							Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
+							TotalQuestions = int.Parse(i["total"].ToString()),
+							CorrectAnswers = int.Parse(i["success"].ToString()),
+							WrongAnswers = int.Parse(i["failed"].ToString()),
+							SkippedAnswers = int.Parse(i["skipped"].ToString())
+						};
+						histories.Add(history);
+						//HttpResponseMessage i_response = await _clientCaller.GetAsync($"/v1/quizzes/" + quizID);
+						//if (i_response.IsSuccessStatusCode)
+						//{
+						//	string i_stringResponse = await i_response.Content.ReadAsStringAsync();
+						//	JObject i_jsonResponse = JObject.Parse(i_stringResponse);
 
-							JObject i_dataResponse = (JObject)i_jsonResponse["data"];
-							string i_title = i_dataResponse["title"].ToString();
-							DateTime date_created = DateTime.Parse(i["date_created"].ToString());
-							TestHistory history = new TestHistory
-							{
-								AnswerId = i["id"].ToString(),
-								TestId = quizID.ToString(),
-								Title = i_title,
-								SubmitTime = date_created,
-								Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
-								TotalQuestions = int.Parse(i["total"].ToString()),
-								CorrectAnswers = int.Parse(i["success"].ToString()),
-								WrongAnswers = int.Parse(i["failed"].ToString()),
-								SkippedAnswers = int.Parse(i["skipped"].ToString())
-							};
-							histories.Add(history);
-						}
+						//	JObject i_dataResponse = (JObject)i_jsonResponse["data"];
+						//	string i_title = i_dataResponse["title"].ToString();
+						//	DateTime date_created = DateTime.Parse(i["date_created"].ToString());
+						//	TestHistory history = new TestHistory
+						//	{
+						//		AnswerId = i["id"].ToString(),
+						//		TestId = quizID.ToString(),
+						//		Title = i_title,
+						//		SubmitTime = date_created,
+						//		Duration = TimeSpan.Parse(i["completed_duration"].ToString()),
+						//		TotalQuestions = int.Parse(i["total"].ToString()),
+						//		CorrectAnswers = int.Parse(i["success"].ToString()),
+						//		WrongAnswers = int.Parse(i["failed"].ToString()),
+						//		SkippedAnswers = int.Parse(i["skipped"].ToString())
+						//	};
+						//	histories.Add(history);
+						//}
 					}
-					return histories;
+                    return histories;
 				}
 				return new List<TestHistory>();
 			}

@@ -108,8 +108,8 @@ namespace login_full.ViewModels
             _vocabularyService = new VocabularyService();
             VocabularyItems = new ObservableCollection<VocabularyItem>();
             _filteredData = new List<VocabularyItem>();
-            NextPageCommand = new RelayCommand(NextPage, () => CanGoNext);
-            PreviousPageCommand = new RelayCommand(PreviousPage, () => CanGoPrevious);
+            NextPageCommand = new RelayCommand(NextPage);
+            PreviousPageCommand = new RelayCommand(PreviousPage);
             ChangePageSizeCommand = new RelayCommand<int>(ChangePageSize);
             DeleteItemCommand = new RelayCommand<VocabularyItem>(DeleteItem);
             ToggleStatusCommand = new RelayCommand<VocabularyItem>(ToggleStatus);
